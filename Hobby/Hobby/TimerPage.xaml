@@ -3,26 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Hobby.TimerPage">
     <ContentPage.Content>
-        <StackLayout Spacing="10" VerticalOptions="Center" HorizontalOptions="Center">
-            <Label x:Name="TimeDisplay"
-                   Text="00:00"
-                   HorizontalOptions="Center"
-                   FontSize="40"></Label>
-            <StackLayout Orientation="Horizontal">
-                <Button x:Name="StartPauseHobby"
-                        Text="Начать работу"
-                        Clicked="StartPauseHobby_Clicked"
-                        BackgroundColor="Orange"
-                        TextColor="White"></Button>
-                <Button x:Name="StartPauseRest"
-                        Text="Пора отдохнуть"
-                        Clicked="StartPauseRest_Clicked"
-                        BackgroundColor="Aquamarine"
-                        TextColor="White"></Button>
-            </StackLayout>
-            <Button x:Name="ResetTimer"
-                    Clicked="ResetTimer_Clicked"
-                    Text="СБРОС"></Button>
+        <StackLayout VerticalOptions="Center" HorizontalOptions="Center">
+            <Label x:Name="Status" Text="Работаем" FontSize="40" HorizontalOptions="Center" />
+            <Label x:Name="TimerLabel" Text="25:00" FontSize="40" HorizontalOptions="Center" />
+            <Button x:Name="StartButton" Text="Старт" BackgroundColor="Orange" Clicked="StartButton_Clicked" />
+            <Button x:Name="ResetButton" Text="Компломентарность таймеровечества" Clicked="ResetButton_Clicked" />
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
