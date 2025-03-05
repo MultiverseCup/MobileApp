@@ -1,0 +1,15 @@
+C:\Users\user\source\repos\Test mobile\Test mobile\Test mobile\bin\Debug\netstandard2.0\Test mobile.deps.json
+C:\Users\user\source\repos\Test mobile\Test mobile\Test mobile\bin\Debug\netstandard2.0\Test mobile.dll
+C:\Users\user\source\repos\Test mobile\Test mobile\Test mobile\bin\Debug\netstandard2.0\ref\Test mobile.dll
+C:\Users\user\source\repos\Test mobile\Test mobile\Test mobile\bin\Debug\netstandard2.0\Test mobile.pdb
+C:\Users\user\source\repos\Test mobile\Test mobile\Test mobile\obj\Debug\netstandard2.0\Test mobile.csproj.AssemblyReference.cache
+C:\Users\user\source\repos\Test mobile\Test mobile\Test mobile\obj\Debug\netstandard2.0\Test mobile.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\source\repos\Test mobile\Test mobile\Test mobile\obj\Debug\netstandard2.0\App.xaml.g.cs
+C:\Users\user\source\repos\Test mobile\Test mobile\Test mobile\obj\Debug\netstandard2.0\MainPage.xaml.g.cs
+C:\Users\user\source\repos\Test mobile\Test mobile\Test mobile\obj\Debug\netstandard2.0\Test mobile.AssemblyInfoInputs.cache
+C:\Users\user\source\repos\Test mobile\Test mobile\Test mobile\obj\Debug\netstandard2.0\Test mobile.AssemblyInfo.cs
+C:\Users\user\source\repos\Test mobile\Test mobile\Test mobile\obj\Debug\netstandard2.0\Test mobile.csproj.CoreCompileInputs.cache
+C:\Users\user\source\repos\Test mobile\Test mobile\Test mobile\obj\Debug\netstandard2.0\XamlC.stamp
+C:\Users\user\source\repos\Test mobile\Test mobile\Test mobile\obj\Debug\netstandard2.0\Test mobile.dll
+C:\Users\user\source\repos\Test mobile\Test mobile\Test mobile\obj\Debug\netstandard2.0\refint\Test mobile.dll
+C:\Users\user\source\repos\Test mobile\Test mobile\Test mobile\obj\Debug\netstandard2.0\Test mobile.pdb
