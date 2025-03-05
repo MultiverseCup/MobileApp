@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Hobby.MainPage">
+
+        <StackLayout Margin="25" Spacing="30">
+            <Button Text="Профиль" 
+                HeightRequest="50"
+                WidthRequest="160"
+                HorizontalOptions="Start"
+        ></Button>
+            <Button Text="Мои увлечения" 
+                HeightRequest="150"
+                ></Button>
+
+            <StackLayout Orientation="Horizontal" 
+                     VerticalOptions="FillAndExpand"
+                     Spacing="30"
+                     >
+                <Button Text="Расписание"
+                    HorizontalOptions="FillAndExpand"></Button>
+                <StackLayout VerticalOptions="FillAndExpand"
+                         Spacing="30">
+                    <Button x:Name="TimerButton"
+                        Text="Таймер Помодоро"
+                        VerticalOptions="FillAndExpand"
+                        Clicked="TimerButton_Clicked"></Button>
+                    <Button Text="Цели"
+                        VerticalOptions="FillAndExpand"></Button>
+
+                </StackLayout>
+
+            </StackLayout>
+        </StackLayout>
+
+</ContentPage>

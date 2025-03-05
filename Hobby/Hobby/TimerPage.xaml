@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Hobby.TimerPage">
+    <ContentPage.Content>
+        <StackLayout Spacing="10" VerticalOptions="Center" HorizontalOptions="Center">
+            <Label x:Name="TimeDisplay"
+                   Text="00:00"
+                   HorizontalOptions="Center"
+                   FontSize="40"></Label>
+            <StackLayout Orientation="Horizontal">
+                <Button x:Name="StartPauseHobby"
+                        Text="Начать работу"
+                        Clicked="StartPauseHobby_Clicked"
+                        BackgroundColor="Orange"
+                        TextColor="White"></Button>
+                <Button x:Name="StartPauseRest"
+                        Text="Пора отдохнуть"
+                        Clicked="StartPauseRest_Clicked"
+                        BackgroundColor="Aquamarine"
+                        TextColor="White"></Button>
+            </StackLayout>
+            <Button x:Name="ResetTimer"
+                    Clicked="ResetTimer_Clicked"
+                    Text="СБРОС"></Button>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
