@@ -1,0 +1,17 @@
+D:\UrFU_Pomodoro\MobileApp\Hobby\Hobby\bin\Debug\netstandard2.0\Hobby.deps.json
+D:\UrFU_Pomodoro\MobileApp\Hobby\Hobby\bin\Debug\netstandard2.0\Hobby.dll
+D:\UrFU_Pomodoro\MobileApp\Hobby\Hobby\bin\Debug\netstandard2.0\ref\Hobby.dll
+D:\UrFU_Pomodoro\MobileApp\Hobby\Hobby\bin\Debug\netstandard2.0\Hobby.pdb
+D:\UrFU_Pomodoro\MobileApp\Hobby\Hobby\obj\Debug\netstandard2.0\Hobby.csproj.AssemblyReference.cache
+D:\UrFU_Pomodoro\MobileApp\Hobby\Hobby\obj\Debug\netstandard2.0\Hobby.GeneratedMSBuildEditorConfig.editorconfig
+D:\UrFU_Pomodoro\MobileApp\Hobby\Hobby\obj\Debug\netstandard2.0\App.xaml.g.cs
+D:\UrFU_Pomodoro\MobileApp\Hobby\Hobby\obj\Debug\netstandard2.0\MainPage.xaml.g.cs
+D:\UrFU_Pomodoro\MobileApp\Hobby\Hobby\obj\Debug\netstandard2.0\TimerPage.xaml.g.cs
+D:\UrFU_Pomodoro\MobileApp\Hobby\Hobby\obj\Debug\netstandard2.0\Hobby.AssemblyInfoInputs.cache
+D:\UrFU_Pomodoro\MobileApp\Hobby\Hobby\obj\Debug\netstandard2.0\Hobby.AssemblyInfo.cs
+D:\UrFU_Pomodoro\MobileApp\Hobby\Hobby\obj\Debug\netstandard2.0\Hobby.csproj.CoreCompileInputs.cache
+D:\UrFU_Pomodoro\MobileApp\Hobby\Hobby\obj\Debug\netstandard2.0\Hobby.sourcelink.json
+D:\UrFU_Pomodoro\MobileApp\Hobby\Hobby\obj\Debug\netstandard2.0\XamlC.stamp
+D:\UrFU_Pomodoro\MobileApp\Hobby\Hobby\obj\Debug\netstandard2.0\Hobby.dll
+D:\UrFU_Pomodoro\MobileApp\Hobby\Hobby\obj\Debug\netstandard2.0\refint\Hobby.dll
+D:\UrFU_Pomodoro\MobileApp\Hobby\Hobby\obj\Debug\netstandard2.0\Hobby.pdb
