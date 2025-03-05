@@ -11,96 +11,89 @@ using static System.Net.Mime.MediaTypeNames;
 namespace Hobby
 {
 	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class TimerPage : ContentPage
-	{
-        private bool IsHobbyTimerRunning = false;
-        private bool IsRestTimerRunning = false;
-        private int HobbySeconds = 60;
-        private int RestSeconds = 30;
-        public TimerPage ()
-		{
-			InitializeComponent ();
-		}
-        private bool OnHobbyTimerTick()
-        {
-            if (HobbySeconds == 0 || !IsHobbyTimerRunning)
-            {
-                
-                Reset();
-                return IsHobbyTimerRunning;
-            }
+    public partial class TimerPage : ContentPage
+    {
+        private const int WorkDuration = 10; // 25 минут в секундах
+        private const int BreakDuration = 5;  // 5 минут в секундах
 
-            HobbySeconds -= 1;
-            TimeDisplay.Text = $"{HobbySeconds / 60}".PadLeft(2, '0') + ":" + $"{HobbySeconds % 60}".PadLeft(2, '0');
-            return IsHobbyTimerRunning;
+        private int _timeRemaining;
+        private bool _isWorking;
+        private bool _isRunning;
+
+        public TimerPage()
+        {
+            InitializeComponent();
+            ResetTimer();
         }
 
-        private bool OnRestTimerTick()
+        private void ResetTimer()
         {
-            if (RestSeconds == 0 || !IsRestTimerRunning)
+            StartButton.BackgroundColor = Color.Orange;
+            Status.Text = "Работаем";
+            _isWorking = true;
+            _timeRemaining = WorkDuration;
+            UpdateTimerDisplay();
+        }
+
+        private void UpdateTimerDisplay()
+        {
+            TimerLabel.Text = TimeSpan.FromSeconds(_timeRemaining).ToString(@"mm\:ss");
+        }
+
+        private async void StartButton_Clicked(object sender, EventArgs e)
+        {
+            if (sender is null)
+                throw new ArgumentNullException(nameof(sender));
+
+            if (_isRunning)
             {
-                Reset();
-                return IsRestTimerRunning;
+                _isRunning = false;
+                StartButton.Text = "Старт";
+
+                return;
             }
 
-            RestSeconds -= 1;
-            TimeDisplay.Text = $"{RestSeconds / 60}".PadLeft(2, '0') + ":" + $"{RestSeconds % 60}".PadLeft(2, '0');
-            return IsRestTimerRunning;
-        }
-        private void StartPauseHobby_Clicked(object sender, EventArgs e)
-        {
-            if (!IsHobbyTimerRunning)
+            _isRunning = true;
+            StartButton.Text = "Пауза";
+
+
+            while (_isRunning && _timeRemaining > 0)
             {
-                
-                
-                IsHobbyTimerRunning = true;
-                StartPauseHobby.Text = "Пауза";
-                StartPauseRest.IsEnabled = false;
-                Device.StartTimer(TimeSpan.FromSeconds(1), OnHobbyTimerTick);
+                await System.Threading.Tasks.Task.Delay(1000); // Ждем 1 секунду
+                _timeRemaining--;
+                UpdateTimerDisplay();
+            }
+
+            if (_timeRemaining == 0)
+            {
+                _isRunning = false;
+                StartButton.Text = "Старт";
+
+                // Переключаемся между работой и отдыхом
+                _isWorking = !_isWorking;
+            if (_isWorking)
+            {
+                StartButton.BackgroundColor = Color.Orange;
+                Status.Text = "Работаем";
             }
             else
             {
-                IsHobbyTimerRunning = false;
-                StartPauseRest.IsEnabled = true;
-                StartPauseHobby.Text = "Начать работу";
-                
+                StartButton.BackgroundColor = Color.Aquamarine;
+                Status.Text = "Откисаем";
+            }
+            _timeRemaining = _isWorking ? WorkDuration : BreakDuration;
+
+            // Уведомление пользователя
+            await DisplayAlert("Помодоро", _isWorking ? "Время работать!" : "Время отдыхать!", "OK");
+            UpdateTimerDisplay();
             }
         }
 
-        private void StartPauseRest_Clicked(object sender, EventArgs e)
+        private void ResetButton_Clicked(object sender, EventArgs e)
         {
-            if (!IsRestTimerRunning)
-            {
-                
-                
-                IsRestTimerRunning = true;
-                StartPauseRest.Text = "Пауза";
-                StartPauseHobby.IsEnabled = false;
-                Device.StartTimer(TimeSpan.FromSeconds(1), OnRestTimerTick);
-            }
-            else
-            {
-                IsRestTimerRunning = false;
-                StartPauseRest.Text = "Пора отдохнуть";
-                StartPauseHobby.IsEnabled = true;
-            }
-        }
-        private void Reset()
-        {
-            IsRestTimerRunning = false;
-            StartPauseRest.Text = "Пора отдохнуть";
-            IsHobbyTimerRunning = false;
-            StartPauseHobby.Text = "Начать работу";
-            StartPauseHobby.IsEnabled = true;
-            StartPauseRest.IsEnabled = true;
-            HobbySeconds = 60;
-            RestSeconds = 30;
-            TimeDisplay.Text = "00:00";
-
-        }
-        private void ResetTimer_Clicked(object sender, EventArgs e)
-        {
-            Reset();
+            _isRunning = false;
+            StartButton.Text = "Старт";
+            ResetTimer();
         }
     }
 }
