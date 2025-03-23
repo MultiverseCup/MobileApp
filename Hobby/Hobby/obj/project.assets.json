@@ -541,23 +541,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\user\\.nuget\\packages\\": {},
+    "C:\\Users\\acer\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\UrFU_Pomodoro\\MobileApp\\Hobby\\Hobby\\Hobby.csproj",
+      "projectUniqueName": "C:\\hobbyres\\MobileApp\\Hobby\\Hobby\\Hobby.csproj",
       "projectName": "Hobby",
-      "projectPath": "D:\\UrFU_Pomodoro\\MobileApp\\Hobby\\Hobby\\Hobby.csproj",
-      "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-      "outputPath": "D:\\UrFU_Pomodoro\\MobileApp\\Hobby\\Hobby\\obj\\",
+      "projectPath": "C:\\hobbyres\\MobileApp\\Hobby\\Hobby\\Hobby.csproj",
+      "packagesPath": "C:\\Users\\acer\\.nuget\\packages\\",
+      "outputPath": "C:\\hobbyres\\MobileApp\\Hobby\\Hobby\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\acer\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],

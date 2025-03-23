@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Hobby")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+da738788c9ee7b0c6a04c99893e1bdadb7951f42")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d5da700403d2016621722a18866fa9f9fa45b62d")]
 [assembly: System.Reflection.AssemblyProductAttribute("Hobby")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Hobby")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
