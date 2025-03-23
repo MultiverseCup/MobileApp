@@ -3408,17 +3408,17 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\user\\.nuget\\packages\\": {},
+    "C:\\Users\\acer\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\UrFU_Pomodoro\\MobileApp\\Hobby\\Hobby.Android\\Hobby.Android.csproj",
+      "projectUniqueName": "C:\\hobbyres\\MobileApp\\Hobby\\Hobby.Android\\Hobby.Android.csproj",
       "projectName": "Hobby.Android",
-      "projectPath": "D:\\UrFU_Pomodoro\\MobileApp\\Hobby\\Hobby.Android\\Hobby.Android.csproj",
-      "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-      "outputPath": "D:\\UrFU_Pomodoro\\MobileApp\\Hobby\\Hobby.Android\\obj\\",
+      "projectPath": "C:\\hobbyres\\MobileApp\\Hobby\\Hobby.Android\\Hobby.Android.csproj",
+      "packagesPath": "C:\\Users\\acer\\.nuget\\packages\\",
+      "outputPath": "C:\\hobbyres\\MobileApp\\Hobby\\Hobby.Android\\obj\\",
       "projectStyle": "PackageReference",
       "skipContentFileWrite": true,
       "UsingMicrosoftNETSdk": false,
@@ -3426,7 +3426,7 @@
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\acer\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -3440,8 +3440,8 @@
       "frameworks": {
         "monoandroid13.0": {
           "projectReferences": {
-            "D:\\UrFU_Pomodoro\\MobileApp\\Hobby\\Hobby\\Hobby.csproj": {
-              "projectPath": "D:\\UrFU_Pomodoro\\MobileApp\\Hobby\\Hobby\\Hobby.csproj"
+            "C:\\hobbyres\\MobileApp\\Hobby\\Hobby\\Hobby.csproj": {
+              "projectPath": "C:\\hobbyres\\MobileApp\\Hobby\\Hobby\\Hobby.csproj"
             }
           }
         }
