@@ -1,36 +1,82 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+
 using static System.Net.Mime.MediaTypeNames;
+using Xamarin.Forms.PlatformConfiguration;
 
 namespace Hobby
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
+    public class TaskItem
+    {
+        public string Name { get; set; }
+        public int WorkDuration { get; set; }
+        public int RestDuartion { get; set; }
+        public Command StartCommand { get; set; }
+    }
+
+
+
+    [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class TimerPage : ContentPage
     {
-        private const int WorkDuration = 10 * 1000;   // миллисекунды
-        private const int BreakDuration = 10 * 1000;  
+        private int WorkDuration = 0 * 1000;   // миллисекунды
+        private int RestDuration = 0 * 1000;  
 
         private int _timeRemaining;
         private bool _isWorking;
         private bool _isRunning;
-
-        private List<HobbyElement> HobbyList = new List<HobbyElement>();
-        private HobbyElement CurrentHobby;
+        public ObservableCollection<TaskItem> Tasks { get; set; } = new ObservableCollection<TaskItem>();
 
 
         public TimerPage()
         {
             InitializeComponent();
+
+            // Инициализация коллекции с командами
+            Tasks = new ObservableCollection<TaskItem>
+    {
+        new TaskItem
+        {
+            Name = "Задача 1",
+            WorkDuration = 25 * 60 * 1000,
+            RestDuartion = 10 * 60 * 1000,
+            StartCommand = new Command(() => OnTaskStart("Задача 1"))
+        },
+        new TaskItem
+        {
+            Name = "Задача 2",
+            WorkDuration = 25 * 60 * 1000,
+            RestDuartion = 10 * 60 * 1000,
+            StartCommand = new Command(() => OnTaskStart("Задача 2"))
+        },
+    };
+
+            BindingContext = this;
             ResetTimer();
-            Editor.IsVisible = false;
         }
-        
+        public void OnTaskStart(string taskName)
+        {
+            WorkDuration = Tasks
+                .Where(task => task.Name == taskName)
+                .First()
+                .WorkDuration * 1000;
+            RestDuration = Tasks
+                .Where(task => task.Name == taskName)
+                .First()
+                .RestDuartion * 1000;
+            _timeRemaining = WorkDuration;
+            UpdateTimerDisplay();
+
+
+        }
+
         private void ResetTimer()
         {
             _isWorking = true;
@@ -45,14 +91,18 @@ namespace Hobby
        
         private async void StartButton_Clicked(object sender, EventArgs e)
         {
-            if (_isRunning)
+            if (WorkDuration == 0 || RestDuration == 0) 
+            {
+                await DisplayAlert("Ошибка", "Выберете задачу", "OK");
+                return;
+            }
+            if (_isRunning) 
             {
                 _isRunning = false;
                 StartButton.Text = "Старт";
 
                 return;
             }
-
             _isRunning = true;
             StartButton.Text = "Пауза";
             StartButton.IsEnabled = false;
@@ -66,17 +116,14 @@ namespace Hobby
                 StartButton.IsEnabled = true;
             }
 
-            if (_timeRemaining == 0)
+            if (_timeRemaining == 0 && _isRunning)
             {
                 _isRunning = false;
                 StartButton.Text = "Старт";
 
-                // Переключаемся между работой и отдыхом
                 _isWorking = !_isWorking;
 
-            _timeRemaining = _isWorking ? WorkDuration : BreakDuration;
-
-            // Уведомление пользователя
+            _timeRemaining = _isWorking ? WorkDuration : RestDuration;
             await DisplayAlert("Помодоро", _isWorking ? "Время работать!" : "Время отдыхать!", "OK");
             UpdateTimerDisplay();
             }
@@ -89,34 +136,11 @@ namespace Hobby
             ResetTimer();
         }
 
-        private void Add_Clicked(object sender, EventArgs e)
+        private async void Add_Clicked(object sender, EventArgs e)
         {
-            CurrentTimer.IsVisible = false;
-            Editor.IsVisible = true;
+            await Navigation.PushAsync(new HobbyEditor(this));
         }
 
-        private void Confirm_Clicked(object sender, EventArgs e)
-        {
-            var hob = new HobbyElement(0, int.Parse(WorkDurationEntry.Text), int.Parse(RestDurationEntry.Text));
-            hob.Text = NameEntry.Text;
-            HobbyList.Add(hob);
-            HobbysLayout.Children.Add(hob);
-
-            CurrentTimer.IsVisible = true;
-            Editor.IsVisible = false;
-        }
-    }
-    class HobbyElement : Button
-    {
-        int TotalTime = 0;
-        int WorkDuration = 10 * 1000; 
-        int BreakDuration = 5 * 1000;
-
-        public HobbyElement(int totalTime, int workDuration, int breakDuration)
-        {
-            TotalTime = totalTime;
-            WorkDuration = workDuration;
-            BreakDuration = breakDuration;
-        }
+       
     }
 }

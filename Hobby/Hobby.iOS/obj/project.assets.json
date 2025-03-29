@@ -175,7 +175,6 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "Xamarin.Essentials": "1.7.0",
           "Xamarin.Forms": "5.0.0.2196"
         },
         "compile": {
@@ -360,7 +359,6 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "Xamarin.Essentials": "1.7.0",
           "Xamarin.Forms": "5.0.0.2196"
         },
         "compile": {
@@ -545,7 +543,6 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "Xamarin.Essentials": "1.7.0",
           "Xamarin.Forms": "5.0.0.2196"
         },
         "compile": {
@@ -730,7 +727,6 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "Xamarin.Essentials": "1.7.0",
           "Xamarin.Forms": "5.0.0.2196"
         },
         "compile": {
@@ -915,7 +911,6 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "Xamarin.Essentials": "1.7.0",
           "Xamarin.Forms": "5.0.0.2196"
         },
         "compile": {
@@ -1247,17 +1242,17 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\acer\\.nuget\\packages\\": {},
+    "C:\\Users\\user\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\hobbyres\\MobileApp\\Hobby\\Hobby.iOS\\Hobby.iOS.csproj",
+      "projectUniqueName": "D:\\UrFU_Pomodoro\\MobileApp\\Hobby\\Hobby.iOS\\Hobby.iOS.csproj",
       "projectName": "Hobby.iOS",
-      "projectPath": "C:\\hobbyres\\MobileApp\\Hobby\\Hobby.iOS\\Hobby.iOS.csproj",
-      "packagesPath": "C:\\Users\\acer\\.nuget\\packages\\",
-      "outputPath": "C:\\hobbyres\\MobileApp\\Hobby\\Hobby.iOS\\obj\\",
+      "projectPath": "D:\\UrFU_Pomodoro\\MobileApp\\Hobby\\Hobby.iOS\\Hobby.iOS.csproj",
+      "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
+      "outputPath": "D:\\UrFU_Pomodoro\\MobileApp\\Hobby\\Hobby.iOS\\obj\\",
       "projectStyle": "PackageReference",
       "skipContentFileWrite": true,
       "UsingMicrosoftNETSdk": false,
@@ -1265,7 +1260,7 @@
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\acer\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -1279,8 +1274,8 @@
       "frameworks": {
         "xamarinios10": {
           "projectReferences": {
-            "C:\\hobbyres\\MobileApp\\Hobby\\Hobby\\Hobby.csproj": {
-              "projectPath": "C:\\hobbyres\\MobileApp\\Hobby\\Hobby\\Hobby.csproj"
+            "D:\\UrFU_Pomodoro\\MobileApp\\Hobby\\Hobby\\Hobby.csproj": {
+              "projectPath": "D:\\UrFU_Pomodoro\\MobileApp\\Hobby\\Hobby\\Hobby.csproj"
             }
           }
         }
