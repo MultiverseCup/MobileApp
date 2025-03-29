@@ -32,4 +32,3 @@ C:\hobbyres\MobileApp\Hobby\Hobby\obj\Debug\netstandard2.0\XamlC.stamp
 C:\hobbyres\MobileApp\Hobby\Hobby\obj\Debug\netstandard2.0\Hobby.dll
 C:\hobbyres\MobileApp\Hobby\Hobby\obj\Debug\netstandard2.0\refint\Hobby.dll
 C:\hobbyres\MobileApp\Hobby\Hobby\obj\Debug\netstandard2.0\Hobby.pdb
-D:\UrFU_Pomodoro\MobileApp\Hobby\Hobby\obj\Debug\netstandard2.0\HobbyEditor.xaml.g.cs

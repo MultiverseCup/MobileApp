@@ -10,7 +10,6 @@
       "Hobby/1.0.0": {
         "dependencies": {
           "NETStandard.Library": "2.0.3",
-          "Xam.Plugin.SimpleAudioPlayer": "1.6.0",
           "Xamarin.Essentials": "1.7.0",
           "Xamarin.Forms": "5.0.0.2196"
         },
@@ -29,21 +28,6 @@
           "lib/netstandard2.0/System.Numerics.Vectors.dll": {
             "assemblyVersion": "4.1.4.0",
             "fileVersion": "4.6.26515.6"
-          }
-        }
-      },
-      "Xam.Plugin.SimpleAudioPlayer/1.6.0": {
-        "dependencies": {
-          "NETStandard.Library": "2.0.3"
-        },
-        "runtime": {
-          "lib/netstandard1.0/Plugin.SimpleAudioPlayer.Abstractions.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          },
-          "lib/netstandard1.0/Plugin.SimpleAudioPlayer.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
           }
         }
       },
@@ -102,13 +86,6 @@
       "sha512": "sha512-QQTlPTl06J/iiDbJCiepZ4H//BVraReU4O4EoRw1U02H5TLUIT7xn3GnDp9AXPSlJUDyFs4uWjWafNX6WrAojQ==",
       "path": "system.numerics.vectors/4.5.0",
       "hashPath": "system.numerics.vectors.4.5.0.nupkg.sha512"
-    },
-    "Xam.Plugin.SimpleAudioPlayer/1.6.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-y+ARGxKc+ABuLuzyuWPH3gXxJQJWwXSYMF+fAh8KlwvT7xGc0b/7uAb8kgPW5Yi+VaAHsdFhccAsy0qrQgupsQ==",
-      "path": "xam.plugin.simpleaudioplayer/1.6.0",
-      "hashPath": "xam.plugin.simpleaudioplayer.1.6.0.nupkg.sha512"
     },
     "Xamarin.Essentials/1.7.0": {
       "type": "package",

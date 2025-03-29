@@ -7,49 +7,31 @@
 
             <StackLayout x:Name="CurrentTimer" VerticalOptions="Center" HorizontalOptions="Center">
                 <Label x:Name="TimerLabel" Text="25:00" FontSize="40" HorizontalOptions="Center" />
-                <StackLayout x:Name="AdditionalButtons" Orientation="Horizontal" HorizontalOptions="Center">
+                <StackLayout x:Name="AdditionalButtons">
                     <Button x:Name="StartButton" Text="Старт" BackgroundColor="Orange" Clicked="StartButton_Clicked" />
                     <Button x:Name="ResetButton" Text="Сброс" Clicked="ResetButton_Clicked" />
                 </StackLayout>
             </StackLayout>
 
-            <CollectionView ItemsSource="{Binding Tasks}" HeightRequest="500">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Padding="10" ColumnSpacing="10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-
-                            <StackLayout Grid.Column="0">
-                                <Label Text="{Binding Name}" FontSize="Medium" FontAttributes="Bold" />
-                                <Label Text="{Binding WorkDuration}" FontSize="Small" TextColor="Gray" />
-                                <Label Text="{Binding RestDuration}" FontSize="Small" TextColor="Gray" />
-                            </StackLayout>
-
-                            <Button Grid.Column="1" 
-                                    Text="▶" 
-                                    Command="{Binding StartCommand}"
-                                    BackgroundColor="Transparent"
-                                    TextColor="Green"
-                                    FontSize="Medium"
-                                    WidthRequest="40"
-                                    HeightRequest="40"
-                                    CornerRadius="20"
-                                    HorizontalOptions="End"
-                                    VerticalOptions="Center"/>
-                        </Grid>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
-            <Button x:Name="Add" Text="+" Clicked="Add_Clicked" 
-                    HorizontalOptions="Center" 
-                    WidthRequest="50"
-                    HeightRequest="50"
-                    CornerRadius="25"
-                    BackgroundColor="LightBlue"/>
+            <StackLayout x:Name="Editor">
+                <StackLayout Orientation="Horizontal" >
+                    <Label Text="Название"></Label>
+                    <Entry x:Name="NameEntry" HorizontalOptions="Fill"></Entry>
+                </StackLayout>
+                <StackLayout Orientation="Horizontal">
+                    <Label Text="Продолжительность отдыха"></Label>
+                    <Entry x:Name="WorkDurationEntry" HorizontalOptions="Fill"></Entry>
+                </StackLayout>
+                <StackLayout Orientation="Horizontal">
+                    <Label Text="Продолжительность отдыха"></Label>
+                    <Entry x:Name="RestDurationEntry" HorizontalOptions="Fill"></Entry>
+                </StackLayout>
+                <Button x:Name="Confirm" Text="Подтвердить" Clicked="Confirm_Clicked"></Button>
+            </StackLayout>
+            <StackLayout x:Name="HobbysLayout">
+                
+            </StackLayout>
+            <Button x:Name="Add" Text ="+" Clicked="Add_Clicked"></Button>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

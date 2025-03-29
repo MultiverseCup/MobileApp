@@ -11,25 +11,6 @@
           "lib/xamarinios10/_._": {}
         }
       },
-      "Xam.Plugin.SimpleAudioPlayer/1.6.0": {
-        "type": "package",
-        "compile": {
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.Abstractions.dll": {
-            "related": ".pdb"
-          },
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.dll": {
-            "related": ".Abstractions.pdb;.XML"
-          }
-        },
-        "runtime": {
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.Abstractions.dll": {
-            "related": ".pdb"
-          },
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.dll": {
-            "related": ".Abstractions.pdb;.XML"
-          }
-        }
-      },
       "Xamarin.Essentials/1.7.0": {
         "type": "package",
         "dependencies": {
@@ -194,7 +175,6 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "Xam.Plugin.SimpleAudioPlayer": "1.6.0",
           "Xamarin.Essentials": "1.7.0",
           "Xamarin.Forms": "5.0.0.2196"
         },
@@ -216,25 +196,6 @@
           "lib/xamarinios10/_._": {}
         }
       },
-      "Xam.Plugin.SimpleAudioPlayer/1.6.0": {
-        "type": "package",
-        "compile": {
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.Abstractions.dll": {
-            "related": ".pdb"
-          },
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.dll": {
-            "related": ".Abstractions.pdb;.XML"
-          }
-        },
-        "runtime": {
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.Abstractions.dll": {
-            "related": ".pdb"
-          },
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.dll": {
-            "related": ".Abstractions.pdb;.XML"
-          }
-        }
-      },
       "Xamarin.Essentials/1.7.0": {
         "type": "package",
         "dependencies": {
@@ -399,7 +360,6 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "Xam.Plugin.SimpleAudioPlayer": "1.6.0",
           "Xamarin.Essentials": "1.7.0",
           "Xamarin.Forms": "5.0.0.2196"
         },
@@ -421,25 +381,6 @@
           "lib/xamarinios10/_._": {}
         }
       },
-      "Xam.Plugin.SimpleAudioPlayer/1.6.0": {
-        "type": "package",
-        "compile": {
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.Abstractions.dll": {
-            "related": ".pdb"
-          },
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.dll": {
-            "related": ".Abstractions.pdb;.XML"
-          }
-        },
-        "runtime": {
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.Abstractions.dll": {
-            "related": ".pdb"
-          },
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.dll": {
-            "related": ".Abstractions.pdb;.XML"
-          }
-        }
-      },
       "Xamarin.Essentials/1.7.0": {
         "type": "package",
         "dependencies": {
@@ -604,7 +545,6 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "Xam.Plugin.SimpleAudioPlayer": "1.6.0",
           "Xamarin.Essentials": "1.7.0",
           "Xamarin.Forms": "5.0.0.2196"
         },
@@ -626,25 +566,6 @@
           "lib/xamarinios10/_._": {}
         }
       },
-      "Xam.Plugin.SimpleAudioPlayer/1.6.0": {
-        "type": "package",
-        "compile": {
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.Abstractions.dll": {
-            "related": ".pdb"
-          },
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.dll": {
-            "related": ".Abstractions.pdb;.XML"
-          }
-        },
-        "runtime": {
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.Abstractions.dll": {
-            "related": ".pdb"
-          },
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.dll": {
-            "related": ".Abstractions.pdb;.XML"
-          }
-        }
-      },
       "Xamarin.Essentials/1.7.0": {
         "type": "package",
         "dependencies": {
@@ -809,7 +730,6 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "Xam.Plugin.SimpleAudioPlayer": "1.6.0",
           "Xamarin.Essentials": "1.7.0",
           "Xamarin.Forms": "5.0.0.2196"
         },
@@ -831,25 +751,6 @@
           "lib/xamarinios10/_._": {}
         }
       },
-      "Xam.Plugin.SimpleAudioPlayer/1.6.0": {
-        "type": "package",
-        "compile": {
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.Abstractions.dll": {
-            "related": ".pdb"
-          },
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.dll": {
-            "related": ".Abstractions.pdb;.XML"
-          }
-        },
-        "runtime": {
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.Abstractions.dll": {
-            "related": ".pdb"
-          },
-          "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.dll": {
-            "related": ".Abstractions.pdb;.XML"
-          }
-        }
-      },
       "Xamarin.Essentials/1.7.0": {
         "type": "package",
         "dependencies": {
@@ -1014,7 +915,6 @@
         "type": "project",
         "framework": ".NETStandard,Version=v2.0",
         "dependencies": {
-          "Xam.Plugin.SimpleAudioPlayer": "1.6.0",
           "Xamarin.Essentials": "1.7.0",
           "Xamarin.Forms": "5.0.0.2196"
         },
@@ -1073,53 +973,6 @@
         "system.numerics.vectors.nuspec",
         "useSharedDesignerContext.txt",
         "version.txt"
-      ]
-    },
-    "Xam.Plugin.SimpleAudioPlayer/1.6.0": {
-      "sha512": "y+ARGxKc+ABuLuzyuWPH3gXxJQJWwXSYMF+fAh8KlwvT7xGc0b/7uAb8kgPW5Yi+VaAHsdFhccAsy0qrQgupsQ==",
-      "type": "package",
-      "path": "xam.plugin.simpleaudioplayer/1.6.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "lib/MonoAndroid10/Plugin.SimpleAudioPlayer.Abstractions.dll",
-        "lib/MonoAndroid10/Plugin.SimpleAudioPlayer.Abstractions.pdb",
-        "lib/MonoAndroid10/Plugin.SimpleAudioPlayer.XML",
-        "lib/MonoAndroid10/Plugin.SimpleAudioPlayer.dll",
-        "lib/MonoAndroid10/Plugin.SimpleAudioPlayer.pdb",
-        "lib/UAP10/Plugin.SimpleAudioPlayer.Abstractions.dll",
-        "lib/UAP10/Plugin.SimpleAudioPlayer.Abstractions.pdb",
-        "lib/UAP10/Plugin.SimpleAudioPlayer.dll",
-        "lib/UAP10/Plugin.SimpleAudioPlayer.pdb",
-        "lib/UAP10/Plugin.SimpleAudioPlayer.pri",
-        "lib/UAP10/Plugin.SimpleAudioPlayer.xml",
-        "lib/Xamarin.Mac20/Plugin.SimpleAudioPlayer.Abstractions.dll",
-        "lib/Xamarin.Mac20/Plugin.SimpleAudioPlayer.Abstractions.pdb",
-        "lib/Xamarin.Mac20/Plugin.SimpleAudioPlayer.dll",
-        "lib/Xamarin.Mac20/Plugin.SimpleAudioPlayer.xml",
-        "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.Abstractions.dll",
-        "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.Abstractions.pdb",
-        "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.XML",
-        "lib/Xamarin.iOS10/Plugin.SimpleAudioPlayer.dll",
-        "lib/Xamarintvos/Plugin.SimpleAudioPlayer.Abstractions.dll",
-        "lib/Xamarintvos/Plugin.SimpleAudioPlayer.Abstractions.pdb",
-        "lib/Xamarintvos/Plugin.SimpleAudioPlayer.dll",
-        "lib/Xamarintvos/Plugin.SimpleAudioPlayer.xml",
-        "lib/net45/Plugin.SimpleAudioPlayer.Abstractions.dll",
-        "lib/net45/Plugin.SimpleAudioPlayer.Abstractions.pdb",
-        "lib/net45/Plugin.SimpleAudioPlayer.WPF.dll",
-        "lib/net45/Plugin.SimpleAudioPlayer.WPF.pdb",
-        "lib/netstandard1.0/Plugin.SimpleAudioPlayer.Abstractions.dll",
-        "lib/netstandard1.0/Plugin.SimpleAudioPlayer.Abstractions.pdb",
-        "lib/netstandard1.0/Plugin.SimpleAudioPlayer.deps.json",
-        "lib/netstandard1.0/Plugin.SimpleAudioPlayer.dll",
-        "lib/netstandard1.0/Plugin.SimpleAudioPlayer.pdb",
-        "lib/tizen4/Plugin.SimpleAudioPlayer.Abstractions.dll",
-        "lib/tizen4/Plugin.SimpleAudioPlayer.Abstractions.pdb",
-        "lib/tizen4/Plugin.SimpleAudioPlayer.deps.json",
-        "lib/tizen4/Plugin.SimpleAudioPlayer.dll",
-        "xam.plugin.simpleaudioplayer.1.6.0.nupkg.sha512",
-        "xam.plugin.simpleaudioplayer.nuspec"
       ]
     },
     "Xamarin.Essentials/1.7.0": {
