@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "UabLt7qWgNk=",
+  "dgSpecHash": "RxloJMyPJXg=",
   "success": true,
   "projectFilePath": "C:\\hobbyres\\MobileApp\\Hobby\\Hobby.Android\\Hobby.Android.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\acer\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",
+    "C:\\Users\\acer\\.nuget\\packages\\xam.plugin.simpleaudioplayer\\1.6.0\\xam.plugin.simpleaudioplayer.1.6.0.nupkg.sha512",
     "C:\\Users\\acer\\.nuget\\packages\\xamarin.androidx.activity\\1.2.4.1\\xamarin.androidx.activity.1.2.4.1.nupkg.sha512",
     "C:\\Users\\acer\\.nuget\\packages\\xamarin.androidx.annotation\\1.2.0.1\\xamarin.androidx.annotation.1.2.0.1.nupkg.sha512",
     "C:\\Users\\acer\\.nuget\\packages\\xamarin.androidx.annotation.experimental\\1.1.0.1\\xamarin.androidx.annotation.experimental.1.1.0.1.nupkg.sha512",
