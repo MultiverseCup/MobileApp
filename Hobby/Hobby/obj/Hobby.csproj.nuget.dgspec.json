@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\hobbyres\\MobileApp\\Hobby\\Hobby\\Hobby.csproj": {}
+    "d:\\UrFU_Pomodoro\\MobileApp\\Hobby\\Hobby\\Hobby.csproj": {}
   },
   "projects": {
-    "C:\\hobbyres\\MobileApp\\Hobby\\Hobby\\Hobby.csproj": {
+    "d:\\UrFU_Pomodoro\\MobileApp\\Hobby\\Hobby\\Hobby.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\hobbyres\\MobileApp\\Hobby\\Hobby\\Hobby.csproj",
+        "projectUniqueName": "d:\\UrFU_Pomodoro\\MobileApp\\Hobby\\Hobby\\Hobby.csproj",
         "projectName": "Hobby",
-        "projectPath": "C:\\hobbyres\\MobileApp\\Hobby\\Hobby\\Hobby.csproj",
-        "packagesPath": "C:\\Users\\acer\\.nuget\\packages\\",
-        "outputPath": "C:\\hobbyres\\MobileApp\\Hobby\\Hobby\\obj\\",
+        "projectPath": "d:\\UrFU_Pomodoro\\MobileApp\\Hobby\\Hobby\\Hobby.csproj",
+        "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
+        "outputPath": "d:\\UrFU_Pomodoro\\MobileApp\\Hobby\\Hobby\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\acer\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -56,6 +56,10 @@
               "target": "Package",
               "version": "[2.0.3, )",
               "autoReferenced": true
+            },
+            "Xam.Plugin.SimpleAudioPlayer": {
+              "target": "Package",
+              "version": "[1.6.0, )"
             },
             "Xamarin.Essentials": {
               "target": "Package",

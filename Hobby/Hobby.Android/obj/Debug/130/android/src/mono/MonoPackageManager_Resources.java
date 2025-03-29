@@ -5,6 +5,8 @@ public class MonoPackageManager_Resources {
 		"Hobby.Android.dll",
 		"FormsViewGroup.dll",
 		"Hobby.dll",
+		"Plugin.SimpleAudioPlayer.Abstractions.dll",
+		"Plugin.SimpleAudioPlayer.dll",
 		"Xamarin.AndroidX.Activity.dll",
 		"Xamarin.AndroidX.Annotation.dll",
 		"Xamarin.AndroidX.Annotation.Experimental.dll",
