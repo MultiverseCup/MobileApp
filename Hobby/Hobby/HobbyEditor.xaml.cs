@@ -33,7 +33,7 @@ namespace Hobby
                     {
                         Name = NameEntry.Text,
                         WorkDuration = workDur * 1000,
-                        RestDuartion = restDur * 1000,
+                        RestDuration = restDur * 1000,
                     }
                     );
                 _timerPage.UpdateTasksFromDB();

@@ -47,7 +47,7 @@ namespace Hobby
                         {
                             Name = "Учёба",
                             WorkDuration = 3 * 60 * 1000, // 3 минуты в мс
-                            RestDuartion = 10 * 60 * 1000,
+                            RestDuration = 10 * 60 * 1000,
                         }
                         );
                 App.Db.SaveItem(
@@ -55,7 +55,7 @@ namespace Hobby
                         {
                             Name = "Хобби",
                             WorkDuration = 2 * 60 * 1000,
-                            RestDuartion = 5 * 60 * 1000,
+                            RestDuration = 5 * 60 * 1000,
                         }
                         );
             }
@@ -75,7 +75,7 @@ namespace Hobby
                     ID = item.ID,
                     Name = item.Name,
                     WorkDuration = item.WorkDuration,
-                    RestDuartion = item.RestDuartion,
+                    RestDuration = item.RestDuration,
                     StartCommand = new Command(() => OnTaskStart(item.ID))
                 });
             }
@@ -90,7 +90,7 @@ namespace Hobby
             RestDuration = Tasks
                 .Where(task => task.ID == itemID)
                 .First()
-                .RestDuartion;
+                .RestDuration;
             _timeRemaining = WorkDuration;
             UpdateTimerDisplay();
         }
@@ -159,6 +159,11 @@ namespace Hobby
         private async void Add_Clicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new HobbyEditor(this));
+        }
+
+        private void TaskItemsCollection_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }
