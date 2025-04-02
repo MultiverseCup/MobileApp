@@ -10,11 +10,11 @@
                     <Entry x:Name="NameEntry" HorizontalOptions="Fill" WidthRequest="250"></Entry>
                 </StackLayout>
                 <StackLayout Orientation="Horizontal">
-                    <Label Text="Продолжительность работы"></Label>
+                    <Label Text="Продолжительность работы в сек"></Label>
                     <Entry x:Name="WorkDurationEntry" HorizontalOptions="Fill" WidthRequest="250"></Entry>
                 </StackLayout>
                 <StackLayout Orientation="Horizontal">
-                    <Label Text="Продолжительность отдыха"></Label>
+                    <Label Text="Продолжительность отдыха в сек"></Label>
                     <Entry x:Name="RestDurationEntry" HorizontalOptions="Fill" WidthRequest="250"></Entry>
                 </StackLayout>
                 <Button x:Name="Confirm" Text="Подтвердить" Clicked="Confirm_Clicked"></Button>

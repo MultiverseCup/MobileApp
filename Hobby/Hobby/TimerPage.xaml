@@ -13,7 +13,7 @@
                 </StackLayout>
             </StackLayout>
 
-            <CollectionView ItemsSource="{Binding Tasks}" HeightRequest="500">
+            <CollectionView x:Name="TaskItemsCollection" ItemsSource ="{Binding Tasks}" HeightRequest="500">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Grid Padding="10" ColumnSpacing="10">

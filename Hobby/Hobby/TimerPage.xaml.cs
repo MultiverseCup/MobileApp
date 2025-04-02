@@ -10,14 +10,12 @@ using Xamarin.Forms.Xaml;
 
 using static System.Net.Mime.MediaTypeNames;
 using Xamarin.Forms.PlatformConfiguration;
+using Hobby.DataBase;
 
 namespace Hobby
 {
-    public class TaskItem
+    public class TaskItem : Item
     {
-        public string Name { get; set; }
-        public int WorkDuration { get; set; }
-        public int RestDuartion { get; set; }
         public Command StartCommand { get; set; }
     }
 
@@ -26,55 +24,75 @@ namespace Hobby
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class TimerPage : ContentPage
     {
-        private int WorkDuration = 0 * 1000;   // миллисекунды
+        private int WorkDuration = 0 * 1000;   // значение в мс
         private int RestDuration = 0 * 1000;  
 
         private int _timeRemaining;
         private bool _isWorking;
         private bool _isRunning;
-        public ObservableCollection<TaskItem> Tasks { get; set; } = new ObservableCollection<TaskItem>();
+        public ObservableCollection<TaskItem> Tasks { get; set; }
 
 
         public TimerPage()
         {
             InitializeComponent();
+            Tasks = new ObservableCollection<TaskItem>();
+            
+            //App.Db.ClearAll(); удаляет все, использовал для отладки
 
-            // Инициализация коллекции с командами
-            Tasks = new ObservableCollection<TaskItem>
-    {
-        new TaskItem
-        {
-            Name = "Задача 1",
-            WorkDuration = 25 * 60 * 1000,
-            RestDuartion = 10 * 60 * 1000,
-            StartCommand = new Command(() => OnTaskStart("Задача 1"))
-        },
-        new TaskItem
-        {
-            Name = "Задача 2",
-            WorkDuration = 25 * 60 * 1000,
-            RestDuartion = 10 * 60 * 1000,
-            StartCommand = new Command(() => OnTaskStart("Задача 2"))
-        },
-    };
+            if (App.Db.IsEmpty())
+            {
+                App.Db.SaveItem(
+                        new Item
+                        {
+                            Name = "Учёба",
+                            WorkDuration = 3 * 60 * 1000, // 3 минуты в мс
+                            RestDuartion = 10 * 60 * 1000,
+                        }
+                        );
+                App.Db.SaveItem(
+                        new Item
+                        {
+                            Name = "Хобби",
+                            WorkDuration = 2 * 60 * 1000,
+                            RestDuartion = 5 * 60 * 1000,
+                        }
+                        );
+            }
 
-            BindingContext = this;
+            UpdateTasksFromDB();
             ResetTimer();
         }
-        public void OnTaskStart(string taskName)
+
+        public void UpdateTasksFromDB()
+        {
+            Tasks = new ObservableCollection<TaskItem>();
+            var items = App.Db.GetItems();
+            foreach(var item in items)
+            {
+                Tasks.Add(new TaskItem
+                {
+                    ID = item.ID,
+                    Name = item.Name,
+                    WorkDuration = item.WorkDuration,
+                    RestDuartion = item.RestDuartion,
+                    StartCommand = new Command(() => OnTaskStart(item.ID))
+                });
+            }
+            TaskItemsCollection.ItemsSource = Tasks;
+        }
+        public void OnTaskStart(int itemID)
         {
             WorkDuration = Tasks
-                .Where(task => task.Name == taskName)
+                .Where(task => task.ID == itemID)
                 .First()
-                .WorkDuration * 1000;
+                .WorkDuration;
             RestDuration = Tasks
-                .Where(task => task.Name == taskName)
+                .Where(task => task.ID == itemID)
                 .First()
-                .RestDuartion * 1000;
+                .RestDuartion;
             _timeRemaining = WorkDuration;
             UpdateTimerDisplay();
-
-
         }
 
         private void ResetTimer()
@@ -109,8 +127,10 @@ namespace Hobby
 
             while (_isRunning && _timeRemaining > 0)
             {
-                await System.Threading.Tasks.Task.Delay(100);  // миллисекунды
-                _timeRemaining -= 100;
+                await System.Threading.Tasks.Task.Delay(100); // значение в миллисекундах
+
+                if (_isRunning)                                                  
+                    _timeRemaining -= 100;
 
                 UpdateTimerDisplay();
                 StartButton.IsEnabled = true;
@@ -140,7 +160,5 @@ namespace Hobby
         {
             await Navigation.PushAsync(new HobbyEditor(this));
         }
-
-       
     }
 }

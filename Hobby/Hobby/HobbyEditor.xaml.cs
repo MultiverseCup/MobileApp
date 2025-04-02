@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Hobby;
-
+using Hobby.DataBase;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -18,7 +18,7 @@ namespace Hobby
 
         public HobbyEditor (TimerPage timerPage)
 		{
-            InitializeComponent ();
+            InitializeComponent();
             _timerPage = timerPage;
         }
 
@@ -28,13 +28,15 @@ namespace Hobby
                 await DisplayAlert(title: "Ошибка", message: "Поле не должно быть пустым", cancel: "ОК");
             else if (int.TryParse(WorkDurationEntry.Text, out var workDur) && int.TryParse(RestDurationEntry.Text, out var restDur))
             {
-                _timerPage.Tasks.Add(new TaskItem
-                {
-                    Name = NameEntry.Text,
-                    WorkDuration = workDur,
-                    RestDuartion = restDur,
-                    StartCommand = new Command(() => _timerPage.OnTaskStart(NameEntry.Text))
-                });
+                App.Db.SaveItem(
+                    new Item
+                    {
+                        Name = NameEntry.Text,
+                        WorkDuration = workDur * 1000,
+                        RestDuartion = restDur * 1000,
+                    }
+                    );
+                _timerPage.UpdateTasksFromDB();
                 await Navigation.PopAsync();
             }
             else
