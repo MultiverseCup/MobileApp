@@ -24,16 +24,15 @@ namespace Hobby
 
         private async void Confirm_Clicked(object sender, EventArgs e)
         {
-            if (WorkDurationEntry.Text is null || RestDurationEntry.Text is null || NameEntry.Text is null)
+            if (WorkDurationEntry.Text is null ||  NameEntry.Text is null)
                 await DisplayAlert(title: "Ошибка", message: "Поле не должно быть пустым", cancel: "ОК");
-            else if (int.TryParse(WorkDurationEntry.Text, out var workDur) && int.TryParse(RestDurationEntry.Text, out var restDur))
+            else if (int.TryParse(WorkDurationEntry.Text, out var workDur))
             {
                 App.Db.SaveItem(
                     new Item
                     {
                         Name = NameEntry.Text,
                         WorkDuration = workDur * 1000,
-                        RestDuration = restDur * 1000,
                     }
                     );
                 _timerPage.UpdateTasksFromDB();
