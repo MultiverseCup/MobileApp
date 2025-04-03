@@ -1,55 +1,91 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Hobby.TimerPage">
+             x:Class="Hobby.TimerPage"
+             >
+    
     <ContentPage.Content>
         <StackLayout>
 
-            <StackLayout x:Name="CurrentTimer" VerticalOptions="Center" HorizontalOptions="Center">
-                <Label x:Name="TimerLabel" Text="25:00" FontSize="40" HorizontalOptions="Center" />
+            <StackLayout x:Name="CurrentTimer" 
+                         Margin="0,120,0,0"
+                         VerticalOptions="Center" 
+                         >
+                <Label x:Name="TimerLabel" 
+                       Text="00:00" 
+                       FontSize="60" 
+                       TextColor="Black"
+                       HorizontalOptions="Center" />
+                
                 <StackLayout x:Name="AdditionalButtons" Orientation="Horizontal" HorizontalOptions="Center">
                     <Button x:Name="StartButton" Text="Старт" BackgroundColor="Orange" Clicked="StartButton_Clicked" />
                     <Button x:Name="ResetButton" Text="Сброс" Clicked="ResetButton_Clicked" />
                 </StackLayout>
+                <Rectangle BackgroundColor="Black" 
+                           Margin="0,20,0,0"
+                           HeightRequest="2"></Rectangle>
             </StackLayout>
 
-            <CollectionView ItemsSource="{Binding Tasks}" HeightRequest="500">
+            <CollectionView x:Name="TaskItemsCollection" 
+                            ItemsSource="{Binding Tasks}"
+                            HeightRequest="300"
+                            SelectionMode="Single"
+                            SelectionChanged="TaskItemsCollection_SelectionChanged"
+                            >
+                
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Grid Padding="10" ColumnSpacing="10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                        <Frame Padding="10,10,10,10" BackgroundColor="Transparent">
+                            <Frame BorderColor="Black" CornerRadius="30" >
+                                <Grid ColumnSpacing="10">
+                                    <Grid.ColumnDefinitions>
 
-                            <StackLayout Grid.Column="0">
-                                <Label Text="{Binding Name}" FontSize="Medium" FontAttributes="Bold" />
-                                <Label Text="{Binding WorkDuration}" FontSize="Small" TextColor="Gray" />
-                                <Label Text="{Binding RestDuration}" FontSize="Small" TextColor="Gray" />
-                            </StackLayout>
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
 
-                            <Button Grid.Column="1" 
-                                    Text="▶" 
-                                    Command="{Binding StartCommand}"
-                                    BackgroundColor="Transparent"
-                                    TextColor="Green"
-                                    FontSize="Medium"
-                                    WidthRequest="40"
-                                    HeightRequest="40"
-                                    CornerRadius="20"
-                                    HorizontalOptions="End"
-                                    VerticalOptions="Center"/>
-                        </Grid>
+                                    <Button Grid.Column="0" 
+                                        Text="▶" 
+                                    
+                                        Command="{Binding StartCommand}"
+                                        BackgroundColor="Transparent"
+                                        TextColor="Black"
+                                        FontSize="Medium"
+                                        WidthRequest="40"
+                                        HeightRequest="40"
+                                        CornerRadius="20"
+                                        BorderColor="Black"
+                                        BorderWidth="3"
+                                
+                                        HorizontalOptions="Start"
+                                        VerticalOptions="Center"/>
+
+                                    <StackLayout Grid.Column="1" 
+                                             HorizontalOptions="Start"
+                                             VerticalOptions="Center"
+                                             Orientation="Horizontal">
+                                            
+                                        <Label Text="{Binding Name}" FontSize="Medium" FontAttributes="Bold" />
+                                        
+                                        <Label Text="{Binding DisplayWorkDuration}" FontSize="Small" TextColor="Gray" />
+                                        <Label Text="{Binding DisplayRestDuration}" FontSize="Small" TextColor="Gray" />
+                                            
+                                    </StackLayout>
+                                </Grid>
+                            </Frame>
+                        </Frame>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
             <Button x:Name="Add" Text="+" Clicked="Add_Clicked" 
+                    FontSize="30"
                     HorizontalOptions="Center" 
                     WidthRequest="50"
                     HeightRequest="50"
                     CornerRadius="25"
-                    BackgroundColor="LightBlue"/>
+                    BorderColor="Black"
+                    BorderWidth="3"
+                    BackgroundColor="Transparent"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
