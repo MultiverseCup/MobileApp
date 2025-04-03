@@ -17,6 +17,15 @@ namespace Hobby
     public class TaskItem : Item
     {
         public Command StartCommand { get; set; }
+
+        
+        public bool IsWork { get; set; } = true;
+
+        public bool IsRunning { get; set; }
+
+        public string DisplayWorkDuration => TimerPage.DisplayTime(WorkDuration);
+        public string DisplayRestDuration => TimerPage.DisplayTime(RestDuration);
+        
     }
 
 
@@ -24,21 +33,19 @@ namespace Hobby
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class TimerPage : ContentPage
     {
-        private int WorkDuration = 0 * 1000;   // значение в мс
-        private int RestDuration = 0 * 1000;  
 
-        private int _timeRemaining;
-        private bool _isWorking;
-        private bool _isRunning;
+        public TaskItem CurrentTaskItem { get; set; }
         public ObservableCollection<TaskItem> Tasks { get; set; }
-
 
         public TimerPage()
         {
             InitializeComponent();
+
+            BindingContext = Tasks;
+
             Tasks = new ObservableCollection<TaskItem>();
             
-            //App.Db.ClearAll(); удаляет все, использовал для отладки
+            App.Db.ClearAll(); //удаляет все, использовал для отладки
 
             if (App.Db.IsEmpty())
             {
@@ -46,24 +53,32 @@ namespace Hobby
                         new Item
                         {
                             Name = "Учёба",
-                            WorkDuration = 3 * 60 * 1000, // 3 минуты в мс
-                            RestDuration = 10 * 60 * 1000,
+                            WorkDuration = 3  * 1000, // 3 секи в мс
+                            RestDuration = 10  * 1000,
                         }
                         );
                 App.Db.SaveItem(
                         new Item
                         {
                             Name = "Хобби",
-                            WorkDuration = 2 * 60 * 1000,
-                            RestDuration = 5 * 60 * 1000,
+                            WorkDuration = 2 * 1000,
+                            RestDuration = 5 * 1000,
                         }
                         );
             }
 
             UpdateTasksFromDB();
-            ResetTimer();
+
+            if (CurrentTaskItem != null)
+            {
+                ResetTimer();
+            }
+
+
+           
         }
 
+        
         public void UpdateTasksFromDB()
         {
             Tasks = new ObservableCollection<TaskItem>();
@@ -76,82 +91,95 @@ namespace Hobby
                     Name = item.Name,
                     WorkDuration = item.WorkDuration,
                     RestDuration = item.RestDuration,
+                    
                     StartCommand = new Command(() => OnTaskStart(item.ID))
                 });
+                
             }
             TaskItemsCollection.ItemsSource = Tasks;
         }
         public void OnTaskStart(int itemID)
         {
-            WorkDuration = Tasks
-                .Where(task => task.ID == itemID)
-                .First()
-                .WorkDuration;
-            RestDuration = Tasks
-                .Where(task => task.ID == itemID)
-                .First()
-                .RestDuration;
-            _timeRemaining = WorkDuration;
-            UpdateTimerDisplay();
+            
         }
 
         private void ResetTimer()
         {
-            _isWorking = true;
-            _timeRemaining = WorkDuration;
+            StartButton.BackgroundColor = Color.Orange;
+            CurrentTaskItem.IsWork = true;
+            
+            CurrentTaskItem.TimeRemaining = CurrentTaskItem.WorkDuration;
             UpdateTimerDisplay();
         }
 
-        private void UpdateTimerDisplay()
+        public void UpdateTimerDisplay()
         {
-            TimerLabel.Text = TimeSpan.FromSeconds(_timeRemaining / 1000).ToString(@"mm\:ss");
+            TimerLabel.Text = DisplayTime(CurrentTaskItem.TimeRemaining);
         }
-       
+
+        public static string DisplayTime(int seconds) => TimeSpan.FromSeconds(seconds / 1000).ToString(@"mm\:ss");
+
+
         private async void StartButton_Clicked(object sender, EventArgs e)
         {
-            if (WorkDuration == 0 || RestDuration == 0) 
+            if (CurrentTaskItem == null) 
             {
-                await DisplayAlert("Ошибка", "Выберете задачу", "OK");
+                await DisplayAlert("Ошибка", "Выберите задачу", "OK");
                 return;
             }
-            if (_isRunning) 
+            if (CurrentTaskItem.IsRunning) 
             {
-                _isRunning = false;
+                CurrentTaskItem.IsRunning = false;
                 StartButton.Text = "Старт";
 
                 return;
             }
-            _isRunning = true;
+            CurrentTaskItem.IsRunning = true;
             StartButton.Text = "Пауза";
             StartButton.IsEnabled = false;
 
-            while (_isRunning && _timeRemaining > 0)
+            while (CurrentTaskItem.IsRunning && CurrentTaskItem.TimeRemaining > 0)
             {
                 await System.Threading.Tasks.Task.Delay(100); // значение в миллисекундах
 
-                if (_isRunning)                                                  
-                    _timeRemaining -= 100;
+                if (CurrentTaskItem.IsRunning)
+                    CurrentTaskItem.TimeRemaining -= 100;
 
                 UpdateTimerDisplay();
                 StartButton.IsEnabled = true;
             }
 
-            if (_timeRemaining == 0 && _isRunning)
+            if (CurrentTaskItem.TimeRemaining == 0 && CurrentTaskItem.IsRunning)
             {
-                _isRunning = false;
+                CurrentTaskItem.IsRunning = false;
                 StartButton.Text = "Старт";
 
-                _isWorking = !_isWorking;
+                if (CurrentTaskItem.IsWork)
+                    StartButton.BackgroundColor = Color.Aqua;
+                else
+                {
+                    StartButton.BackgroundColor = Color.Orange;
+                }
+                CurrentTaskItem.IsWork = !CurrentTaskItem.IsWork;
+                
 
-            _timeRemaining = _isWorking ? WorkDuration : RestDuration;
-            await DisplayAlert("Помодоро", _isWorking ? "Время работать!" : "Время отдыхать!", "OK");
+            CurrentTaskItem.TimeRemaining = CurrentTaskItem.IsWork
+                    ? CurrentTaskItem.WorkDuration : CurrentTaskItem.RestDuration;
+            await DisplayAlert("Помодоро", CurrentTaskItem.IsWork ? "Время работать!" : "Время отдыхать!", "OK");
             UpdateTimerDisplay();
             }
         }
 
-        private void ResetButton_Clicked(object sender, EventArgs e)
+        private async void ResetButton_Clicked(object sender, EventArgs e)
         {
-            _isRunning = false;
+            
+            if (CurrentTaskItem == null)
+            {
+                await DisplayAlert("Ошибка", "Выберите задачу", "OK");
+                return;
+            }
+
+            CurrentTaskItem.IsRunning = false;
             StartButton.Text = "Старт";
             ResetTimer();
         }
@@ -163,6 +191,9 @@ namespace Hobby
 
         private void TaskItemsCollection_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            CurrentTaskItem = e.CurrentSelection[0] as TaskItem;
+            ResetTimer();
+            UpdateTimerDisplay();
 
         }
     }

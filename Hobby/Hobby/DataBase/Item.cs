@@ -18,6 +18,8 @@ namespace Hobby.DataBase
         public int RestDuration { get; set; }
         public int TimeRemaining { get; set; }
 
+
+
         // Нужно будет где-то делать словарь(timespan с датой-int время) и хэш функцию
         // И сюда записывать хэши, либо как-то подругому записывать знаения
         public string WorkTimePerDay { get; set; } 
