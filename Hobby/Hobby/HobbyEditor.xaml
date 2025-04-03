@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Hobby.HobbyEditor">
+             x:Class="Hobby.HobbyEditor"
+             NavigationPage.HasNavigationBar="False">
     <ContentPage.Content>
         <StackLayout>
             <StackLayout x:Name="Editor">
@@ -10,11 +11,11 @@
                     <Entry x:Name="NameEntry" HorizontalOptions="Fill" WidthRequest="250"></Entry>
                 </StackLayout>
                 <StackLayout Orientation="Horizontal">
-                    <Label Text="Продолжительность работы"></Label>
+                    <Label Text="Продолжительность работы в сек"></Label>
                     <Entry x:Name="WorkDurationEntry" HorizontalOptions="Fill" WidthRequest="250"></Entry>
                 </StackLayout>
                 <StackLayout Orientation="Horizontal">
-                    <Label Text="Продолжительность отдыха"></Label>
+                    <Label Text="Продолжительность отдыха в сек"></Label>
                     <Entry x:Name="RestDurationEntry" HorizontalOptions="Fill" WidthRequest="250"></Entry>
                 </StackLayout>
                 <Button x:Name="Confirm" Text="Подтвердить" Clicked="Confirm_Clicked"></Button>

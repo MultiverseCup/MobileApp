@@ -8,16 +8,11 @@ using Xamarin.Forms;
 
 namespace Hobby
 {
-    public partial class MainPage : ContentPage
+    public partial class MainPage : TabbedPage
     {
         public MainPage()
         {
             InitializeComponent();
-        }
-
-        private  async void TimerButton_Clicked(object sender, EventArgs e)
-        {
-            await Navigation.PushAsync(new TimerPage());
         }
     }
 }
