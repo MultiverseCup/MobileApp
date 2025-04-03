@@ -25,11 +25,10 @@ namespace Hobby
     public partial class TimerPage : ContentPage
     {
         private int WorkDuration = 0 * 1000;   // значение в мс
-
-        private TaskItem SelectedTimer;
+        private int RestDuration = 0 * 1000;  
 
         private int _timeRemaining;
-        
+        private bool _isWorking;
         private bool _isRunning;
         public ObservableCollection<TaskItem> Tasks { get; set; }
 
@@ -39,7 +38,7 @@ namespace Hobby
             InitializeComponent();
             Tasks = new ObservableCollection<TaskItem>();
             
-            App.Db.ClearAll(); //удаляет все, использовал для отладки
+            //App.Db.ClearAll(); удаляет все, использовал для отладки
 
             if (App.Db.IsEmpty())
             {
@@ -48,7 +47,7 @@ namespace Hobby
                         {
                             Name = "Учёба",
                             WorkDuration = 3 * 60 * 1000, // 3 минуты в мс
-                            TimerType = "work"
+                            RestDuration = 10 * 60 * 1000,
                         }
                         );
                 App.Db.SaveItem(
@@ -56,16 +55,7 @@ namespace Hobby
                         {
                             Name = "Хобби",
                             WorkDuration = 2 * 60 * 1000,
-                            TimerType = "work"
-                        }
-                        );
-
-                App.Db.SaveItem(
-                        new Item
-                        {
-                            Name = "Отдых",
-                            WorkDuration = 2 * 60 * 1000,
-                            TimerType = "rest"
+                            RestDuration = 5 * 60 * 1000,
                         }
                         );
             }
@@ -85,7 +75,7 @@ namespace Hobby
                     ID = item.ID,
                     Name = item.Name,
                     WorkDuration = item.WorkDuration,
-                    TimerType = item.TimerType,
+                    RestDuration = item.RestDuration,
                     StartCommand = new Command(() => OnTaskStart(item.ID))
                 });
             }
@@ -97,12 +87,20 @@ namespace Hobby
                 .Where(task => task.ID == itemID)
                 .First()
                 .WorkDuration;
-            
+            RestDuration = Tasks
+                .Where(task => task.ID == itemID)
+                .First()
+                .RestDuration;
             _timeRemaining = WorkDuration;
             UpdateTimerDisplay();
         }
 
-        
+        private void ResetTimer()
+        {
+            _isWorking = true;
+            _timeRemaining = WorkDuration;
+            UpdateTimerDisplay();
+        }
 
         private void UpdateTimerDisplay()
         {
@@ -111,7 +109,7 @@ namespace Hobby
        
         private async void StartButton_Clicked(object sender, EventArgs e)
         {
-            if (WorkDuration == 0) 
+            if (WorkDuration == 0 || RestDuration == 0) 
             {
                 await DisplayAlert("Ошибка", "Выберете задачу", "OK");
                 return;
@@ -143,11 +141,10 @@ namespace Hobby
                 _isRunning = false;
                 StartButton.Text = "Старт";
 
-                
+                _isWorking = !_isWorking;
 
-            _timeRemaining =  WorkDuration;
-
-            await DisplayAlert("Помодоро", "Время сменить деятельность!", "OK");
+            _timeRemaining = _isWorking ? WorkDuration : RestDuration;
+            await DisplayAlert("Помодоро", _isWorking ? "Время работать!" : "Время отдыхать!", "OK");
             UpdateTimerDisplay();
             }
         }
@@ -159,15 +156,14 @@ namespace Hobby
             ResetTimer();
         }
 
-        private void ResetTimer()
-        {
-            _timeRemaining = WorkDuration;
-            UpdateTimerDisplay();
-        }
-
         private async void Add_Clicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new HobbyEditor(this));
+        }
+
+        private void TaskItemsCollection_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }

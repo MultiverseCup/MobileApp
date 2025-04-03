@@ -13,8 +13,11 @@
                 </StackLayout>
             </StackLayout>
 
-            <CollectionView x:Name="TaskItemsCollection" ItemsSource ="{Binding Tasks}" HeightRequest="500"
-                            >
+            <CollectionView x:Name="TaskItemsCollection" 
+                            ItemsSource ="{Binding Tasks}" 
+                            HeightRequest="500"
+                            SelectionMode="Single"
+                            SelectionChanged="TaskItemsCollection_SelectionChanged">
                 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
@@ -47,9 +50,10 @@
                                              VerticalOptions="Center"
                                              Orientation="Horizontal">
                                         <Label Text="{Binding Name}" FontSize="Medium" FontAttributes="Bold" />
-
-                                        <Label Text="{Binding WorkDuration}" FontSize="Small" TextColor="Gray" />
-                                        <Label Text="{Binding TimerType}" FontSize="Small" TextColor="Blue" />
+                                        
+                                            <Label Text="{Binding WorkDuration}" FontSize="Small" TextColor="Gray" />
+                                            <Label Text="{Binding RestDuration}" FontSize="Small" TextColor="Gray" />
+                                        
                                     </StackLayout>
                                 </Grid>
                             </Frame>

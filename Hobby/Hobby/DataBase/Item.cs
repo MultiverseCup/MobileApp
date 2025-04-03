@@ -15,9 +15,8 @@ namespace Hobby.DataBase
         public int ID {get; set;}
         public string Name { get; set; }
         public int WorkDuration { get; set; }  // значение в мс
+        public int RestDuration { get; set; }
         public int TimeRemaining { get; set; }
-
-        public string TimerType { get; set; } //work / rest
 
         // Нужно будет где-то делать словарь(timespan с датой-int время) и хэш функцию
         // И сюда записывать хэши, либо как-то подругому записывать знаения
