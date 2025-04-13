@@ -32,44 +32,37 @@
                             SelectionMode="Single"
                             SelectionChanged="TaskItemsCollection_SelectionChanged"
                             >
-                
+
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Frame Padding="10,10,10,10" BackgroundColor="Transparent">
-                            <Frame BorderColor="Black" CornerRadius="30" >
+                            <Frame BorderColor="Black" CornerRadius="30">
                                 <Grid ColumnSpacing="10">
                                     <Grid.ColumnDefinitions>
-
+                                        <ColumnDefinition Width="*" />
+                                        <!-- Основное содержимое -->
                                         <ColumnDefinition Width="Auto" />
+                                        <!-- Кнопка удаления -->
                                     </Grid.ColumnDefinitions>
 
-                                    <Button Grid.Column="0" 
-                                        Text="▶" 
-                                    
-                                        Command="{Binding StartCommand}"
-                                        BackgroundColor="Transparent"
-                                        TextColor="Black"
-                                        FontSize="Medium"
-                                        WidthRequest="40"
-                                        HeightRequest="40"
-                                        CornerRadius="20"
-                                        BorderColor="Black"
-                                        BorderWidth="3"
-                                
-                                        HorizontalOptions="Start"
-                                        VerticalOptions="Center"/>
-
-                                    <StackLayout Grid.Column="1" 
-                                             HorizontalOptions="Start"
-                                             VerticalOptions="Center"
-                                             Orientation="Horizontal">
-                                            
+                                    <!-- Существующий StackLayout с данными задачи -->
+                                    <StackLayout Grid.Column="0" 
+                                 HorizontalOptions="Start"
+                                 VerticalOptions="Center"
+                                 Orientation="Horizontal">
                                         <Label Text="{Binding Name}" FontSize="Medium" FontAttributes="Bold" />
-                                        
                                         <Label Text="{Binding DisplayWorkDuration}" FontSize="Small" TextColor="Gray" />
                                         <Label Text="{Binding DisplayRestDuration}" FontSize="Small" TextColor="Gray" />
-                                            
                                     </StackLayout>
+
+                                   
+                                    <Button Grid.Column="1"
+                                        Text="🗑️"
+                                        FontSize="Medium"
+                                        BackgroundColor="Transparent"
+                                        Command="{Binding DeleteCommand}"
+                                        HorizontalOptions="End"
+                                        VerticalOptions="Center"/>
                                 </Grid>
                             </Frame>
                         </Frame>

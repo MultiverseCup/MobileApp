@@ -17,15 +17,13 @@ namespace Hobby
     public class TaskItem : Item
     {
         public Command StartCommand { get; set; }
+        public Command DeleteCommand { get; set; }  // Новая команда
 
-        
         public bool IsWork { get; set; } = true;
-
         public bool IsRunning { get; set; }
 
         public string DisplayWorkDuration => TimerPage.DisplayTime(WorkDuration);
         public string DisplayRestDuration => TimerPage.DisplayTime(RestDuration);
-        
     }
 
 
@@ -45,8 +43,6 @@ namespace Hobby
 
             Tasks = new ObservableCollection<TaskItem>();
             
-            App.Db.ClearAll(); //удаляет все, использовал для отладки
-
             if (App.Db.IsEmpty())
             {
                 App.Db.SaveItem(
@@ -78,12 +74,12 @@ namespace Hobby
            
         }
 
-        
+
         public void UpdateTasksFromDB()
         {
             Tasks = new ObservableCollection<TaskItem>();
             var items = App.Db.GetItems();
-            foreach(var item in items)
+            foreach (var item in items)
             {
                 Tasks.Add(new TaskItem
                 {
@@ -91,13 +87,40 @@ namespace Hobby
                     Name = item.Name,
                     WorkDuration = item.WorkDuration,
                     RestDuration = item.RestDuration,
-                    
-                    StartCommand = new Command(() => OnTaskStart(item.ID))
+
+                    StartCommand = new Command(() => OnTaskStart(item.ID)),
+                    DeleteCommand = new Command(() => DeleteTask(item.ID))  // Добавляем команду удаления
                 });
-                
             }
             TaskItemsCollection.ItemsSource = Tasks;
         }
+
+        // Метод для удаления задачи
+        private async void DeleteTask(int taskId)
+        {
+            bool confirm = await DisplayAlert("Удаление", "Удалить задачу?", "Да", "Нет");
+            if (!confirm) return;
+
+            // Удаляем из базы данных
+            App.Db.DeleteItem(taskId);
+
+            // Удаляем из коллекции
+            var taskToRemove = Tasks.FirstOrDefault(t => t.ID == taskId);
+            if (taskToRemove != null)
+            {
+                Tasks.Remove(taskToRemove);
+
+                // Если удаляемая задача была текущей, сбрасываем таймер
+                if (CurrentTaskItem?.ID == taskId)
+                {
+                    CurrentTaskItem = null;
+                    TimerLabel.Text = "00:00";
+                    StartButton.Text = "Старт";
+                    StartButton.BackgroundColor = Color.Orange;
+                }
+            }
+        }
+
         public void OnTaskStart(int itemID)
         {
             
