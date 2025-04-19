@@ -1,45 +1,47 @@
 ﻿using SQLite;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
 
 namespace Hobby.DataBase
 {
     public class DB
     {
-        private readonly SQLiteConnection _database;
+        private SQLiteConnection _connection;
 
         public DB(string dbPath)
         {
-            _database = new SQLiteConnection(dbPath);
-            _database.CreateTable<Item>(); // Создаём таблицу, если её нет
+            // Создаём подключение к базе данных
+            _connection = new SQLiteConnection(dbPath);
+            CreateTables(); // Создаём таблицы при инициализации базы данных
         }
 
-        // Получение всех элементов
+        private void CreateTables()
+        {
+            // Создаём таблицы для Item и TaskItem (если они еще не существуют)
+            _connection.CreateTable<Item>();
+            _connection.CreateTable<TaskItem>(); // Обратите внимание, что TaskItem теперь тоже создается
+        }
+
+        // Метод для получения всех элементов из базы данных
         public List<Item> GetItems()
         {
-            return _database.Table<Item>().ToList();
+            return _connection.Table<Item>().ToList();
         }
 
-        // Сохранение (добавление или обновление)
-        public int SaveItem(Item item)
+        // Метод для сохранения элемента в базе данных
+        public void SaveItem(Item item)
         {
             if (item.ID != 0)
-                return _database.Update(item);
+                _connection.Update(item); // Если ID существует, обновляем запись
             else
-                return _database.Insert(item);
+                _connection.Insert(item); // Если нет, то вставляем новую запись
         }
 
-        // Удаление элемента по ID
-        public int DeleteItem(int id)
-        {
-            return _database.Delete<Item>(id); // Важно: передаём ID, а не объект
-        }
-
-        // Проверка, пуста ли БД
+        // Проверка на пустоту базы данных
         public bool IsEmpty()
         {
-            return _database.Table<Item>().Count() == 0;
+            return _connection.Table<Item>().Count() == 0;
         }
     }
 }
