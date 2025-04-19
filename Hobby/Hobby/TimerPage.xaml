@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Hobby.TimerPage"
              >
-    
+
     <ContentPage.Content>
         <StackLayout>
 
@@ -16,7 +16,7 @@
                        FontSize="60" 
                        TextColor="Black"
                        HorizontalOptions="Center" />
-                
+
                 <StackLayout x:Name="AdditionalButtons" Orientation="Horizontal" HorizontalOptions="Center">
                     <Button x:Name="StartButton" Text="Старт" BackgroundColor="Orange" Clicked="StartButton_Clicked" />
                     <Button x:Name="ResetButton" Text="Сброс" Clicked="ResetButton_Clicked" />
@@ -55,7 +55,7 @@
                                         <Label Text="{Binding DisplayRestDuration}" FontSize="Small" TextColor="Gray" />
                                     </StackLayout>
 
-                                   
+
                                     <Button Grid.Column="1"
                                         Text="🗑️"
                                         FontSize="Medium"

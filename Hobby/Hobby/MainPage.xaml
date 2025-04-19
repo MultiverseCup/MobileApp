@@ -13,6 +13,7 @@
     
     <local:Shedule Title="Расписание" />
     <local:TimerPage Title="Помодоро" />
+    <local:FreeTimer Title="Свободный Таймер" />
     <local:Purposes Title="Цели" />
 
 </TabbedPage>

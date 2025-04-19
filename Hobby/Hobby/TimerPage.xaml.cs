@@ -42,15 +42,15 @@ namespace Hobby
             BindingContext = Tasks;
 
             Tasks = new ObservableCollection<TaskItem>();
-            
+
             if (App.Db.IsEmpty())
             {
                 App.Db.SaveItem(
                         new Item
                         {
                             Name = "Учёба",
-                            WorkDuration = 3  * 1000, // 3 секи в мс
-                            RestDuration = 10  * 1000,
+                            WorkDuration = 3 * 1000, // 3 секи в мс
+                            RestDuration = 10 * 1000,
                         }
                         );
                 App.Db.SaveItem(
@@ -71,7 +71,7 @@ namespace Hobby
             }
 
 
-           
+
         }
 
 
@@ -123,14 +123,14 @@ namespace Hobby
 
         public void OnTaskStart(int itemID)
         {
-            
+
         }
 
         private void ResetTimer()
         {
             StartButton.BackgroundColor = Color.Orange;
             CurrentTaskItem.IsWork = true;
-            
+
             CurrentTaskItem.TimeRemaining = CurrentTaskItem.WorkDuration;
             UpdateTimerDisplay();
         }
@@ -145,12 +145,12 @@ namespace Hobby
 
         private async void StartButton_Clicked(object sender, EventArgs e)
         {
-            if (CurrentTaskItem == null) 
+            if (CurrentTaskItem == null)
             {
                 await DisplayAlert("Ошибка", "Выберите задачу", "OK");
                 return;
             }
-            if (CurrentTaskItem.IsRunning) 
+            if (CurrentTaskItem.IsRunning)
             {
                 CurrentTaskItem.IsRunning = false;
                 StartButton.Text = "Старт";
@@ -184,18 +184,18 @@ namespace Hobby
                     StartButton.BackgroundColor = Color.Orange;
                 }
                 CurrentTaskItem.IsWork = !CurrentTaskItem.IsWork;
-                
 
-            CurrentTaskItem.TimeRemaining = CurrentTaskItem.IsWork
-                    ? CurrentTaskItem.WorkDuration : CurrentTaskItem.RestDuration;
-            await DisplayAlert("Помодоро", CurrentTaskItem.IsWork ? "Время работать!" : "Время отдыхать!", "OK");
-            UpdateTimerDisplay();
+
+                CurrentTaskItem.TimeRemaining = CurrentTaskItem.IsWork
+                        ? CurrentTaskItem.WorkDuration : CurrentTaskItem.RestDuration;
+                await DisplayAlert("Помодоро", CurrentTaskItem.IsWork ? "Время работать!" : "Время отдыхать!", "OK");
+                UpdateTimerDisplay();
             }
         }
 
         private async void ResetButton_Clicked(object sender, EventArgs e)
         {
-            
+
             if (CurrentTaskItem == null)
             {
                 await DisplayAlert("Ошибка", "Выберите задачу", "OK");

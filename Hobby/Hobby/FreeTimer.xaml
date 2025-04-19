@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Hobby.FreeTimer"
+             Title="Свободный&#10;Таймер">
+    <!-- Перенос строки в Title -->
+
+    <ContentPage.Content>
+
+        <StackLayout VerticalOptions="Center">
+
+            <!-- Таймер -->
+            <Label x:Name="TimerLabel" 
+                   Text="00:00" 
+                   FontSize="60" 
+                   TextColor="Black"
+                   HorizontalOptions="Center" />
+
+            <!-- Кнопки управления -->
+            <StackLayout Orientation="Horizontal" 
+                         HorizontalOptions="Center"
+                         Spacing="20">
+                <Button x:Name="StartButton" 
+                        Text="Старт" 
+                        BackgroundColor="Orange" 
+                        Clicked="StartButton_Clicked" 
+                        WidthRequest="100"/>
+
+                <Button x:Name="ResetButton" 
+                        Text="Сброс" 
+                        Clicked="ResetButton_Clicked" 
+                        WidthRequest="100"/>
+            </StackLayout>
+
+            <StackLayout>
+                <Label x:Name="TotalTime" 
+       Text="00:00" 
+       FontSize="60" 
+       TextColor="Black"
+       HorizontalOptions="Center" />
+                <Button x:Name="ResetTotalButton" 
+        Text="Сбросить всё" 
+        BackgroundColor="LightCoral"
+        Clicked="ResetTotalButton_Clicked"
+        WidthRequest="120"/>
+            </StackLayout>
+        </StackLayout>
+    </ContentPage.Content>
+</ContentPage>
