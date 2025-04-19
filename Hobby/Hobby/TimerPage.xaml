@@ -1,37 +1,79 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Hobby.TimerPage"
-             >
-    
+             x:Class="Hobby.TimerPage">
+
     <ContentPage.Content>
         <StackLayout>
 
-            <StackLayout x:Name="CurrentTimer" 
-                         Margin="0,120,0,0"
-                         VerticalOptions="Center" 
-                         >
-                <Label x:Name="TimerLabel" 
+            <!-- Селектор режимов -->
+            <Picker x:Name="ModePicker"
+                    Title="Выберите режим таймера"
+                    SelectedIndexChanged="ModePicker_SelectedIndexChanged"
+                    Margin="10">
+                <Picker.Items>
+                    <x:String>Pomodoro</x:String>
+                    <x:String>FreeTimer</x:String>
+                </Picker.Items>
+            </Picker>
+
+            <!-- Контейнер Pomodoro -->
+            <StackLayout x:Name="PomodoroContainer">
+                <StackLayout Margin="0,20,0,0" VerticalOptions="Center">
+                    <Label x:Name="PomodoroTimerLabel" 
+                           Text="00:00" 
+                           FontSize="60" 
+                           TextColor="Black"
+                           HorizontalOptions="Center" />
+
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+                        <Button x:Name="PomodoroStartButton" 
+                                Text="Старт" 
+                                BackgroundColor="Orange" 
+                                Clicked="PomodoroStartButton_Clicked" />
+                        <Button x:Name="PomodoroResetButton" 
+                                Text="Сброс" 
+                                Clicked="PomodoroResetButton_Clicked" />
+                    </StackLayout>
+                    <Rectangle BackgroundColor="Black" 
+                               Margin="0,20,0,0"
+                               HeightRequest="2"/>
+                </StackLayout>
+            </StackLayout>
+
+            <!-- Контейнер FreeTimer -->
+            <StackLayout x:Name="FreeTimerContainer" IsVisible="False">
+                <Label x:Name="FreeTimerLabel" 
                        Text="00:00" 
                        FontSize="60" 
                        TextColor="Black"
-                       HorizontalOptions="Center" />
-                
-                <StackLayout x:Name="AdditionalButtons" Orientation="Horizontal" HorizontalOptions="Center">
-                    <Button x:Name="StartButton" Text="Старт" BackgroundColor="Orange" Clicked="StartButton_Clicked" />
-                    <Button x:Name="ResetButton" Text="Сброс" Clicked="ResetButton_Clicked" />
+                       HorizontalOptions="Center"/>
+
+                <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="20">
+                    <Button x:Name="FreeStartButton" 
+                            Text="Старт" 
+                            BackgroundColor="Orange" 
+                            Clicked="FreeStartButton_Clicked"/>
+                    <Button x:Name="FreeResetButton" 
+                            Text="Сброс" 
+                            Clicked="FreeResetButton_Clicked"/>
+                    <Button x:Name="ResetTotalButton" 
+                            Text="Общий сброс" 
+                            BackgroundColor="LightCoral" 
+                            Clicked="ResetTotalButton_Clicked"/>
                 </StackLayout>
-                <Rectangle BackgroundColor="Black" 
-                           Margin="0,20,0,0"
-                           HeightRequest="2"></Rectangle>
+
+                <Label x:Name="TotalTimeLabel" 
+                           Text="{Binding CurrentTaskItem.TotalWorkTime, StringFormat='{0:hh\\:mm\\:ss}'}" 
+                           FontSize="30" 
+                           HorizontalOptions="Center"/>
             </StackLayout>
 
+            <!-- Общий список задач -->
             <CollectionView x:Name="TaskItemsCollection" 
-                            ItemsSource="{Binding Tasks}"
-                            HeightRequest="300"
-                            SelectionMode="Single"
-                            SelectionChanged="TaskItemsCollection_SelectionChanged"
-                            >
+                           ItemsSource="{Binding Tasks}"
+                           SelectionMode="Single"
+                           SelectionChanged="TaskItemsCollection_SelectionChanged">
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
@@ -40,22 +82,18 @@
                                 <Grid ColumnSpacing="10">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
-                                        <!-- Основное содержимое -->
                                         <ColumnDefinition Width="Auto" />
-                                        <!-- Кнопка удаления -->
                                     </Grid.ColumnDefinitions>
 
-                                    <!-- Существующий StackLayout с данными задачи -->
                                     <StackLayout Grid.Column="0" 
-                                 HorizontalOptions="Start"
-                                 VerticalOptions="Center"
-                                 Orientation="Horizontal">
+                                       HorizontalOptions="Start"
+                                       VerticalOptions="Center"
+                                       Orientation="Horizontal">
                                         <Label Text="{Binding Name}" FontSize="Medium" FontAttributes="Bold" />
                                         <Label Text="{Binding DisplayWorkDuration}" FontSize="Small" TextColor="Gray" />
                                         <Label Text="{Binding DisplayRestDuration}" FontSize="Small" TextColor="Gray" />
                                     </StackLayout>
 
-                                   
                                     <Button Grid.Column="1"
                                         Text="🗑️"
                                         FontSize="Medium"
@@ -70,7 +108,10 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <Button x:Name="Add" Text="+" Clicked="Add_Clicked" 
+            <!-- Кнопка добавления -->
+            <Button x:Name="AddButton" 
+                    Text="+" 
+                    Clicked="Add_Clicked" 
                     FontSize="30"
                     HorizontalOptions="Center" 
                     WidthRequest="50"
