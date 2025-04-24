@@ -45,7 +45,7 @@ namespace Hobby
 
             Tasks = new ObservableCollection<TaskItem>();
             
-            App.Db.ClearAll(); //удаляет все, использовал для отладки
+           // App.Db.ClearAll(); //удаляет все, использовал для отладки
 
             if (App.Db.IsEmpty())
             {
