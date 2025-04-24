@@ -6,13 +6,14 @@ using SQLite;
 
 namespace Hobby.DataBase
 {
-    enum Weekdays{
+    enum Weekdays
+    {
         MON, TUE, WED, THU, FRI, SAT, SUN
     };
     public class Item
     {
         [PrimaryKey, AutoIncrement]
-        public int ID {get; set;}
+        public int ID { get; set; }
         public string Name { get; set; }
         public int WorkDuration { get; set; }  // значение в мс
         public int RestDuration { get; set; }
@@ -22,7 +23,7 @@ namespace Hobby.DataBase
 
         // Нужно будет где-то делать словарь(timespan с датой-int время) и хэш функцию
         // И сюда записывать хэши, либо как-то подругому записывать знаения
-        public string WorkTimePerDay { get; set; } 
+        public string WorkTimePerDay { get; set; }
         public int TotalWorkTime { get; set; }
 
         // Расписание 
