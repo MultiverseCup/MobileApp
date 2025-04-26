@@ -12,6 +12,36 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\background.jpg" />
+    <None Remove="Images\bg.png" />
+    <None Remove="Images\calendar.png" />
+    <None Remove="Images\check-circle.png" />
+    <None Remove="Images\clock.png" />
+    <None Remove="Images\confirm.png" />
+    <None Remove="Images\plus-circle.png" />
+    <None Remove="Images\Polygon 1.png" />
+    <None Remove="Images\refresh-ccw.png" />
+    <None Remove="Images\rotate-ccw.png" />
+    <None Remove="Images\TabRect.png" />
+    <None Remove="Images\trash.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Images\background.jpg" />
+    <EmbeddedResource Include="Images\bg.png" />
+    <EmbeddedResource Include="Images\calendar.png" />
+    <EmbeddedResource Include="Images\check-circle.png" />
+    <EmbeddedResource Include="Images\clock.png" />
+    <EmbeddedResource Include="Images\confirm.png" />
+    <EmbeddedResource Include="Images\plus-circle.png" />
+    <EmbeddedResource Include="Images\Polygon 1.png" />
+    <EmbeddedResource Include="Images\refresh-ccw.png" />
+    <EmbeddedResource Include="Images\rotate-ccw.png" />
+    <EmbeddedResource Include="Images\TabRect.png" />
+    <EmbeddedResource Include="Images\trash.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
     <PackageReference Include="Xam.Plugin.SimpleAudioPlayer" Version="1.6.0" />
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2196" />

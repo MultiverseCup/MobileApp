@@ -16,10 +16,10 @@ namespace Hobby
 	{
         private TimerPage _timerPage;
 
-        public HobbyEditor (TimerPage timerPage)
+        public HobbyEditor ()
 		{
             InitializeComponent();
-            _timerPage = timerPage;
+           
         }
 
         private async void Confirm_Clicked(object sender, EventArgs e)
@@ -36,7 +36,7 @@ namespace Hobby
                         RestDuration = restDur * 1000,
                     }
                     );
-                _timerPage.UpdateTasksFromDB();
+                
                 await Navigation.PopAsync();
             }
             else
