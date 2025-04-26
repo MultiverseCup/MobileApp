@@ -1,19 +1,25 @@
-﻿using Hobby.DataBase;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
+using static System.Net.Mime.MediaTypeNames;
+using Xamarin.Forms.PlatformConfiguration;
+using Hobby.DataBase;
+using SQLite;
+
 namespace Hobby
 {
+    // Класс TaskItem с улучшениями из новой версии
     public class TaskItem : Item
     {
-        // Убираем Command из базы данных
-        //public Command StartCommand { get; set; }
-        //public Command DeleteCommand { get; set; }
+        [Ignore]
+        public Command DeleteCommand { get; set; }
 
         public bool IsWork { get; set; } = true;
         public bool IsRunning { get; set; }
@@ -21,17 +27,20 @@ namespace Hobby
         public string DisplayWorkDuration => DisplayTime(WorkDuration);
         public string DisplayRestDuration => DisplayTime(RestDuration);
 
-        private string DisplayTime(int milliseconds) => TimeSpan.FromMilliseconds(milliseconds).ToString(@"mm\:ss");
+        private string DisplayTime(int milliseconds) =>
+            TimeSpan.FromMilliseconds(milliseconds).ToString(@"mm\:ss");
     }
+
+
 
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class TimerPage : ContentPage
     {
-        // Для Pomodoro режима
+        // Восстанавливаем старый нейминг с новым функционалом
         public TaskItem CurrentTaskItem { get; set; }
         public ObservableCollection<TaskItem> Tasks { get; set; } = new ObservableCollection<TaskItem>();
 
-        // Для FreeTimer режима
+        // Переносим новый функционал с сохранением старого нейминга
         private bool _isFreeTimerRunning;
         private int _freeTimeRemaining;
 
@@ -40,13 +49,14 @@ namespace Hobby
             InitializeComponent();
             BindingContext = this;
             LoadInitialData();
-            ModePicker.SelectedIndex = 0; // Устанавливаем Pomodoro по умолчанию
+
+            // Инициализация режимов как в новой версии
+            ModePicker.SelectedIndex = 0;
         }
 
         private void TaskItemsCollection_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (e.CurrentSelection == null || !e.CurrentSelection.Any())
-                return;
+            if (e.CurrentSelection == null || !e.CurrentSelection.Any()) return;
 
             // Получаем выбранную задачу
             CurrentTaskItem = e.CurrentSelection.First() as TaskItem;
@@ -69,10 +79,8 @@ namespace Hobby
             }
         }
 
-        private async void Add_Clicked(object sender, EventArgs e)
-        {
-            await Navigation.PushAsync(new HobbyEditor(this));
-        }
+        private async void Add_Clicked(object sender, EventArgs e) => await Navigation.PushAsync(new HobbyEditor(this));
+
 
         private void LoadInitialData()
         {
@@ -87,6 +95,31 @@ namespace Hobby
             UpdateTasksFromDB(); // Обновляем список задач
         }
 
+        // Старый метод удаления с улучшениями из новой версии
+        private async void DeleteTask(int taskId)
+        {
+            bool confirm = await DisplayAlert("Удаление", "Удалить задачу?", "Да", "Нет");
+            if (!confirm) return;
+
+            App.Db.DeleteItem(taskId);
+
+            var taskToRemove = Tasks.FirstOrDefault(t => t.ID == taskId);
+            if (taskToRemove != null)
+            {
+                Tasks.Remove(taskToRemove);
+
+                if (CurrentTaskItem?.ID == taskId)
+                {
+                    CurrentTaskItem = null;
+                    // Обновляем UI как в новой версии
+                    PomodoroTimerLabel.Text = "00:00";
+                    PomodoroStartButton.Text = "Старт";
+                    PomodoroStartButton.BackgroundColor = Color.Orange;
+                }
+            }
+        }
+
+        // Обновлённый метод загрузки задач
         public void UpdateTasksFromDB()
         {
             Tasks.Clear();
@@ -99,16 +132,11 @@ namespace Hobby
                     WorkDuration = item.WorkDuration,
                     RestDuration = item.RestDuration,
                     TimeRemaining = item.TimeRemaining == 0 ? item.WorkDuration : item.TimeRemaining,
-                    TotalWorkTime = item.TotalWorkTime,  // Важно! Загружаем TotalWorkTime
+                    TotalWorkTime = item.TotalWorkTime,
+                    DeleteCommand = new Command(() => DeleteTask(item.ID))
                 });
             }
-
-            // Если есть текущая задача, обновите соответствующий текст
-            if (CurrentTaskItem != null)
-                TotalTimeLabel.Text = TimeSpan.FromMilliseconds(CurrentTaskItem.TotalWorkTime).ToString(@"mm\:ss");
         }
-
-
 
         private void ModePicker_SelectedIndexChanged(object sender, EventArgs e)
         {
