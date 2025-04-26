@@ -4,7 +4,6 @@
              x:Class="Hobby.TimerPage">
 
     <ContentPage.Content>
-        
         <StackLayout>
 
             <!-- Селектор режимов -->
@@ -24,7 +23,7 @@
                     <Label x:Name="PomodoroTimerLabel" 
                            Text="00:00" 
                            FontSize="60" 
-                           TextColor="White"
+                           TextColor="Black"
                            HorizontalOptions="Center" />
 
                     <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
@@ -72,7 +71,6 @@
 
             <!-- Общий список задач -->
             <CollectionView x:Name="TaskItemsCollection" 
-                            HeightRequest="200"
                            ItemsSource="{Binding Tasks}"
                            SelectionMode="Single"
                            SelectionChanged="TaskItemsCollection_SelectionChanged">
@@ -113,7 +111,7 @@
             <!-- Кнопка добавления -->
             <Button x:Name="AddButton" 
                     Text="+" 
-                    Clicked = "Add_Clicked" 
+                    Clicked="Add_Clicked" 
                     FontSize="30"
                     HorizontalOptions="Center" 
                     WidthRequest="50"

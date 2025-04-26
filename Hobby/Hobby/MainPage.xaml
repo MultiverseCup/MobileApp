@@ -1,80 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-            xmlns:local="clr-namespace:Hobby"
-            x:Class="Hobby.MainPage">
-
-    <ContentPage.Content >
-        <Grid>
-            <Grid.RowDefinitions>   
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="100"/>
-            </Grid.RowDefinitions>
-
-            <!-- Фоновое изображение -->
-            <Image Source= "{local:ImageResource Hobby.Images.background.jpg}"
-            Aspect="AspectFill" 
-            Grid.RowSpan="2"
-            />
+<TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Hobby.MainPage"
+             xmlns:local="clr-namespace:Hobby"
+            NavigationPage.HasNavigationBar="False"
+            BarBackgroundColor="#D9D9D9"
             
-            <!-- Контент страниц -->
-            <StackLayout x:Name="PageContent" Grid.Row="0"/>
-        
-            <!-- Нижнее меню -->
-            <Grid Grid.Row="1" 
-                ColumnSpacing="0">
+            BarTextColor="Black"
+            xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
+            android:TabbedPage.ToolbarPlacement="Bottom">
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                
-                <Image Source= "{local:ImageResource Hobby.Images.TabRect.png}"
-                Aspect="Fill" 
-                Grid.ColumnSpan="3"
-                />
-                <!-- Кнопки меню -->
-                <Image x:Name="SheduleIcon"
-                    Source= "{local:ImageResource Hobby.Images.calendar.png}"
-                    Aspect="AspectFit" 
-                    Grid.Column ="0"
-                    Margin="25"
-                    />
-                <Button x:Name="Shedule"
-                    
-                    BackgroundColor="Transparent"
-                    Grid.Column="0" 
-                    
-                    Clicked="OnTabButtonClicked"
-                    ></Button>
+    
+    <local:Shedule Title="Расписание" />
+    <local:TimerPage Title="Помодоро" />
+    <local:Purposes Title="Цели" />
 
-                <Image x:Name="TimerIcon"
-                    Source= "{local:ImageResource Hobby.Images.clock.png}"
-                    Aspect="AspectFit" 
-                    Grid.Column ="1"
-                    Margin="25"
-                    
-                    />
-                <Button x:Name="Timer" 
-                    BackgroundColor="Transparent"
-                    Grid.Column="1" 
-                    
-                    Clicked="OnTabButtonClicked"
-                    ></Button>
-                <Image x:Name="PurposesIcon"
-                    Source= "{local:ImageResource Hobby.Images.check-circle.png}"
-                    Aspect="AspectFit" 
-                    Grid.Column ="2"
-                    Margin="25"
-                    />
-                <Button x:Name="Purposes"                     
-                    BackgroundColor="Transparent"
-                    Grid.Column="2" 
-                    
-                    Clicked="OnTabButtonClicked"
-                    ></Button>
-            </Grid>
-        </Grid>
-    </ContentPage.Content>
-</ContentPage>
+</TabbedPage>

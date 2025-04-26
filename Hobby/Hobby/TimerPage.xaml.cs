@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
+using static System.Net.Mime.MediaTypeNames;
 using Xamarin.Forms.PlatformConfiguration;
 using Hobby.DataBase;
 using SQLite;
@@ -46,7 +47,7 @@ namespace Hobby
         public TimerPage()
         {
             InitializeComponent();
-            
+            BindingContext = this;
             LoadInitialData();
 
             // Инициализация режимов как в новой версии
@@ -78,13 +79,7 @@ namespace Hobby
             }
         }
 
-        private async void Add_Clicked(object sender, EventArgs e)
-        {
-            
-            await Navigation.PushAsync(new HobbyEditor());
-            UpdateTasksFromDB();
-           
-        }
+        private async void Add_Clicked(object sender, EventArgs e) => await Navigation.PushAsync(new HobbyEditor(this));
 
 
         private void LoadInitialData()
