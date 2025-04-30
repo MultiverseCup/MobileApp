@@ -4,15 +4,24 @@
              x:Class="Hobby.MainPage"
              xmlns:local="clr-namespace:Hobby"
             NavigationPage.HasNavigationBar="False"
-            BarBackgroundColor="#D9D9D9"
             
+            BarBackgroundColor="#FFFFFF"
+            SelectedTabColor="Black"
             BarTextColor="Black"
+            BackgroundColor="#FF7E7E"
             xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
-            android:TabbedPage.ToolbarPlacement="Bottom">
-
+            android:TabbedPage.ToolbarPlacement="Bottom"
+            >
     
-    <local:Shedule Title="Расписание" />
-    <local:TimerPage Title="Помодоро" />
-    <local:Purposes Title="Цели" />
+
+    <local:Shedule 
+                    IconImageSource="calendar.png"
+                    BackgroundColor = "Transparent" />
+    <local:TimerPage 
+                     IconImageSource = "clock.png"
+                    BackgroundImageSource = "bg.jpg"
+                    />
+    <local:Purposes  IconImageSource="checkcircle.png"
+                    BackgroundColor = "Transparent" />
 
 </TabbedPage>
