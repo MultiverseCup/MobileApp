@@ -12,7 +12,7 @@
             xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
             android:TabbedPage.ToolbarPlacement="Bottom"
             >
-
+    
 
     <local:Shedule 
                     IconImageSource="calendar.png"

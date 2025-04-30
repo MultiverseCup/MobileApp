@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+
+using static System.Net.Mime.MediaTypeNames;
+using Xamarin.Forms.PlatformConfiguration;
 using Hobby.DataBase;
 using SQLite;
 
@@ -62,7 +65,7 @@ namespace Hobby
             {
                 // Обновляем отображение для Pomodoro режима
                 PomodoroTimerLabel.Text = TimeSpan.FromMilliseconds(CurrentTaskItem.TimeRemaining).ToString(@"mm\:ss");
-                PomodoroStartButton.ImageSource = "play.png";
+                PomodoroStartButton.Text = "Старт";
                 PomodoroStartButton.BackgroundColor = Color.Orange;
 
                 // Обновляем отображение общего времени для FreeTimer режима
@@ -72,12 +75,11 @@ namespace Hobby
                 _isFreeTimerRunning = false;
                 _freeTimeRemaining = 0;
                 FreeTimerLabel.Text = "00:00";
-                FreeStartButton.ImageSource = "play.png";
+                FreeStartButton.Text = "Старт";
             }
         }
 
-        private async void Add_Clicked(object sender, EventArgs e) 
-            => await Navigation.PushAsync(new HobbyEditor(this));
+        private async void Add_Clicked(object sender, EventArgs e) => await Navigation.PushAsync(new HobbyEditor(this));
 
 
         private void LoadInitialData()
@@ -111,8 +113,8 @@ namespace Hobby
                     CurrentTaskItem = null;
                     // Обновляем UI как в новой версии
                     PomodoroTimerLabel.Text = "00:00";
-                    PomodoroStartButton.ImageSource = "play.png";
-                    
+                    PomodoroStartButton.Text = "Старт";
+                    PomodoroStartButton.BackgroundColor = Color.Orange;
                 }
             }
         }
@@ -166,7 +168,7 @@ namespace Hobby
             {
                 // Останавливаем таймер
                 CurrentTaskItem.IsRunning = false;
-                PomodoroStartButton.ImageSource = "play.png";
+                PomodoroStartButton.Text = "Старт";
 
                 // Сохраняем текущие изменения в базе данных
                 App.Db.SaveItem(CurrentTaskItem);
@@ -176,7 +178,7 @@ namespace Hobby
 
             // Запуск таймера
             CurrentTaskItem.IsRunning = true;
-            PomodoroStartButton.ImageSource = "pause.png";
+            PomodoroStartButton.Text = "Пауза";
             PomodoroStartButton.IsEnabled = false;
 
             while (CurrentTaskItem.IsRunning && CurrentTaskItem.TimeRemaining > 0)
@@ -212,7 +214,7 @@ namespace Hobby
             if (CurrentTaskItem.TimeRemaining <= 0 && CurrentTaskItem.IsRunning)
             {
                 CurrentTaskItem.IsRunning = false;
-                PomodoroStartButton.ImageSource = "play.png";
+                PomodoroStartButton.Text = "Старт";
 
                 // Переключаем режим (работа/отдых)
                 CurrentTaskItem.IsWork = !CurrentTaskItem.IsWork;
@@ -223,7 +225,7 @@ namespace Hobby
                     : CurrentTaskItem.RestDuration;
 
                 // Меняем цвет кнопки в зависимости от режима
-                //Color newColor = CurrentTaskItem.IsWork ? Color.Aqua : Color.Orange;
+                Color newColor = CurrentTaskItem.IsWork ? Color.Aqua : Color.Orange;
 
                 // Сохраняем задачу в БД (чтобы сохранить TotalWorkTime)
                 App.Db.SaveItem(CurrentTaskItem);
@@ -231,7 +233,7 @@ namespace Hobby
                 // Обновляем UI
                 Device.BeginInvokeOnMainThread(async () =>
                 {
-                    //PomodoroStartButton.BackgroundColor = newColor;
+                    PomodoroStartButton.BackgroundColor = newColor;
                     PomodoroTimerLabel.Text = TimeSpan.FromMilliseconds(CurrentTaskItem.TimeRemaining).ToString(@"mm\:ss");
 
                     // Показываем уведомление
@@ -254,8 +256,8 @@ namespace Hobby
             CurrentTaskItem.IsRunning = false;
             CurrentTaskItem.IsWork = true;
             CurrentTaskItem.TimeRemaining = CurrentTaskItem.WorkDuration;
-            PomodoroStartButton.ImageSource = "play.png";
-            //PomodoroStartButton.BackgroundColor = Color.Orange;
+            PomodoroStartButton.Text = "Старт";
+            PomodoroStartButton.BackgroundColor = Color.Orange;
             PomodoroTimerLabel.Text = TimeSpan.FromMilliseconds(CurrentTaskItem.TimeRemaining).ToString(@"mm\:ss");
 
             // Сохраняем данные в базе данных после сброса
@@ -276,7 +278,7 @@ namespace Hobby
             if (_isFreeTimerRunning)
             {
                 _isFreeTimerRunning = false;
-                FreeStartButton.ImageSource = "play.png";
+                FreeStartButton.Text = "Старт";
 
                 // Сохраняем данные в базе данных, когда останавливаем таймер
                 App.Db.SaveItem(CurrentTaskItem);
@@ -284,7 +286,7 @@ namespace Hobby
             }
 
             _isFreeTimerRunning = true;
-            FreeStartButton.ImageSource = "pause.png";
+            FreeStartButton.Text = "Пауза";
 
             while (_isFreeTimerRunning)
             {
@@ -311,7 +313,7 @@ namespace Hobby
         {
             _isFreeTimerRunning = false;
             _freeTimeRemaining = 0;
-            FreeStartButton.ImageSource = "play.png";
+            FreeStartButton.Text = "Старт";
             FreeTimerLabel.Text = "00:00";
 
             // Сохраняем данные в базе данных после сброса
