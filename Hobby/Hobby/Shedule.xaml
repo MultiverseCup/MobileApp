@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Hobby.Shedule">
     <ContentPage.Content>
-        
         <StackLayout>
             <Label Text="Расписание" FontSize="40"
                 VerticalOptions="CenterAndExpand" 

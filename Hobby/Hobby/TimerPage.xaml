@@ -3,25 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Hobby.TimerPage">
 
-
-    <ContentPage.Resources>
-        <Style TargetType="CollectionView">
-            <Setter Property="VisualStateManager.VisualStateGroups">
-                <VisualStateGroupList>
-                    <VisualStateGroup x:Name="CommonStates">
-                        <VisualState x:Name="Normal" />
-                        <VisualState x:Name="Selected">
-                            <VisualState.Setters>
-                                <Setter Property="BackgroundColor"
-                                    Value="LightSkyBlue" />
-                            </VisualState.Setters>
-                        </VisualState>
-                    </VisualStateGroup>
-                </VisualStateGroupList>
-            </Setter>
-        </Style>
-    </ContentPage.Resources>
-
     <ContentPage.Content>
         <StackLayout>
 
@@ -29,8 +10,7 @@
             <Picker x:Name="ModePicker"
                     Title="Выберите режим таймера"
                     SelectedIndexChanged="ModePicker_SelectedIndexChanged"
-                    Margin="10"
-                    FontFamily="VisionRegular">
+                    Margin="10">
                 <Picker.Items>
                     <x:String>Pomodoro</x:String>
                     <x:String>FreeTimer</x:String>
@@ -38,26 +18,26 @@
             </Picker>
 
             <!-- Контейнер Pomodoro -->
-            <StackLayout x:Name="PomodoroContainer" Padding="50">
-                <StackLayout Margin="0,0,0,0" VerticalOptions="Center">
+            <StackLayout x:Name="PomodoroContainer">
+                <StackLayout Margin="0,20,0,0" VerticalOptions="Center">
                     <Label x:Name="PomodoroTimerLabel" 
                            Text="00:00" 
-                           FontFamily="VisionBold"
                            FontSize="60" 
-                           TextColor="White"
+                           TextColor="Black"
                            HorizontalOptions="Center" />
-                    <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
 
-                        <Button x:Name="PomodoroResetButton" 
-                                ImageSource="rotateccw.png"  
-                                BackgroundColor="Transparent"
-                                Clicked="PomodoroResetButton_Clicked" />
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
                         <Button x:Name="PomodoroStartButton" 
-                                ImageSource="play.png"
-                                BackgroundColor="Transparent"
+                                Text="Старт" 
+                                BackgroundColor="Orange" 
                                 Clicked="PomodoroStartButton_Clicked" />
-                        <Button BackgroundColor="Transparent" IsEnabled="False"/>
+                        <Button x:Name="PomodoroResetButton" 
+                                Text="Сброс" 
+                                Clicked="PomodoroResetButton_Clicked" />
                     </StackLayout>
+                    <Rectangle BackgroundColor="Black" 
+                               Margin="0,20,0,0"
+                               HeightRequest="2"/>
                 </StackLayout>
             </StackLayout>
 
@@ -66,28 +46,25 @@
                 <Label x:Name="FreeTimerLabel" 
                        Text="00:00" 
                        FontSize="60" 
-                       FontFamily="VisionRegular"
-                       TextColor="White"
+                       TextColor="Black"
                        HorizontalOptions="Center"/>
 
                 <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="20">
                     <Button x:Name="FreeStartButton" 
-                            ImageSource="play.png" 
-                            BackgroundColor="Transparent"
+                            Text="Старт" 
+                            BackgroundColor="Orange" 
                             Clicked="FreeStartButton_Clicked"/>
                     <Button x:Name="FreeResetButton" 
-                            ImageSource="rotateccw.png"
-                            BackgroundColor="Transparent"
+                            Text="Сброс" 
                             Clicked="FreeResetButton_Clicked"/>
                     <Button x:Name="ResetTotalButton" 
-                            ImageSource="refreshccw.png" 
-                            BackgroundColor="Transparent" 
+                            Text="Общий сброс" 
+                            BackgroundColor="LightCoral" 
                             Clicked="ResetTotalButton_Clicked"/>
                 </StackLayout>
 
                 <Label x:Name="TotalTimeLabel" 
-                           Text="{Binding CurrentTaskItem.TotalWorkTime, StringFormat='{0:hh\\:mm\\:ss}'}"
-                           FontFamily="VisionRegular"
+                           Text="{Binding CurrentTaskItem.TotalWorkTime, StringFormat='{0:hh\\:mm\\:ss}'}" 
                            FontSize="30" 
                            HorizontalOptions="Center"/>
             </StackLayout>
@@ -96,13 +73,12 @@
             <CollectionView x:Name="TaskItemsCollection" 
                            ItemsSource="{Binding Tasks}"
                            SelectionMode="Single"
-                           
                            SelectionChanged="TaskItemsCollection_SelectionChanged">
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame Padding="30,10,30,10" BackgroundColor="Transparent">
-                            <Frame CornerRadius="30">
+                        <Frame Padding="10,10,10,10" BackgroundColor="Transparent">
+                            <Frame BorderColor="Black" CornerRadius="30">
                                 <Grid ColumnSpacing="10">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
@@ -113,16 +89,14 @@
                                        HorizontalOptions="Start"
                                        VerticalOptions="Center"
                                        Orientation="Horizontal">
-                                        <Label Text="{Binding Name}" FontSize="Medium" FontFamily="VisionRegular" FontAttributes="Bold" />
-                                        <Label Text="{Binding DisplayWorkDuration}" FontSize="Small" FontFamily="VisionRegular" TextColor="Gray"  Margin="10,0,0,0"/>
-                                        <Label Text="{Binding DisplayRestDuration}" FontSize="Small" FontFamily="VisionRegular" TextColor="Gray" />
+                                        <Label Text="{Binding Name}" FontSize="Medium" FontAttributes="Bold" />
+                                        <Label Text="{Binding DisplayWorkDuration}" FontSize="Small" TextColor="Gray" />
+                                        <Label Text="{Binding DisplayRestDuration}" FontSize="Small" TextColor="Gray" />
                                     </StackLayout>
 
                                     <Button Grid.Column="1"
-                                        ImageSource="trash"
+                                        Text="🗑️"
                                         FontSize="Medium"
-                                        WidthRequest="30"
-                                        HeightRequest="30"
                                         BackgroundColor="Transparent"
                                         Command="{Binding DeleteCommand}"
                                         HorizontalOptions="End"
@@ -136,11 +110,15 @@
 
             <!-- Кнопка добавления -->
             <Button x:Name="AddButton" 
-                    ImageSource="pluscircle.png" 
-                    Clicked="Add_Clicked"                
+                    Text="+" 
+                    Clicked="Add_Clicked" 
+                    FontSize="30"
                     HorizontalOptions="Center" 
-                    WidthRequest="60"
-                    HeightRequest="60"
+                    WidthRequest="50"
+                    HeightRequest="50"
+                    CornerRadius="25"
+                    BorderColor="Black"
+                    BorderWidth="3"
                     BackgroundColor="Transparent"/>
         </StackLayout>
     </ContentPage.Content>
