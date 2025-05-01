@@ -44,7 +44,7 @@
             </Grid>
 
             <!-- Селектор режимов -->
-            <!-- <Picker x:Name="ModePicker"
+            <Picker x:Name="ModePicker"
                     Title="Выберите режим таймера"
                     SelectedIndexChanged="ModePicker_SelectedIndexChanged"
                     Margin="10"
@@ -53,7 +53,7 @@
                     <x:String>Pomodoro</x:String>
                     <x:String>FreeTimer</x:String>
                 </Picker.Items>
-            </Picker>-->
+            </Picker>
 
             <!-- Контейнер Pomodoro -->
             <StackLayout x:Name="PomodoroContainer" Padding="50">
