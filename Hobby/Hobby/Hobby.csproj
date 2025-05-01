@@ -21,6 +21,7 @@
     <None Remove="Images\calendar.png" />
     <None Remove="Images\checkcircle.png" />
     <None Remove="Images\clock.png" />
+    <None Remove="Images\confirm.png" />
     <None Remove="Images\pause.png" />
     <None Remove="Images\play.png" />
     <None Remove="Images\pluscircle.png" />
@@ -39,6 +40,7 @@
     <EmbeddedResource Include="Images\calendar.png" />
     <EmbeddedResource Include="Images\checkcircle.png" />
     <EmbeddedResource Include="Images\clock.png" />
+    <EmbeddedResource Include="Images\confirm.png" />
     <EmbeddedResource Include="Images\pause.png" />
     <EmbeddedResource Include="Images\play.png" />
     <EmbeddedResource Include="Images\pluscircle.png" />
@@ -56,9 +58,6 @@
 
   <ItemGroup>
     <EmbeddedResource Update="FreeTimerFlyout.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Update="HobbyEditor.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Page1.xaml">

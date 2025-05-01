@@ -49,6 +49,10 @@ namespace Hobby
             LoadInitialData();
 
             FreeTimerContainer.IsVisible = false;
+
+            var tapGesture = new TapGestureRecognizer();
+            tapGesture.Tapped += OnCloseMenuTapped;
+            Overlay.GestureRecognizers.Add(tapGesture);
         }
         private void SelectedMode_Clicked(object sender, EventArgs e)
         {
@@ -99,7 +103,23 @@ namespace Hobby
             }
         }
 
-        private async void Add_Clicked(object sender, EventArgs e) => await Navigation.PushAsync(new HobbyEditor(this));
+        private async void OnShowMenuClicked(object sender, EventArgs e)
+        {
+            // Показать затемненный фон
+            Overlay.IsVisible = true;
+            await Overlay.FadeTo(0.7, 250);
+
+            // Анимация выезжания меню
+            await BottomMenu.TranslateTo(0, 0, 300, Easing.SinOut);
+        }
+
+        private async void OnCloseMenuTapped(object sender, EventArgs e)
+        {
+            // Анимация скрытия меню
+            await BottomMenu.TranslateTo(0, 500, 300, Easing.SinIn);
+            await Overlay.FadeTo(0, 250);
+            Overlay.IsVisible = false;
+        }
 
 
         private void LoadInitialData()
@@ -344,5 +364,26 @@ namespace Hobby
 
 
         #endregion
+
+        private async void ConfirmNew_Clicked(object sender, EventArgs e)
+        {
+            if (WorkDurationEntry.Text is null || RestDurationEntry.Text is null || NameEntry.Text is null)
+                await DisplayAlert(title: "Ошибка", message: "Поле не должно быть пустым", cancel: "ОК");
+            else if (int.TryParse(WorkDurationEntry.Text, out var workDur) && int.TryParse(RestDurationEntry.Text, out var restDur))
+            {
+                App.Db.SaveItem(
+                    new DbItem
+                    {
+                        Name = NameEntry.Text,
+                        WorkDuration = workDur * 1000,
+                        RestDuration = restDur * 1000,
+                    }
+                    );
+                OnCloseMenuTapped(null, null);
+                UpdateTasksFromDB();            
+            }
+            else
+                await DisplayAlert(title: "Ошибка", message: "Неправильные значения ввода", cancel: "ОК");
+        }
     }
 }
