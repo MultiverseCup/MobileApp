@@ -29,7 +29,7 @@ namespace Hobby
             else if (int.TryParse(WorkDurationEntry.Text, out var workDur) && int.TryParse(RestDurationEntry.Text, out var restDur))
             {
                 App.Db.SaveItem(
-                    new Item
+                    new DbItem
                     {
                         Name = NameEntry.Text,
                         WorkDuration = workDur * 1000,

@@ -12,13 +12,35 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="font\VisionBold.ttf" />
-    <None Remove="font\VisionRegular.ttf" />
+    <None Remove="Fonts\VisionBold.ttf" />
+    <None Remove="Fonts\VisionRegular.ttf" />
+    <None Remove="Images\bg.jpg" />
+    <None Remove="Images\bg1.jpg" />
+    <None Remove="Images\calendar.png" />
+    <None Remove="Images\checkcircle.png" />
+    <None Remove="Images\clock.png" />
+    <None Remove="Images\pause.png" />
+    <None Remove="Images\play.png" />
+    <None Remove="Images\pluscircle.png" />
+    <None Remove="Images\refreshccw.png" />
+    <None Remove="Images\rotateccw.png" />
+    <None Remove="Images\trash.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="font\VisionBold.ttf" />
-    <EmbeddedResource Include="font\VisionRegular.ttf" />
+    <EmbeddedResource Include="Fonts\VisionBold.ttf" />
+    <EmbeddedResource Include="Fonts\VisionRegular.ttf" />
+    <EmbeddedResource Include="Images\bg.jpg" />
+    <EmbeddedResource Include="Images\bg1.jpg" />
+    <EmbeddedResource Include="Images\calendar.png" />
+    <EmbeddedResource Include="Images\checkcircle.png" />
+    <EmbeddedResource Include="Images\clock.png" />
+    <EmbeddedResource Include="Images\pause.png" />
+    <EmbeddedResource Include="Images\play.png" />
+    <EmbeddedResource Include="Images\pluscircle.png" />
+    <EmbeddedResource Include="Images\refreshccw.png" />
+    <EmbeddedResource Include="Images\rotateccw.png" />
+    <EmbeddedResource Include="Images\trash.png" />
   </ItemGroup>
 
   <ItemGroup>

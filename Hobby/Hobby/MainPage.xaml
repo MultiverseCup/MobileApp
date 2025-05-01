@@ -2,7 +2,8 @@
 <TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Hobby.MainPage"
-             xmlns:local="clr-namespace:Hobby"
+             xmlns:local="clr-namespace:Hobby;assembly=Hobby"
+            
             NavigationPage.HasNavigationBar="False"
             
             BarBackgroundColor="#FFFFFF"
@@ -13,15 +14,18 @@
             android:TabbedPage.ToolbarPlacement="Bottom"
             >
     
-
+    
     <local:Shedule 
-                    IconImageSource="calendar.png"
-                    BackgroundColor = "Transparent" />
+                    IconImageSource= "{local:ImageResource Hobby.Images.calendar.png}"
+ />
     <local:TimerPage 
-                     IconImageSource = "clock.png"
-                    BackgroundImageSource = "bg.jpg"
+                     IconImageSource = "{local:ImageResource Hobby.Images.clock.png}"
+                    BackgroundImageSource = "{local:ImageResource Hobby.Images.bg.jpg}"
+        
                     />
-    <local:Purposes  IconImageSource="checkcircle.png"
-                    BackgroundColor = "Transparent" />
+    <local:Purposes  IconImageSource= "{local:ImageResource Hobby.Images.checkcircle.png}"
+                    BackgroundImageSource = "{local:ImageResource Hobby.Images.bg1.jpg}"
+                    
+/>
 
 </TabbedPage>

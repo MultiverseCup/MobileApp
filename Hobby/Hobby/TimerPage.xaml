@@ -1,13 +1,50 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Hobby.TimerPage">
+             x:Class="Hobby.TimerPage"
+            xmlns:local="clr-namespace:Hobby;assembly=Hobby"
+>
 
     <ContentPage.Content>
         <StackLayout>
+            <Grid WidthRequest="200" HorizontalOptions="Start" Margin="10,10,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="140" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                
+                <Frame BackgroundColor="#B55757"
+                       CornerRadius="10"
+                       Grid.RowSpan="2"
+                       Grid.ColumnSpan="2"
+                       ></Frame>
+                <Button x:Name="SelectedMode"
+                        Clicked="SelectedMode_Clicked"
+                        Text="Pomodoro"
+                        TextColor="White"
+                        TextTransform="None"
+                        FontSize="25"
+                        FontFamily="VisionRegular"
+                        BackgroundColor="Transparent"
+                        Grid.Row="0"/>
+                <Button x:Name="UnSelectedMode" 
+                        Clicked="UnSelectedMode_Clicked"
+                        Text="FreeTimer"
+                        TextColor="White"
+                        TextTransform="None"
+                        FontFamily="VisionRegular"
+                        FontSize="25"
+                        BackgroundColor="Transparent"
+                        Grid.Row="1"/>
+                <Image Source="checkcircle.png" Grid.Column="1" Grid.Row="0"/>
+            </Grid>
 
             <!-- Селектор режимов -->
-            <Picker x:Name="ModePicker"
+            <!-- <Picker x:Name="ModePicker"
                     Title="Выберите режим таймера"
                     SelectedIndexChanged="ModePicker_SelectedIndexChanged"
                     Margin="10"
@@ -16,7 +53,7 @@
                     <x:String>Pomodoro</x:String>
                     <x:String>FreeTimer</x:String>
                 </Picker.Items>
-            </Picker>
+            </Picker>-->
 
             <!-- Контейнер Pomodoro -->
             <StackLayout x:Name="PomodoroContainer" Padding="50">
@@ -24,51 +61,85 @@
                     <Label x:Name="PomodoroTimerLabel" 
                            Text="00:00" 
                            FontFamily="VisionBold"
-                           FontSize="60" 
+                           FontSize="80" 
                            TextColor="White"
                            HorizontalOptions="Center" />
-                    <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+                    <Grid>
+                        <Image  Grid.Column="0"
+                                x:Name="PomodoroResetButtonImage"
+                                Source = "{local:ImageResource Hobby.Images.rotateccw.png}" 
+                                HeightRequest="40"
+                                WidthRequest="40"/>
 
-                        <Button x:Name="PomodoroResetButton" 
-                                ImageSource="rotateccw.png"  
+                        <Image  Grid.Column="1"
+                                x:Name="PomodoroStartButtonImage"
+                                Source = "{local:ImageResource Hobby.Images.play.png}"
+                                HeightRequest="40"
+                                WidthRequest="40" 
+                                />
+
+                        <Button x:Name="PomodoroResetButton"
+                                Grid.Column="0"
                                 BackgroundColor="Transparent"
-                                Clicked="PomodoroResetButton_Clicked" />
-                        <Button x:Name="PomodoroStartButton" 
-                                ImageSource="play.png"
+                                Clicked="PomodoroResetButton_Clicked"
+                                HeightRequest="40"
+                                WidthRequest="40"/>
+                        <Button x:Name="PomodoroStartButton"
+                                Grid.Column="1"
                                 BackgroundColor="Transparent"
-                                Clicked="PomodoroStartButton_Clicked" />
-                        <Button BackgroundColor="Transparent" IsEnabled="False"/>
-                    </StackLayout>
+                                Clicked="PomodoroStartButton_Clicked"
+                                HeightRequest="40"
+                                WidthRequest="40"/>
+                        <Button BackgroundColor="Transparent" IsEnabled="False" Grid.Column="2"/>
+                    </Grid>
                 </StackLayout>
             </StackLayout>
 
             <!-- Контейнер FreeTimer -->
-            <StackLayout x:Name="FreeTimerContainer" IsVisible="False">
+            <StackLayout x:Name="FreeTimerContainer" IsVisible="False" Padding="50,50,50,0">
                 <Label x:Name="FreeTimerLabel" 
                        Text="00:00" 
-                       FontSize="60" 
-                       FontFamily="VisionRegular"
+                       FontSize="80" 
+                       FontFamily="VisionBold"
                        TextColor="White"
                        HorizontalOptions="Center"/>
 
-                <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="20">
-                    <Button x:Name="FreeStartButton" 
-                            ImageSource="play.png" 
-                            BackgroundColor="Transparent"
-                            Clicked="FreeStartButton_Clicked"/>
+                <Grid>
+                    <Image  Grid.Column="0"
+                        x:Name="FreeResetButtonImage"
+                        Source = "{local:ImageResource Hobby.Images.rotateccw.png}"
+                        HeightRequest="40"
+                        WidthRequest="40"/>
+
+                    <Image  Grid.Column="1"
+                        x:Name="FreeStartButtonImage"
+                        Source = "{local:ImageResource Hobby.Images.play.png}"
+                        HeightRequest="40"
+                        WidthRequest="40" />
+                    <Image  Grid.Column="2"
+                        x:Name="ResetTotalButtonImage"
+                        Source = "{local:ImageResource Hobby.Images.refreshccw.png}"
+                        HeightRequest="40"
+                        WidthRequest="40" />
+                    
                     <Button x:Name="FreeResetButton" 
-                            ImageSource="rotateccw.png"
+                            Grid.Column="0"
                             BackgroundColor="Transparent"
                             Clicked="FreeResetButton_Clicked"/>
+                    <Button x:Name="FreeStartButton" 
+                            Grid.Column="1"
+                            BackgroundColor="Transparent"
+                            Clicked="FreeStartButton_Clicked"/>
                     <Button x:Name="ResetTotalButton" 
-                            ImageSource="refreshccw.png" 
+                            Grid.Column="2"
                             BackgroundColor="Transparent" 
                             Clicked="ResetTotalButton_Clicked"/>
-                </StackLayout>
+                </Grid>
 
                 <Label x:Name="TotalTimeLabel" 
                            Text="{Binding CurrentTaskItem.TotalWorkTime, StringFormat='{0:hh\\:mm\\:ss}'}"
-                           FontFamily="VisionRegular"
+                           Margin="0,20,0,0"
+                        FontFamily="VisionRegular"
                            FontSize="30" 
                            HorizontalOptions="Center"/>
             </StackLayout>
@@ -76,14 +147,31 @@
             <!-- Общий список задач -->
             <CollectionView x:Name="TaskItemsCollection" 
                            ItemsSource="{Binding Tasks}"
+                           HeightRequest="300"
                            SelectionMode="Single"
                            
                            SelectionChanged="TaskItemsCollection_SelectionChanged">
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Frame Padding="30,10,30,10" BackgroundColor="Transparent">
-                            <Frame CornerRadius="30">
+                        <Frame Padding="20,5,20,5" BackgroundColor="Transparent">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup Name="CommonStates">
+                                    <!-- Состояние нормальное -->
+                                    <VisualState Name="Normal">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="Transparent"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <!-- Состояние выделения -->
+                                    <VisualState Name="Selected">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="Pink"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Frame CornerRadius="15">
                                 <Grid ColumnSpacing="10">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
@@ -94,16 +182,16 @@
                                        HorizontalOptions="Start"
                                        VerticalOptions="Center"
                                        Orientation="Horizontal">
-                                        <Label Text="{Binding Name}" FontSize="Medium" FontFamily="VisionRegular" FontAttributes="Bold" />
-                                        <Label Text="{Binding DisplayWorkDuration}" FontSize="Small" FontFamily="VisionRegular" TextColor="Gray"  Margin="10,0,0,0"/>
-                                        <Label Text="{Binding DisplayRestDuration}" FontSize="Small" FontFamily="VisionRegular" TextColor="Gray" />
+                                        <Label Text="{Binding Name}" FontSize="25" FontFamily="VisionRegular" TextColor="Black" VerticalOptions="Center"/>
+                                        <Label Text="{Binding DisplayWorkDuration}" FontSize="20" FontFamily="VisionRegular" TextColor="Gray"  Margin="10,0,0,0" VerticalOptions="Center"/>
+                                        <Label Text="{Binding DisplayRestDuration}" FontSize="20" FontFamily="VisionRegular" TextColor="Gray" VerticalOptions="Center"/>
                                     </StackLayout>
-
-                                    <Button Grid.Column="1"
-                                        ImageSource="trash"
-                                        FontSize="Medium"
-                                        WidthRequest="30"
-                                        HeightRequest="30"
+                                    <Image Grid.Column="1"
+                                            Source = "{local:ImageResource Hobby.Images.trash.png}"/>
+                                    <Button Grid.Column="1" 
+                                        FontSize= "Medium"
+                                        WidthRequest="20"
+                                        HeightRequest="20"
                                         BackgroundColor="Transparent"
                                         Command="{Binding DeleteCommand}"
                                         HorizontalOptions="End"
@@ -116,13 +204,20 @@
             </CollectionView>
 
             <!-- Кнопка добавления -->
-            <Button x:Name="AddButton" 
-                    ImageSource="pluscircle.png" 
-                    Clicked="Add_Clicked"                
-                    HorizontalOptions="Center" 
-                    WidthRequest="60"
-                    HeightRequest="60"
-                    BackgroundColor="Transparent"/>
+            <Grid>
+                <Image 
+                    Source="{local:ImageResource Hobby.Images.pluscircle.png}"
+                    WidthRequest="40"
+                    HeightRequest="40"
+                    Aspect="AspectFit"/>
+                <Button x:Name="AddButton" 
+                        Clicked="Add_Clicked"                
+                        HorizontalOptions="Center" 
+                        WidthRequest="40"
+                        HeightRequest="40"
+                        BackgroundColor="Transparent"
+                        />
+            </Grid>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

@@ -13,17 +13,17 @@ namespace Hobby.DataBase
         public DB(string dbPath)
         {
             _database = new SQLiteConnection(dbPath);
-            _database.CreateTable<Item>(); // Создаём таблицу, если её нет
+            _database.CreateTable<DbItem>(); // Создаём таблицу, если её нет
         }
 
         // Получение всех элементов
-        public List<Item> GetItems()
+        public List<DbItem> GetItems()
         {
-            return _database.Table<Item>().ToList();
+            return _database.Table<DbItem>().ToList();
         }
 
         // Сохранение (добавление или обновление)
-        public int SaveItem(Item item)
+        public int SaveItem(DbItem item)
         {
             if (item.ID != 0)
                 return _database.Update(item);
@@ -34,13 +34,13 @@ namespace Hobby.DataBase
         // Удаление элемента по ID
         public int DeleteItem(int id)
         {
-            return _database.Delete<Item>(id); // Важно: передаём ID, а не объект
+            return _database.Delete<DbItem>(id); // Важно: передаём ID, а не объект
         }
 
         // Проверка, пуста ли БД
         public bool IsEmpty()
         {
-            return _database.Table<Item>().Count() == 0;
+            return _database.Table<DbItem>().Count() == 0;
         }
     }
 }
