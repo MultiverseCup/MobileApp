@@ -14,6 +14,8 @@
   <ItemGroup>
     <None Remove="Fonts\VisionBold.ttf" />
     <None Remove="Fonts\VisionRegular.ttf" />
+    <None Remove="Images\arrowDown.png" />
+    <None Remove="Images\arrowUp.png" />
     <None Remove="Images\bg.jpg" />
     <None Remove="Images\bg1.jpg" />
     <None Remove="Images\calendar.png" />
@@ -30,6 +32,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Fonts\VisionBold.ttf" />
     <EmbeddedResource Include="Fonts\VisionRegular.ttf" />
+    <EmbeddedResource Include="Images\arrowDown.png" />
+    <EmbeddedResource Include="Images\arrowUp.png" />
     <EmbeddedResource Include="Images\bg.jpg" />
     <EmbeddedResource Include="Images\bg1.jpg" />
     <EmbeddedResource Include="Images\calendar.png" />

@@ -7,7 +7,7 @@
 
     <ContentPage.Content>
         <StackLayout>
-            <Grid WidthRequest="200" HorizontalOptions="Start" Margin="10,10,0,0">
+            <Grid WidthRequest="200" HorizontalOptions="Start" Margin="10,10,0,0" RowSpacing="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="140" />
                     <ColumnDefinition Width="*" />
@@ -17,7 +17,8 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 
-                <Frame BackgroundColor="#B55757"
+                <Frame x:Name="PickerBackground"
+                        BackgroundColor="#B55757"
                        CornerRadius="10"
                        Grid.RowSpan="2"
                        Grid.ColumnSpan="2"
@@ -33,27 +34,21 @@
                         Grid.Row="0"/>
                 <Button x:Name="UnSelectedMode" 
                         Clicked="UnSelectedMode_Clicked"
-                        Text="FreeTimer"
+                        Text="Free Timer"
                         TextColor="White"
                         TextTransform="None"
                         FontFamily="VisionRegular"
                         FontSize="25"
                         BackgroundColor="Transparent"
                         Grid.Row="1"/>
-                <Image Source="checkcircle.png" Grid.Column="1" Grid.Row="0"/>
+                <Image  x:Name="ModePickerArrow"
+                        Source= "{local:ImageResource Hobby.Images.arrowDown.png}"  
+                        Grid.Column="1" 
+                        Grid.Row="0"
+                        Margin="10,0,10,0"
+                       />
             </Grid>
 
-            <!-- Селектор режимов -->
-            <Picker x:Name="ModePicker"
-                    Title="Выберите режим таймера"
-                    SelectedIndexChanged="ModePicker_SelectedIndexChanged"
-                    Margin="10"
-                    FontFamily="VisionRegular">
-                <Picker.Items>
-                    <x:String>Pomodoro</x:String>
-                    <x:String>FreeTimer</x:String>
-                </Picker.Items>
-            </Picker>
 
             <!-- Контейнер Pomodoro -->
             <StackLayout x:Name="PomodoroContainer" Padding="50">

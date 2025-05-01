@@ -48,33 +48,29 @@ namespace Hobby
             BindingContext = this;
             LoadInitialData();
 
-            
-            // Инициализация режимов как в новой версии
-            ModePicker.SelectedIndex = 0;
+            FreeTimerContainer.IsVisible = false;
         }
         private void SelectedMode_Clicked(object sender, EventArgs e)
         {
-
+            PickerBackground.IsVisible = !PickerBackground.IsVisible;
+            UnSelectedMode.IsVisible = !UnSelectedMode.IsVisible;
+            
+            ModePickerArrow.Source = PickerBackground.IsVisible 
+                ? PicSource("arrowUp.png") : PicSource("arrowDown.png");
         }
-
         private void UnSelectedMode_Clicked(object sender, EventArgs e)
         {
-
+            var temp = SelectedMode.Text;
+            SelectedMode.Text = UnSelectedMode.Text;
+            UnSelectedMode.Text = temp;
+            ChangeTimerMode();
         }
-        private void ModePicker_SelectedIndexChanged(object sender, EventArgs e)
+        private void ChangeTimerMode()
         {
-            switch (ModePicker.SelectedIndex)
-            {
-                case 0: // Pomodoro
-                    PomodoroContainer.IsVisible = true;
-                    FreeTimerContainer.IsVisible = false;
-                    break;
-                case 1: // FreeTimer
-                    PomodoroContainer.IsVisible = false;
-                    FreeTimerContainer.IsVisible = true;
-                    break;
-            }
+            PomodoroContainer.IsVisible = !PomodoroContainer.IsVisible;
+            FreeTimerContainer.IsVisible = !FreeTimerContainer.IsVisible;
         }
+        
         private ImageSource PicSource(string s)
         {
             return ImageSource.FromResource("Hobby.Images." + s);
