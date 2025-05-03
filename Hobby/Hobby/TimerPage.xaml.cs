@@ -367,20 +367,30 @@ namespace Hobby
 
         private async void ConfirmNew_Clicked(object sender, EventArgs e)
         {
-            if (WorkDurationEntry.Text is null || RestDurationEntry.Text is null || NameEntry.Text is null)
+            if (WorkDurationEntryMinutes.Text is null || RestDurationEntryMinutes.Text is null 
+                || WorkDurationEntrySeconds.Text is null || RestDurationEntrySeconds.Text is null
+                || NameEntry.Text is null)
                 await DisplayAlert(title: "Ошибка", message: "Поле не должно быть пустым", cancel: "ОК");
-            else if (int.TryParse(WorkDurationEntry.Text, out var workDur) && int.TryParse(RestDurationEntry.Text, out var restDur))
+            else if (int.TryParse(WorkDurationEntrySeconds.Text, out var workSec) 
+                && int.TryParse(RestDurationEntrySeconds.Text, out var restSec)
+                && int.TryParse(WorkDurationEntryMinutes.Text, out var workMin)
+                && int.TryParse(RestDurationEntryMinutes.Text, out var restMin))
             {
                 App.Db.SaveItem(
                     new DbItem
                     {
                         Name = NameEntry.Text,
-                        WorkDuration = workDur * 1000,
-                        RestDuration = restDur * 1000,
+                        WorkDuration = (workSec + workMin * 60) * 1000,
+                        RestDuration = (restSec + restMin * 60) * 1000,
                     }
                     );
                 OnCloseMenuTapped(null, null);
-                UpdateTasksFromDB();            
+                UpdateTasksFromDB();
+                NameEntry.Text = "";
+                WorkDurationEntryMinutes.Text = "25";
+                RestDurationEntryMinutes.Text = "5";
+                WorkDurationEntrySeconds.Text = "00";
+                RestDurationEntrySeconds.Text = "00";
             }
             else
                 await DisplayAlert(title: "Ошибка", message: "Неправильные значения ввода", cancel: "ОК");
