@@ -2,17 +2,30 @@
 <TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Hobby.MainPage"
-             xmlns:local="clr-namespace:Hobby"
-            NavigationPage.HasNavigationBar="False"
-            BarBackgroundColor="#D9D9D9"
+             xmlns:local="clr-namespace:Hobby;assembly=Hobby"
             
+            NavigationPage.HasNavigationBar="False"
+            
+            BarBackgroundColor="#FFFFFF"
+            SelectedTabColor="Black"
             BarTextColor="Black"
+            BackgroundColor="#FF7E7E"
             xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
-            android:TabbedPage.ToolbarPlacement="Bottom">
-
+            android:TabbedPage.ToolbarPlacement="Bottom"
+            >
     
-    <local:Shedule Title="Расписание" />
-    <local:TimerPage Title="Помодоро" />
-    <local:Purposes Title="Цели" />
+    
+    <local:Shedule 
+                    IconImageSource= "{local:ImageResource Hobby.Images.calendar.png}"
+ />
+    <local:TimerPage 
+                     IconImageSource = "{local:ImageResource Hobby.Images.clock.png}"
+                    BackgroundImageSource = "{local:ImageResource Hobby.Images.bg.jpg}"
+        
+                    />
+    <local:Purposes  IconImageSource= "{local:ImageResource Hobby.Images.checkcircle.png}"
+                    BackgroundImageSource = "{local:ImageResource Hobby.Images.bg1.jpg}"
+                    
+/>
 
 </TabbedPage>

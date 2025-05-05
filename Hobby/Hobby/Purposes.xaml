@@ -7,6 +7,7 @@
             <Label Text="Цели" FontSize="40"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
+                            
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
