@@ -10,7 +10,7 @@ namespace Hobby.DataBase
     {
         MON, TUE, WED, THU, FRI, SAT, SUN
     };
-    public class Item
+    public class DbItem
     {
         [PrimaryKey, AutoIncrement]
         public int ID { get; set; }
