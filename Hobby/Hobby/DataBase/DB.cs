@@ -1,8 +1,7 @@
 ﻿using SQLite;
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Text;
+using System.Linq;
 
 namespace Hobby.DataBase
 {
@@ -13,34 +12,32 @@ namespace Hobby.DataBase
         public DB(string dbPath)
         {
             _database = new SQLiteConnection(dbPath);
-            _database.CreateTable<DbItem>(); // Создаём таблицу, если её нет
+
+
+            _database.CreateTable<DbItem>(CreateFlags.AllImplicit);
+
+
+            // Миграция (если нужно)
+            //var cols = _database.GetTableInfo(nameof(DbItem)).Select(c => c.Name).ToList();
+            //if (!cols.Contains(nameof(DbItem.TotalWorkTime)))
+            //{
+            //    _database.Execute(
+            //        $"ALTER TABLE {nameof(DbItem)} ADD COLUMN {nameof(DbItem.TotalWorkTime)} INTEGER DEFAULT 0;");
+            //}
         }
 
-        // Получение всех элементов
-        public List<DbItem> GetItems()
-        {
-            return _database.Table<DbItem>().ToList();
-        }
+        public List<DbItem> GetItems() => _database.Table<DbItem>().ToList();
+        public int SaveItem(DbItem item) => item.ID != 0 ? _database.Update(item) : _database.Insert(item);
+        public int DeleteItem(int id) => _database.Delete<DbItem>(id);
+        public bool IsEmpty() => _database.Table<DbItem>().Count() == 0;
 
-        // Сохранение (добавление или обновление)
-        public int SaveItem(DbItem item)
+        // ← Новый метод
+        public List<string> GetColumns()
         {
-            if (item.ID != 0)
-                return _database.Update(item);
-            else
-                return _database.Insert(item);
-        }
-
-        // Удаление элемента по ID
-        public int DeleteItem(int id)
-        {
-            return _database.Delete<DbItem>(id); // Важно: передаём ID, а не объект
-        }
-
-        // Проверка, пуста ли БД
-        public bool IsEmpty()
-        {
-            return _database.Table<DbItem>().Count() == 0;
+            return _database
+                .GetTableInfo(nameof(DbItem))
+                .Select(c => c.Name)
+                .ToList();
         }
     }
 }

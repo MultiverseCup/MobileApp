@@ -1,301 +1,260 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-
-using static System.Net.Mime.MediaTypeNames;
-using Xamarin.Forms.PlatformConfiguration;
 using Hobby.DataBase;
 using SQLite;
 
 namespace Hobby
 {
-    // Класс TaskItem с улучшениями из новой версии
     public class TaskItem : DbItem
     {
         [Ignore]
         public Command DeleteCommand { get; set; }
-
         public bool IsWork { get; set; } = true;
         public bool IsRunning { get; set; }
-
-        public string DisplayWorkDuration => DisplayTime(WorkDuration);
-        public string DisplayRestDuration => DisplayTime(RestDuration);
-
-        private string DisplayTime(int milliseconds) =>
-            TimeSpan.FromMilliseconds(milliseconds).ToString(@"mm\:ss");
+        public string DisplayWorkDuration =>
+            TimeSpan.FromMilliseconds(WorkDuration).ToString(@"mm\:ss");
+        public string DisplayRestDuration =>
+            TimeSpan.FromMilliseconds(RestDuration).ToString(@"mm\:ss");
     }
 
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class TimerPage : ContentPage
     {
-        // Восстанавливаем старый нейминг с новым функционалом
         public TaskItem CurrentTaskItem { get; set; }
-        public ObservableCollection<TaskItem> Tasks { get; set; } = new ObservableCollection<TaskItem>();
+        public ObservableCollection<TaskItem> Tasks { get; set; }
+            = new ObservableCollection<TaskItem>();
 
-        // Переносим новый функционал с сохранением старого нейминга
         private bool _isFreeTimerRunning;
         private int _freeTimeRemaining;
+
+        void Log(string message)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                DebugConsole.Text += $"[{DateTime.Now:HH:mm:ss}] {message}\n";
+            });
+        }
+
+        private void SaveCurrentTaskToDb()
+        {
+            try
+            {
+                // Создаем копию ВСЕХ полей из TaskItem в DbItem
+                var dbItem = new DbItem
+                {
+                    ID = CurrentTaskItem.ID,
+                    Name = CurrentTaskItem.Name,
+                    WorkDuration = CurrentTaskItem.WorkDuration,
+                    RestDuration = CurrentTaskItem.RestDuration,
+                    TimeRemaining = CurrentTaskItem.TimeRemaining,
+                    TotalWorkTime = CurrentTaskItem.TotalWorkTime,
+
+                    // Эти поля должны быть в DbItem:
+                    WorkTimePerDay = CurrentTaskItem.WorkTimePerDay,
+                    Schedule = CurrentTaskItem.Schedule,
+                    BoxColor = CurrentTaskItem.BoxColor
+                };
+
+                App.Db.SaveItem(dbItem);
+                Log($"Сохранено: ID={dbItem.ID}, Total={dbItem.TotalWorkTime}");
+            }
+            catch (Exception ex)
+            {
+                Log($"Ошибка сохранения: {ex.Message}");
+            }
+        }
 
         public TimerPage()
         {
             InitializeComponent();
             BindingContext = this;
-            LoadInitialData();
 
+            // Дебаг-консоль: выводим список колонок БД
+            var cols = App.Db.GetColumns();
+            Log("DB columns: " + string.Join(", ", cols));
+
+            LoadInitialData();
             FreeTimerContainer.IsVisible = false;
 
-            var tapGesture = new TapGestureRecognizer();
-            tapGesture.Tapped += OnCloseMenuTapped;
-            Overlay.GestureRecognizers.Add(tapGesture);
+            MessagingCenter.Subscribe<App>(this, "AppGoingToSleep", sender =>
+            {
+                if (CurrentTaskItem != null)
+                    App.Db.SaveItem(CurrentTaskItem);
+            });
         }
-        private void SelectedMode_Clicked(object sender, EventArgs e)
-        {
-            PickerBackground.IsVisible = !PickerBackground.IsVisible;
-            UnSelectedMode.IsVisible = !UnSelectedMode.IsVisible;
-            
-            ModePickerArrow.Source = PickerBackground.IsVisible 
-                ? PicSource("arrowUp.png") : PicSource("arrowDown.png");
-        }
-        private void UnSelectedMode_Clicked(object sender, EventArgs e)
-        {
-            var temp = SelectedMode.Text;
-            SelectedMode.Text = UnSelectedMode.Text;
-            UnSelectedMode.Text = temp;
-            ChangeTimerMode();
-        }
-        private void ChangeTimerMode()
-        {
-            PomodoroContainer.IsVisible = !PomodoroContainer.IsVisible;
-            FreeTimerContainer.IsVisible = !FreeTimerContainer.IsVisible;
-        }
-        
-        private ImageSource PicSource(string s)
-        {
-            return ImageSource.FromResource("Hobby.Images." + s);
-        } 
-        private void TaskItemsCollection_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.CurrentSelection == null || !e.CurrentSelection.Any()) return;
 
-            // Получаем выбранную задачу
-            CurrentTaskItem = e.CurrentSelection.First() as TaskItem;
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            UpdateTasksFromDB();
+
+            if (CurrentTaskItem == null && Tasks.Any())
+                CurrentTaskItem = Tasks.First();
 
             if (CurrentTaskItem != null)
-            {
-                // Обновляем отображение для Pomodoro режима
-                PomodoroTimerLabel.Text = TimeSpan.FromMilliseconds(CurrentTaskItem.TimeRemaining).ToString(@"mm\:ss");
-                PomodoroStartButtonImage.Source = PicSource("play.png");
-
-                // Обновляем отображение общего времени для FreeTimer режима
-                TotalTimeLabel.Text = TimeSpan.FromMilliseconds(CurrentTaskItem.TotalWorkTime).ToString(@"mm\:ss");
-
-                // Сбрасываем FreeTimer при смене задачи
-                _isFreeTimerRunning = false;
-                _freeTimeRemaining = 0;
-                FreeTimerLabel.Text = "00:00";
-                FreeStartButtonImage.Source = PicSource("play.png");
-            }
+                RefreshAllTimersInUI();
         }
 
-        private async void OnShowMenuClicked(object sender, EventArgs e)
+        protected override void OnDisappearing()
         {
-            // Показать затемненный фон
-            Overlay.IsVisible = true;
-            await Overlay.FadeTo(0.7, 250);
-
-            // Анимация выезжания меню
-            await BottomMenu.TranslateTo(0, 0, 300, Easing.SinOut);
+            base.OnDisappearing();
+            MessagingCenter.Unsubscribe<App>(this, "AppGoingToSleep");
+            if (CurrentTaskItem != null)
+                App.Db.SaveItem(CurrentTaskItem);
         }
 
-        private async void OnCloseMenuTapped(object sender, EventArgs e)
+        private void RefreshAllTimersInUI()
         {
-            // Анимация скрытия меню
-            await BottomMenu.TranslateTo(0, 500, 300, Easing.SinIn);
-            await Overlay.FadeTo(0, 250);
-            Overlay.IsVisible = false;
+            PomodoroTimerLabel.Text =
+                TimeSpan.FromMilliseconds(CurrentTaskItem.TimeRemaining)
+                .ToString(@"mm\:ss");
+            FreeTimerLabel.Text =
+                TimeSpan.FromMilliseconds(_freeTimeRemaining)
+                .ToString(@"mm\:ss");
+            TotalTimeLabel.Text =
+                TimeSpan.FromMilliseconds(CurrentTaskItem.TotalWorkTime)
+                .ToString(@"hh\:mm\:ss");
         }
-
 
         private void LoadInitialData()
         {
-            if (App.Db.IsEmpty())
+
+            if (App.Db.GetItems().Count == 0)
             {
-                var item1 = new DbItem { Name = "Учёба", WorkDuration = 300000, RestDuration = 100000, TimeRemaining = 300000 };
-                var item2 = new DbItem { Name = "Хобби", WorkDuration = 200000, RestDuration = 50000, TimeRemaining = 200000 };
+                var item1 = new DbItem
+                {
+                    Name = "Учёба",
+                    WorkDuration = 300_000,
+                    RestDuration = 100_000,
+                    TimeRemaining = 300_000,
+                    TotalWorkTime = 0
+                };
                 App.Db.SaveItem(item1);
+
+                var item2 = new DbItem
+                {
+                    Name = "Хобби",
+                    WorkDuration = 200_000,
+                    RestDuration = 50_000,
+                    TimeRemaining = 200_000,
+                    TotalWorkTime = 0
+                };
                 App.Db.SaveItem(item2);
             }
-
-            UpdateTasksFromDB(); // Обновляем список задач
         }
 
-        // Старый метод удаления с улучшениями из новой версии
-        private async void DeleteTask(int taskId)
-        {
-            bool confirm = await DisplayAlert("Удаление", "Удалить задачу?", "Да", "Нет");
-            if (!confirm) return;
-
-            App.Db.DeleteItem(taskId);
-
-            var taskToRemove = Tasks.FirstOrDefault(t => t.ID == taskId);
-            if (taskToRemove != null)
-            {
-                Tasks.Remove(taskToRemove);
-
-                if (CurrentTaskItem?.ID == taskId)
-                {
-                    CurrentTaskItem = null;
-                    // Обновляем UI как в новой версии
-                    PomodoroTimerLabel.Text = "00:00";
-                    PomodoroStartButtonImage.Source = PicSource("play.png");
-                    
-                }
-            }
-            //Задаем высоту списка с задачами в зависимости от их кол-ва
-            TaskItemsCollection.HeightRequest = Tasks.Count * 90;
-        }
-
-        // Обновлённый метод загрузки задач
-        public void UpdateTasksFromDB()
+        private void UpdateTasksFromDB()
         {
             Tasks.Clear();
-            foreach (var item in App.Db.GetItems())
+            foreach (var itm in App.Db.GetItems())
             {
-                Tasks.Add(new TaskItem
+                var ti = new TaskItem
                 {
-                    ID = item.ID,
-                    Name = item.Name,
-                    WorkDuration = item.WorkDuration,
-                    RestDuration = item.RestDuration,
-                    TimeRemaining = item.TimeRemaining == 0 ? item.WorkDuration : item.TimeRemaining,
-                    TotalWorkTime = item.TotalWorkTime,
-                    DeleteCommand = new Command(() => DeleteTask(item.ID))
-                });
+                    ID = itm.ID,
+                    Name = itm.Name,
+                    WorkDuration = itm.WorkDuration,
+                    RestDuration = itm.RestDuration,
+                    TimeRemaining = itm.TimeRemaining == 0
+                        ? itm.WorkDuration
+                        : itm.TimeRemaining,
+                    TotalWorkTime = itm.TotalWorkTime,
+                    DeleteCommand = new Command(() => DeleteTask(itm.ID))
+                };
+                Tasks.Add(ti);
             }
-            //Задаем высоту списка с задачами в зависимости от их кол-ва
             TaskItemsCollection.HeightRequest = Tasks.Count * 90;
         }
 
-        
+        private async void TaskItemsCollection_SelectionChanged(
+            object sender, SelectionChangedEventArgs e)
+        {
+            if (!e.CurrentSelection.Any()) return;
+            CurrentTaskItem = e.CurrentSelection.First() as TaskItem;
+            _isFreeTimerRunning = false;
+            _freeTimeRemaining = 0;
+            RefreshAllTimersInUI();
+        }
 
         #region Pomodoro Logic
+
         private async void PomodoroStartButton_Clicked(object sender, EventArgs e)
         {
-            // Проверка выбора задачи
             if (CurrentTaskItem == null)
             {
                 await DisplayAlert("Ошибка", "Выберите задачу", "OK");
                 return;
             }
 
-            // Обработка нажатия на кнопку "Пауза"
             if (CurrentTaskItem.IsRunning)
             {
-                // Останавливаем таймер
                 CurrentTaskItem.IsRunning = false;
                 PomodoroStartButtonImage.Source = PicSource("play.png");
 
-                // Сохраняем текущие изменения в базе данных
-                App.Db.SaveItem(CurrentTaskItem);
-
+                // Сохраняем при остановке
+                Device.BeginInvokeOnMainThread(() => SaveCurrentTaskToDb());
                 return;
             }
 
-            // Запуск таймера
             CurrentTaskItem.IsRunning = true;
             PomodoroStartButtonImage.Source = PicSource("pause.png");
-            PomodoroStartButton.IsEnabled = false;
 
             while (CurrentTaskItem.IsRunning && CurrentTaskItem.TimeRemaining > 0)
             {
-                await Task.Delay(100); // Ждем 100 мс
-
-                // Уменьшаем оставшееся время
+                await Task.Delay(100);
                 CurrentTaskItem.TimeRemaining -= 100;
 
-                // Добавляем время ТОЛЬКО в рабочем режиме
                 if (CurrentTaskItem.IsWork)
                 {
-                    CurrentTaskItem.TotalWorkTime += 100;
-                    // Обновляем отображение общего времени
                     Device.BeginInvokeOnMainThread(() =>
                     {
-                        TotalTimeLabel.Text = TimeSpan.FromMilliseconds(CurrentTaskItem.TotalWorkTime).ToString(@"mm\:ss");
+                        CurrentTaskItem.TotalWorkTime += 100;
+
+                        SaveCurrentTaskToDb();
+
+                        PomodoroTimerLabel.Text = TimeSpan
+                            .FromMilliseconds(CurrentTaskItem.TimeRemaining)
+                            .ToString(@"mm\:ss");
+                        TotalTimeLabel.Text = TimeSpan
+                            .FromMilliseconds(CurrentTaskItem.TotalWorkTime)
+                            .ToString(@"hh\:mm\:ss");
                     });
                 }
-
-                // Сохраняем данные в базе данных на каждом шаге
-                App.Db.SaveItem(CurrentTaskItem);
-
-                // Обновляем UI
-                Device.BeginInvokeOnMainThread(() =>
+                else
                 {
-                    PomodoroTimerLabel.Text = TimeSpan.FromMilliseconds(CurrentTaskItem.TimeRemaining).ToString(@"mm\:ss");
-                    PomodoroStartButton.IsEnabled = true;
-                });
-            }
-
-            // Обработка завершения интервала
-            if (CurrentTaskItem.TimeRemaining <= 0 && CurrentTaskItem.IsRunning)
-            {
-                CurrentTaskItem.IsRunning = false;
-                PomodoroStartButtonImage.Source = PicSource("play.png");
-
-                // Переключаем режим (работа/отдых)
-                CurrentTaskItem.IsWork = !CurrentTaskItem.IsWork;
-
-                // Устанавливаем новое время в зависимости от режима
-                CurrentTaskItem.TimeRemaining = CurrentTaskItem.IsWork
-                    ? CurrentTaskItem.WorkDuration
-                    : CurrentTaskItem.RestDuration;
-
-                
-
-                // Сохраняем задачу в БД (чтобы сохранить TotalWorkTime)
-                App.Db.SaveItem(CurrentTaskItem);
-
-                // Обновляем UI
-                Device.BeginInvokeOnMainThread(async () =>
-                {
-                    PomodoroTimerLabel.Text = TimeSpan.FromMilliseconds(CurrentTaskItem.TimeRemaining).ToString(@"mm\:ss");
-
-                    // Показываем уведомление
-                    string message = CurrentTaskItem.IsWork ? "Время работать!" : "Время отдыхать!";
-                    await DisplayAlert("Помодоро", message, "OK");
-                });
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        PomodoroTimerLabel.Text = TimeSpan
+                            .FromMilliseconds(CurrentTaskItem.TimeRemaining)
+                            .ToString(@"mm\:ss");
+                    });
+                }
             }
         }
 
 
-        private async void PomodoroResetButton_Clicked(object sender, EventArgs e)
+        private void PomodoroResetButton_Clicked(
+            object sender, EventArgs e)
         {
-            if (CurrentTaskItem == null)
-            {
-                await DisplayAlert("Ошибка", "Выберите задачу", "OK");
-                return;
-            }
-
-            // Сбрасываем таймер
+            if (CurrentTaskItem == null) return;
             CurrentTaskItem.IsRunning = false;
             CurrentTaskItem.IsWork = true;
             CurrentTaskItem.TimeRemaining = CurrentTaskItem.WorkDuration;
             PomodoroStartButtonImage.Source = PicSource("play.png");
-            
-            PomodoroTimerLabel.Text = TimeSpan.FromMilliseconds(CurrentTaskItem.TimeRemaining).ToString(@"mm\:ss");
-
-            // Сохраняем данные в базе данных после сброса
+            PomodoroTimerLabel.Text =
+                TimeSpan.FromMilliseconds(
+                    CurrentTaskItem.TimeRemaining)
+                .ToString(@"mm\:ss");
             App.Db.SaveItem(CurrentTaskItem);
         }
 
         #endregion
 
         #region FreeTimer Logic
+
         private async void FreeStartButton_Clicked(object sender, EventArgs e)
         {
             if (CurrentTaskItem == null)
@@ -309,8 +268,8 @@ namespace Hobby
                 _isFreeTimerRunning = false;
                 FreeStartButtonImage.Source = PicSource("play.png");
 
-                // Сохраняем данные в базе данных, когда останавливаем таймер
-                App.Db.SaveItem(CurrentTaskItem);
+                // Сохраняем при остановке таймера
+                Device.BeginInvokeOnMainThread(() => SaveCurrentTaskToDb());
                 return;
             }
 
@@ -322,78 +281,144 @@ namespace Hobby
                 await Task.Delay(100);
                 _freeTimeRemaining += 100;
 
-                // Добавляем время ТОЛЬКО когда задача в рабочем режиме
                 if (CurrentTaskItem.IsWork)
-                    CurrentTaskItem.TotalWorkTime += 100;
-
-                Device.BeginInvokeOnMainThread(() =>
                 {
-                    FreeTimerLabel.Text = TimeSpan.FromMilliseconds(_freeTimeRemaining).ToString(@"mm\:ss");
-                    TotalTimeLabel.Text = TimeSpan.FromMilliseconds(CurrentTaskItem.TotalWorkTime).ToString(@"mm\:ss");
-                });
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        CurrentTaskItem.TotalWorkTime += 100;
 
-                // Сохраняем данные в базе данных после каждого обновления
-                App.Db.SaveItem(CurrentTaskItem);
+                        SaveCurrentTaskToDb();
+
+                        FreeTimerLabel.Text = TimeSpan
+                            .FromMilliseconds(_freeTimeRemaining)
+                            .ToString(@"mm\:ss");
+                        TotalTimeLabel.Text = TimeSpan
+                            .FromMilliseconds(CurrentTaskItem.TotalWorkTime)
+                            .ToString(@"hh\:mm\:ss");
+                    });
+                }
+                else
+                {
+                    Device.BeginInvokeOnMainThread(() =>
+                    {
+                        FreeTimerLabel.Text = TimeSpan
+                            .FromMilliseconds(_freeTimeRemaining)
+                            .ToString(@"mm\:ss");
+                    });
+                }
+
+                var dbItem = App.Db.GetItems().FirstOrDefault(i => i.ID == CurrentTaskItem.ID);
+                Log($"FreeTimer старт. ID из БД: {CurrentTaskItem.ID}");
+                Log($"FreeTimer старт. TotalWorkTime из БД: {CurrentTaskItem.TotalWorkTime}");
             }
         }
 
-
-        private void FreeResetButton_Clicked(object sender, EventArgs e)
+        private void FreeResetButton_Clicked(
+            object sender, EventArgs e)
         {
+            if (CurrentTaskItem == null) return;
             _isFreeTimerRunning = false;
             _freeTimeRemaining = 0;
             FreeStartButtonImage.Source = PicSource("play.png");
             FreeTimerLabel.Text = "00:00";
-
-            // Сохраняем данные в базе данных после сброса
-            App.Db.SaveItem(CurrentTaskItem);
         }
 
-
-        private void ResetTotalButton_Clicked(object sender, EventArgs e)
+        private void ResetTotalButton_Clicked(
+            object sender, EventArgs e)
         {
-            if (CurrentTaskItem != null)
-            {
-                CurrentTaskItem.TotalWorkTime = 0;
-                App.Db.SaveItem(CurrentTaskItem);
-                TotalTimeLabel.Text = "00:00";
-                // Сохраняем изменения в БД
-                App.Db.SaveItem(CurrentTaskItem);
-            }
+            if (CurrentTaskItem == null) return;
+            CurrentTaskItem.TotalWorkTime = 0;
+            TotalTimeLabel.Text = "00:00:00";
         }
-
 
         #endregion
 
+        private void SelectedMode_Clicked(object sender, EventArgs e)
+        {
+            PickerBackground.IsVisible = !PickerBackground.IsVisible;
+            UnSelectedMode.IsVisible = !UnSelectedMode.IsVisible;
+            ModePickerArrow.Source = PickerBackground.IsVisible
+                ? PicSource("arrowUp.png")
+                : PicSource("arrowDown.png");
+        }
+
+        private void UnSelectedMode_Clicked(object sender, EventArgs e)
+        {
+            string tmp = SelectedMode.Text;
+            SelectedMode.Text = UnSelectedMode.Text;
+            UnSelectedMode.Text = tmp;
+            PomodoroContainer.IsVisible = !PomodoroContainer.IsVisible;
+            FreeTimerContainer.IsVisible = !FreeTimerContainer.IsVisible;
+        }
+
+        private ImageSource PicSource(string s) =>
+            ImageSource.FromResource("Hobby.Images." + s);
+
+        private async void OnShowMenuClicked(object sender, EventArgs e)
+        {
+            Overlay.IsVisible = true;
+            await Overlay.FadeTo(0.7, 250);
+            await BottomMenu.TranslateTo(0, 0, 300, Easing.SinOut);
+        }
+
+        private async void OnCloseMenuTapped(object sender, EventArgs e)
+        {
+            await BottomMenu.TranslateTo(0, 500, 300, Easing.SinIn);
+            await Overlay.FadeTo(0, 250);
+            Overlay.IsVisible = false;
+        }
+
+        private async void DeleteTask(int taskId)
+        {
+            bool ok = await DisplayAlert("Удаление", "Удалить задачу?", "Да", "Нет");
+            if (!ok) return;
+            App.Db.DeleteItem(taskId);
+            var toRemove = Tasks.FirstOrDefault(t => t.ID == taskId);
+            if (toRemove != null)
+                Tasks.Remove(toRemove);
+            TaskItemsCollection.HeightRequest = Tasks.Count * 90;
+        }
+
         private async void ConfirmNew_Clicked(object sender, EventArgs e)
         {
-            if (WorkDurationEntryMinutes.Text is null || RestDurationEntryMinutes.Text is null 
-                || WorkDurationEntrySeconds.Text is null || RestDurationEntrySeconds.Text is null
-                || NameEntry.Text is null)
-                await DisplayAlert(title: "Ошибка", message: "Поле не должно быть пустым", cancel: "ОК");
-            else if (int.TryParse(WorkDurationEntrySeconds.Text, out var workSec) 
-                && int.TryParse(RestDurationEntrySeconds.Text, out var restSec)
-                && int.TryParse(WorkDurationEntryMinutes.Text, out var workMin)
-                && int.TryParse(RestDurationEntryMinutes.Text, out var restMin))
+            if (WorkDurationEntryMinutes.Text == null ||
+                RestDurationEntryMinutes.Text == null ||
+                WorkDurationEntrySeconds.Text == null ||
+                RestDurationEntrySeconds.Text == null ||
+                NameEntry.Text == null)
             {
-                App.Db.SaveItem(
-                    new DbItem
-                    {
-                        Name = NameEntry.Text,
-                        WorkDuration = (workSec + workMin * 60) * 1000,
-                        RestDuration = (restSec + restMin * 60) * 1000,
-                    }
-                    );
-                OnCloseMenuTapped(null, null);
+                await DisplayAlert("Ошибка", "Поле не должно быть пустым", "ОК");
+                return;
+            }
+
+            if (int.TryParse(WorkDurationEntryMinutes.Text, out int wMin) &&
+                int.TryParse(WorkDurationEntrySeconds.Text, out int wSec) &&
+                int.TryParse(RestDurationEntryMinutes.Text, out int rMin) &&
+                int.TryParse(RestDurationEntrySeconds.Text, out int rSec))
+            {
+                var newItem = new DbItem
+                {
+                    Name = NameEntry.Text,
+                    WorkDuration = (wMin * 60 + wSec) * 1000,
+                    RestDuration = (rMin * 60 + rSec) * 1000,
+                    TimeRemaining = (wMin * 60 + wSec) * 1000,
+                    TotalWorkTime = 0
+                };
+                App.Db.SaveItem(newItem);
+                await BottomMenu.TranslateTo(0, 500, 300, Easing.SinIn);
+                await Overlay.FadeTo(0, 250);
+                Overlay.IsVisible = false;
                 UpdateTasksFromDB();
                 NameEntry.Text = "";
                 WorkDurationEntryMinutes.Text = "25";
-                RestDurationEntryMinutes.Text = "5";
                 WorkDurationEntrySeconds.Text = "00";
+                RestDurationEntryMinutes.Text = "5";
                 RestDurationEntrySeconds.Text = "00";
             }
             else
-                await DisplayAlert(title: "Ошибка", message: "Неправильные значения ввода", cancel: "ОК");
+            {
+                await DisplayAlert("Ошибка", "Неправильные значения ввода", "ОК");
+            }
         }
     }
 }

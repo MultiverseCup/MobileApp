@@ -1,8 +1,9 @@
 ﻿using Hobby.DataBase;
 using System;
+using System.IO;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using System.IO;
+
 namespace Hobby
 {
     public partial class App : Application
@@ -15,26 +16,28 @@ namespace Hobby
                 if (db == null)
                     db = new DB(Path.Combine(
                         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                        "database.sqlite3")); // Путь где создастся бд
+                        "database.sqlite3"));
                 return db;
             }
         }
-        public App ()
+
+        public App()
         {
             InitializeComponent();
-            
             MainPage = new NavigationPage(new MainPage());
         }
 
-        protected override void OnStart ()
+        protected override void OnStart()
         {
         }
 
-        protected override void OnSleep ()
+        protected override void OnSleep()
         {
+            base.OnSleep();
+            MessagingCenter.Send(this, "AppGoingToSleep");
         }
 
-        protected override void OnResume ()
+        protected override void OnResume()
         {
         }
     }
