@@ -23,7 +23,7 @@
                     BackgroundImageSource = "{local:ImageResource Hobby.Images.bg.jpg}"
         
                     />
-    <local:Purposes  IconImageSource= "{local:ImageResource Hobby.Images.checkcircle.png}"
+    <local:PurposesPage  IconImageSource= "{local:ImageResource Hobby.Images.checkcircle.png}"
                     BackgroundImageSource = "{local:ImageResource Hobby.Images.bg1.jpg}"
                     
 />

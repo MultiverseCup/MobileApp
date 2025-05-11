@@ -6,6 +6,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Hobby.DataBase;
 using SQLite;
+using System.Diagnostics;
 
 namespace Hobby
 {
@@ -31,14 +32,6 @@ namespace Hobby
         private bool _isFreeTimerRunning;
         private int _freeTimeRemaining;
 
-        void Log(string message)
-        {
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                DebugConsole.Text += $"[{DateTime.Now:HH:mm:ss}] {message}\n";
-            });
-        }
-
         private void SaveCurrentTaskToDb()
         {
             try
@@ -60,11 +53,10 @@ namespace Hobby
                 };
 
                 App.Db.SaveItem(dbItem);
-                Log($"Сохранено: ID={dbItem.ID}, Total={dbItem.TotalWorkTime}");
             }
             catch (Exception ex)
             {
-                Log($"Ошибка сохранения: {ex.Message}");
+                Debug.WriteLine(ex.Message);
             }
         }
 
@@ -75,7 +67,6 @@ namespace Hobby
 
             // Дебаг-консоль: выводим список колонок БД
             var cols = App.Db.GetColumns();
-            Log("DB columns: " + string.Join(", ", cols));
 
             LoadInitialData();
             FreeTimerContainer.IsVisible = false;
@@ -191,49 +182,65 @@ namespace Hobby
 
             if (CurrentTaskItem.IsRunning)
             {
+                // Остановка таймера
                 CurrentTaskItem.IsRunning = false;
                 PomodoroStartButtonImage.Source = PicSource("play.png");
 
-                // Сохраняем при остановке
-                Device.BeginInvokeOnMainThread(() => SaveCurrentTaskToDb());
+                SaveCurrentTaskToDb();
                 return;
             }
 
+            // Запуск таймера
             CurrentTaskItem.IsRunning = true;
             PomodoroStartButtonImage.Source = PicSource("pause.png");
 
-            while (CurrentTaskItem.IsRunning && CurrentTaskItem.TimeRemaining > 0)
+            while (CurrentTaskItem.IsRunning)
             {
+                if (CurrentTaskItem.TimeRemaining <= 0)
+                {
+                    // Смена режима: остановка и уведомление
+                    CurrentTaskItem.IsRunning = false;
+
+                    CurrentTaskItem.IsWork = !CurrentTaskItem.IsWork;
+                    CurrentTaskItem.TimeRemaining = CurrentTaskItem.IsWork
+                        ? CurrentTaskItem.WorkDuration
+                        : CurrentTaskItem.RestDuration;
+
+                    string alertTitle = CurrentTaskItem.IsWork ? "Пора работать!" : "Пора отдыхать!";
+                    await Device.InvokeOnMainThreadAsync(async () =>
+                    {
+                        await DisplayAlert("Время!", alertTitle, "OK");
+                    });
+
+                    PomodoroStartButtonImage.Source = PicSource("play.png");
+
+                    SaveCurrentTaskToDb();
+                    break; // выходим из цикла, ждём следующего нажатия кнопки
+                }
+
                 await Task.Delay(100);
                 CurrentTaskItem.TimeRemaining -= 100;
 
-                if (CurrentTaskItem.IsWork)
+                Device.BeginInvokeOnMainThread(() =>
                 {
-                    Device.BeginInvokeOnMainThread(() =>
+                    PomodoroTimerLabel.Text = TimeSpan
+                        .FromMilliseconds(CurrentTaskItem.TimeRemaining)
+                        .ToString(@"mm\:ss");
+
+                    if (CurrentTaskItem.IsWork)
                     {
                         CurrentTaskItem.TotalWorkTime += 100;
 
-                        SaveCurrentTaskToDb();
-
-                        PomodoroTimerLabel.Text = TimeSpan
-                            .FromMilliseconds(CurrentTaskItem.TimeRemaining)
-                            .ToString(@"mm\:ss");
                         TotalTimeLabel.Text = TimeSpan
                             .FromMilliseconds(CurrentTaskItem.TotalWorkTime)
                             .ToString(@"hh\:mm\:ss");
-                    });
-                }
-                else
-                {
-                    Device.BeginInvokeOnMainThread(() =>
-                    {
-                        PomodoroTimerLabel.Text = TimeSpan
-                            .FromMilliseconds(CurrentTaskItem.TimeRemaining)
-                            .ToString(@"mm\:ss");
-                    });
-                }
+                    }
+
+                    SaveCurrentTaskToDb();
+                });
             }
         }
+
 
 
         private void PomodoroResetButton_Clicked(
@@ -307,9 +314,8 @@ namespace Hobby
                     });
                 }
 
-                var dbItem = App.Db.GetItems().FirstOrDefault(i => i.ID == CurrentTaskItem.ID);
-                Log($"FreeTimer старт. ID из БД: {CurrentTaskItem.ID}");
-                Log($"FreeTimer старт. TotalWorkTime из БД: {CurrentTaskItem.TotalWorkTime}");
+
+
             }
         }
 

@@ -1,13 +1,140 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Hobby.Purposes">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ContentPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:local="clr-namespace:Hobby;assembly=Hobby"
+    x:Class="Hobby.PurposesPage"
+    Title="Планировщик задач">
+
     <ContentPage.Content>
-        <StackLayout>
-            <Label Text="Цели" FontSize="40"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
-                            
-        </StackLayout>
+        <Grid>
+
+            <!-- Основной контент -->
+            <StackLayout Padding="20">
+
+                <Label Text="План на сегодня"
+               FontSize="24"
+               FontAttributes="Bold"
+               Margin="0,0,0,10"/>
+
+                <CollectionView
+            x:Name="ScheduleCollection"
+            ItemsSource="{Binding ScheduleItems}"
+            SelectionMode="None"
+            HeightRequest="200"
+            Margin="0,0,0,20">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame CornerRadius="10"
+                     Padding="10"
+                     Margin="0,0,0,10"
+                     BackgroundColor="#F5F5F5">
+                                <Grid ColumnSpacing="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackLayout Grid.Column="0" VerticalOptions="Center">
+                                        <Label Text="{Binding Deadline, StringFormat='{0:dd MMM}'}"
+                           FontSize="16"
+                           FontAttributes="Bold"/>
+                                        <Label Text="{Binding RemainingTime, StringFormat='● {0:F1} ч'}"
+                           FontSize="14"
+                           TextColor="Gray"/>
+                                    </StackLayout>
+
+                                    <StackLayout Grid.Column="1" Spacing="4">
+                                        <Label Text="{Binding TaskName}"
+                           FontSize="16"
+                           LineBreakMode="TailTruncation"/>
+                                    </StackLayout>
+
+                                    <Frame Grid.Column="2"
+                         Padding="6"
+                         BackgroundColor="#FFE0B2"
+                         VerticalOptions="Center">
+                                        <Label Text="{Binding PlannedHours, StringFormat='{0:F1} ч'}"
+                           FontSize="14"
+                           FontAttributes="Bold"/>
+                                    </Frame>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Grid HorizontalOptions="Center">
+                    <Image Source="{local:ImageResource Hobby.Images.pluscircle.png}"
+                 WidthRequest="50" HeightRequest="50"/>
+                    <Button BackgroundColor="Transparent"
+                  WidthRequest="50" HeightRequest="50"
+                  Clicked="OnShowMenuClicked"/>
+                </Grid>
+
+            </StackLayout>
+
+            <!-- Затемненный фон для попапа -->
+            <BoxView x:Name="Overlay"
+               BackgroundColor="#80000000"
+               Opacity="0"
+               IsVisible="False"
+               Grid.RowSpan="1"/>
+
+            <!-- Попап, выезжающий снизу -->
+            <Grid x:Name="BottomMenu"
+            Padding="0"
+            VerticalOptions="End"
+            TranslationY="600">
+                <!-- скрыт по умолчанию -->
+                <Frame BackgroundColor="White"
+               CornerRadius="20"
+               Margin="10"
+               HeightRequest="400">
+                    <!-- увеличили высоту попапа -->
+                    <ScrollView>
+                        <StackLayout Padding="20" Spacing="15">
+
+                            <Label Text="Добавить план"
+                     FontSize="22"
+                     FontAttributes="Bold"/>
+
+                            <Label Text="Занятие" FontSize="18"/>
+                            <Picker x:Name="TaskPicker"
+                      Title="Выберите занятие"/>
+
+                            <Label Text="Требуемое время (часы)" FontSize="18"/>
+                            <Entry x:Name="PlannedTimeEntry"
+                     Keyboard="Numeric"
+                     Placeholder="1.5"
+                     FontSize="16"/>
+
+                            <Label Text="Крайний срок" FontSize="18"/>
+                            <DatePicker x:Name="DeadlineChooser"
+                          MinimumDate="{x:Static sys:DateTime.Today}"
+                          Format="D"/>
+
+                            <Button Text="Добавить"
+                      BackgroundColor="#B55757"
+                      TextColor="White"
+                      CornerRadius="10"
+                      FontSize="18"
+                      Clicked="OnConfirmAddSchedule"/>
+
+                            <Button Text="Отмена"
+                      BackgroundColor="Gray"
+                      TextColor="White"
+                      CornerRadius="10"
+                      FontSize="18"
+                      Clicked="OnCloseMenuTapped"/>
+
+                        </StackLayout>
+                    </ScrollView>
+                </Frame>
+            </Grid>
+
+        </Grid>
     </ContentPage.Content>
 </ContentPage>
