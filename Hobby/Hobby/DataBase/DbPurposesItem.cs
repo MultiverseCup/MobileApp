@@ -17,6 +17,7 @@ namespace Hobby.DataBase
         // Крайний срок (DateTime в виде строки)
         public string Deadline { get; set; }
 
-        public bool IsDone { get; set; }
+        // Снимок TotalWorkTime в момент добавления в план
+        public int InitialTotalTime { get; set; }
     }
 }

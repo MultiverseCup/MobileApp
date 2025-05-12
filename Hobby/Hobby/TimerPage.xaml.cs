@@ -32,34 +32,6 @@ namespace Hobby
         private bool _isFreeTimerRunning;
         private int _freeTimeRemaining;
 
-        private void SaveCurrentTaskToDb()
-        {
-            try
-            {
-                // Создаем копию ВСЕХ полей из TaskItem в DbItem
-                var dbItem = new DbItem
-                {
-                    ID = CurrentTaskItem.ID,
-                    Name = CurrentTaskItem.Name,
-                    WorkDuration = CurrentTaskItem.WorkDuration,
-                    RestDuration = CurrentTaskItem.RestDuration,
-                    TimeRemaining = CurrentTaskItem.TimeRemaining,
-                    TotalWorkTime = CurrentTaskItem.TotalWorkTime,
-
-                    // Эти поля должны быть в DbItem:
-                    WorkTimePerDay = CurrentTaskItem.WorkTimePerDay,
-                    Schedule = CurrentTaskItem.Schedule,
-                    BoxColor = CurrentTaskItem.BoxColor
-                };
-
-                App.Db.SaveItem(dbItem);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-            }
-        }
-
         public TimerPage()
         {
             InitializeComponent();
@@ -96,6 +68,32 @@ namespace Hobby
             MessagingCenter.Unsubscribe<App>(this, "AppGoingToSleep");
             if (CurrentTaskItem != null)
                 App.Db.SaveItem(CurrentTaskItem);
+        }
+
+        /// <summary>
+        /// Сохраняет текущую задачу в БД и шлёт уведомление о том, что TotalWorkTime изменилось.
+        /// </summary>
+        private void SaveCurrentTaskToDb()
+        {
+            if (CurrentTaskItem == null) return;
+
+            var dbItem = new DbItem
+            {
+                ID = CurrentTaskItem.ID,
+                Name = CurrentTaskItem.Name,
+                WorkDuration = CurrentTaskItem.WorkDuration,
+                RestDuration = CurrentTaskItem.RestDuration,
+                TimeRemaining = CurrentTaskItem.TimeRemaining,
+                TotalWorkTime = CurrentTaskItem.TotalWorkTime,
+                WorkTimePerDay = CurrentTaskItem.WorkTimePerDay,
+                Schedule = CurrentTaskItem.Schedule,
+                BoxColor = CurrentTaskItem.BoxColor
+            };
+
+            App.Db.SaveItem(dbItem);
+
+            // Отправляем сообщение всем, кто подписался на TimerPage
+            MessagingCenter.Send(Application.Current as App, "TaskTimeChanged");
         }
 
         private void RefreshAllTimersInUI()
