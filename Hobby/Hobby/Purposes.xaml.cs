@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Hobby.DataBase;
 using Xamarin.Forms;
@@ -44,6 +45,18 @@ namespace Hobby
                 Device.BeginInvokeOnMainThread(UpdateCompletionStates));
             LoadTasks();
             LoadSchedule(); // создаём VM один раз
+
+            MessagingCenter.Subscribe<TimerPage, int>(this, "TaskDeleted", (sender, deletedTaskId) =>
+            {
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    // Удаляем все элементы планировщика, привязанные к этой задаче
+                    var toRemove = ScheduleItems.Where(si => si.TaskID == deletedTaskId).ToList();
+                    foreach (var vm in toRemove)
+                        ScheduleItems.Remove(vm);
+                });
+            });
+
         }
 
         void OnItemTapped(ScheduleItemViewModel item)
@@ -73,16 +86,25 @@ namespace Hobby
             var list = App.Db.GetPurposesItems();
             foreach (var item in list)
             {
+                // ищем задачу
                 var task = _tasks.FirstOrDefault(t => t.ID == item.TaskID);
-                int elapsed = (task?.TotalWorkTime ?? 0) - item.InitialTotalTime;
+                if (task == null)
+                {
+                    // если хотите сразу подчистить «мусор» из БД:
+                    App.Db.DeletePurposesItemAsync(item.ID).Wait();
+                    continue;
+                }
+
+                long elapsed = (task.TotalWorkTime) - item.InitialTotalTime;
                 if (elapsed < 0) elapsed = 0;
 
                 ScheduleItems.Add(new ScheduleItemViewModel
                 {
                     ID = item.ID,
-                    TaskName = task?.Name ?? "<удалена>",
-                    PlannedHours = item.PlannedTime / 3600000.0,
-                    ElapsedHours = elapsed / 3600000.0,
+                    TaskID = item.TaskID,
+                    TaskName = task.Name,
+                    PlannedHours = item.PlannedTime / 3_600_000.0,
+                    ElapsedHours = elapsed / 3_600_000.0,
                     Deadline = DateTime.Parse(item.Deadline),
                     IsCompleted = elapsed >= item.PlannedTime
                 });
@@ -131,27 +153,45 @@ namespace Hobby
                 return;
             }
 
+            const double maxHours = int.MaxValue / 3600000.0; // ≈596.5
+            if (hours > maxHours)
+            {
+                await DisplayAlert(
+                    "Ошибка",
+                    $"Слишком большое время (максимум {maxHours:F1} ч).",
+                    "OK");
+                return;
+            }
+
             var picked = _tasks[TaskPicker.SelectedIndex];
+            var plannedMs = (int)(hours * 3_600_000);
+
             var item = new DbPurposesItem
             {
                 TaskID = picked.ID,
-                PlannedTime = (int)(hours * 3600_000),
+                PlannedTime = plannedMs,
                 Deadline = DeadlineChooser.Date.ToString("o"),
                 InitialTotalTime = picked.TotalWorkTime
             };
 
-            // 1) Сохраняем новый план
             await App.Db.SavePurposesItemAsync(item);
 
-            // 2) Обновляем список сразу же
             LoadSchedule();
 
-            // 3) Сброс формы
             PlannedTimeEntry.Text = "";
             DeadlineChooser.Date = DateTime.Today;
 
-            // 4) Закрываем попап
-            OnCloseMenuTapped(this, EventArgs.Empty);
+            // вместо await OnCloseMenuTapped(...)
+            await ClosePopupAsync();
+        }
+
+
+        // Вызывается из кода, чтобы закрыть попап с await
+        async Task ClosePopupAsync()
+        {
+            await BottomMenu.TranslateTo(0, 600, 300, Easing.SinIn);
+            await Overlay.FadeTo(0, 200);
+            Overlay.IsVisible = false;
         }
 
 
@@ -163,7 +203,7 @@ namespace Hobby
                 var item = list.FirstOrDefault(i => i.ID == vm.ID);
                 if (item == null) continue;
                 var task = _tasks.FirstOrDefault(t => t.ID == item.TaskID);
-                int elapsed = (task?.TotalWorkTime ?? 0) - item.InitialTotalTime;
+                long elapsed = (task?.TotalWorkTime ?? 0) - item.InitialTotalTime;
                 if (elapsed < 0) elapsed = 0;
                 bool shouldComplete = elapsed >= item.PlannedTime;
                 // просто меняем свойство, которое уведомит UI
@@ -175,13 +215,19 @@ namespace Hobby
     public class ScheduleItemViewModel : INotifyPropertyChanged
     {
         public int ID { get; set; }
+        public int TaskID { get; set; }
         public string TaskName { get; set; }
         public double PlannedHours { get; set; }
         public double ElapsedHours { get; set; }
         public DateTime Deadline { get; set; }
 
         public bool IsCompleted { get; set; }
-        public bool IsOverdue => !IsCompleted && Deadline < DateTime.Now;
+        /// <summary>
+        /// Истек ли дедлайн (включительно до дня Deadline)?
+        /// </summary>
+        public bool IsOverdue =>
+            !IsCompleted
+            && DateTime.Now.Date > Deadline.Date;
 
         public bool IsRemovable => IsCompleted || IsOverdue;
 

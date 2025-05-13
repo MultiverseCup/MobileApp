@@ -1,5 +1,4 @@
 ﻿using SQLite;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +7,6 @@ namespace Hobby.DataBase
 {
     public class DB
     {
-        // синхронная и асинхронная связи
         private readonly SQLiteConnection _syncDb;
         private readonly SQLiteAsyncConnection _asyncDb;
 
@@ -17,83 +15,53 @@ namespace Hobby.DataBase
             _syncDb = new SQLiteConnection(dbPath);
             _asyncDb = new SQLiteAsyncConnection(dbPath);
 
-            // создаём таблицы, если их нет
+            // создаём таблицы
             _syncDb.CreateTable<DbItem>();
             _syncDb.CreateTable<DbPurposesItem>();
-
             _asyncDb.CreateTableAsync<DbItem>().Wait();
             _asyncDb.CreateTableAsync<DbPurposesItem>().Wait();
 
-            // миграция: добавляем InitialTotalTime, если его нет
-            var cols = _syncDb.GetTableInfo(nameof(DbPurposesItem))
-                              .Select(c => c.Name)
-                              .ToList();
+            // миграция InitialTotalTime
+            var cols = _syncDb.GetTableInfo(nameof(DbPurposesItem)).Select(c => c.Name).ToList();
             if (!cols.Contains(nameof(DbPurposesItem.InitialTotalTime)))
             {
                 _syncDb.Execute(
-                    $"ALTER TABLE {nameof(DbPurposesItem)} " +
-                    $"ADD COLUMN {nameof(DbPurposesItem.InitialTotalTime)} INTEGER DEFAULT 0;");
+                  $"ALTER TABLE {nameof(DbPurposesItem)} " +
+                  $"ADD COLUMN {nameof(DbPurposesItem.InitialTotalTime)} INTEGER DEFAULT 0;"
+                );
             }
         }
 
-        // -------------------------
-        // Методы для PomodoroPage
-        // -------------------------
+        public int DeletePurposesForTask(int taskId) => _syncDb.Execute(
+        "DELETE FROM DbPurposesItem WHERE TaskID = ?",
+        taskId);
 
-        // Синхронное получение всех задач
-        public List<DbItem> GetItems() =>
-            _syncDb.Table<DbItem>().ToList();
-
-        // Синхронное сохранение/обновление DbItem
+        // PomodoroPage
+        public List<DbItem> GetItems() => _syncDb.Table<DbItem>().ToList();
         public int SaveItem(DbItem item) =>
-            item.ID != 0
-                ? _syncDb.Update(item)
-                : _syncDb.Insert(item);
-
-        // Синхронное удаление DbItem
-        public int DeleteItem(int id) =>
-            _syncDb.Delete<DbItem>(id);
-
-        // Список колонок DbItem (для дебага)
+            item.ID != 0 ? _syncDb.Update(item) : _syncDb.Insert(item);
+        public int DeleteItem(int id) => _syncDb.Delete<DbItem>(id);
         public List<string> GetColumns() =>
-            _syncDb
-              .GetTableInfo(nameof(DbItem))
-              .Select(c => c.Name)
-              .ToList();
+            _syncDb.GetTableInfo(nameof(DbItem)).Select(c => c.Name).ToList();
 
-        // --------------------------------
-        // Методы для PurposesPage (Planner)
-        // --------------------------------
-
-        // Синхронно получить все записи планировщика
+        // PurposesPage
         public List<DbPurposesItem> GetPurposesItems() =>
             _syncDb.Table<DbPurposesItem>().ToList();
 
-        // Асинхронно сохранить/обновить запись планировщика
         public Task<int> SavePurposesItemAsync(DbPurposesItem item)
         {
-            if (item.ID == 0)
-                return _asyncDb.InsertAsync(item);
-            else
-                return _asyncDb.UpdateAsync(item);
+            return item.ID == 0
+                ? _asyncDb.InsertAsync(item)
+                : _asyncDb.UpdateAsync(item);
         }
 
-        // Асинхронно удалить запись планировщика
         public Task<int> DeletePurposesItemAsync(int id) =>
             _asyncDb.DeleteAsync<DbPurposesItem>(id);
 
-        // Синхронно найти все записи планировщика по ID задачи
         public List<DbPurposesItem> GetPurposesForTask(int taskId) =>
-            _syncDb
-              .Table<DbPurposesItem>()
-              .Where(s => s.TaskID == taskId)
-              .ToList();
+            _syncDb.Table<DbPurposesItem>().Where(s => s.TaskID == taskId).ToList();
 
-        // Дебаг: колонки таблицы планировщика
         public List<string> GetPurposesColumns() =>
-            _syncDb
-              .GetTableInfo(nameof(DbPurposesItem))
-              .Select(c => c.Name)
-              .ToList();
+            _syncDb.GetTableInfo(nameof(DbPurposesItem)).Select(c => c.Name).ToList();
     }
 }
