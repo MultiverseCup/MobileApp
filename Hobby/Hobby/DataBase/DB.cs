@@ -1,46 +1,67 @@
 ﻿using SQLite;
-using System;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Hobby.DataBase
 {
     public class DB
     {
-        private readonly SQLiteConnection _database;
+        private readonly SQLiteConnection _syncDb;
+        private readonly SQLiteAsyncConnection _asyncDb;
 
         public DB(string dbPath)
         {
-            _database = new SQLiteConnection(dbPath);
-            _database.CreateTable<DbItem>(); // Создаём таблицу, если её нет
+            _syncDb = new SQLiteConnection(dbPath);
+            _asyncDb = new SQLiteAsyncConnection(dbPath);
+
+            // создаём таблицы
+            _syncDb.CreateTable<DbItem>();
+            _syncDb.CreateTable<DbPurposesItem>();
+            _asyncDb.CreateTableAsync<DbItem>().Wait();
+            _asyncDb.CreateTableAsync<DbPurposesItem>().Wait();
+
+            // миграция InitialTotalTime
+            var cols = _syncDb.GetTableInfo(nameof(DbPurposesItem)).Select(c => c.Name).ToList();
+            if (!cols.Contains(nameof(DbPurposesItem.InitialTotalTime)))
+            {
+                _syncDb.Execute(
+                  $"ALTER TABLE {nameof(DbPurposesItem)} " +
+                  $"ADD COLUMN {nameof(DbPurposesItem.InitialTotalTime)} INTEGER DEFAULT 0;"
+                );
+            }
         }
 
-        // Получение всех элементов
-        public List<DbItem> GetItems()
+        public int DeletePurposesForTask(int taskId) => _syncDb.Execute(
+        "DELETE FROM DbPurposesItem WHERE TaskID = ?",
+        taskId);
+
+        // PomodoroPage
+        public List<DbItem> GetItems() => _syncDb.Table<DbItem>().ToList();
+        public int SaveItem(DbItem item) =>
+            item.ID != 0 ? _syncDb.Update(item) : _syncDb.Insert(item);
+        public int DeleteItem(int id) => _syncDb.Delete<DbItem>(id);
+        public List<string> GetColumns() =>
+            _syncDb.GetTableInfo(nameof(DbItem)).Select(c => c.Name).ToList();
+
+        // PurposesPage
+        public List<DbPurposesItem> GetPurposesItems() =>
+            _syncDb.Table<DbPurposesItem>().ToList();
+
+        public Task<int> SavePurposesItemAsync(DbPurposesItem item)
         {
-            return _database.Table<DbItem>().ToList();
+            return item.ID == 0
+                ? _asyncDb.InsertAsync(item)
+                : _asyncDb.UpdateAsync(item);
         }
 
-        // Сохранение (добавление или обновление)
-        public int SaveItem(DbItem item)
-        {
-            if (item.ID != 0)
-                return _database.Update(item);
-            else
-                return _database.Insert(item);
-        }
+        public Task<int> DeletePurposesItemAsync(int id) =>
+            _asyncDb.DeleteAsync<DbPurposesItem>(id);
 
-        // Удаление элемента по ID
-        public int DeleteItem(int id)
-        {
-            return _database.Delete<DbItem>(id); // Важно: передаём ID, а не объект
-        }
+        public List<DbPurposesItem> GetPurposesForTask(int taskId) =>
+            _syncDb.Table<DbPurposesItem>().Where(s => s.TaskID == taskId).ToList();
 
-        // Проверка, пуста ли БД
-        public bool IsEmpty()
-        {
-            return _database.Table<DbItem>().Count() == 0;
-        }
+        public List<string> GetPurposesColumns() =>
+            _syncDb.GetTableInfo(nameof(DbPurposesItem)).Select(c => c.Name).ToList();
     }
 }
