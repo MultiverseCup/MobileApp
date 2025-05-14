@@ -17,16 +17,14 @@
     
     <local:Shedule 
                     IconImageSource= "{local:ImageResource Hobby.Images.calendar.png}"
-        Title="Расписание"
- />                 
+ />
     <local:TimerPage 
                      IconImageSource = "{local:ImageResource Hobby.Images.clock.png}"
                     BackgroundImageSource = "{local:ImageResource Hobby.Images.bg.jpg}"
-         Title="Таймер"
+        
                     />
     <local:PurposesPage  IconImageSource= "{local:ImageResource Hobby.Images.checkcircle.png}"
                     BackgroundImageSource = "{local:ImageResource Hobby.Images.bg1.jpg}"
-                         
                     
 />
 
