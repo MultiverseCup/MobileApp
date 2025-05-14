@@ -4,7 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:tool="http://xamarin.com/schemas/2020/toolkit"
     xmlns:local="clr-namespace:Hobby;assembly=Hobby"
-    x:Class="Hobby.TimerPage">
+    x:Class="Hobby.TimerPage"
+    Title="Таймер">
 
     <ContentPage.Content>
         <Grid>
@@ -166,7 +167,8 @@
                             x:Name="ResetTotalButton"
                             Grid.Column="2"
                             BackgroundColor="Transparent"
-                            Clicked="ResetTotalButton_Clicked" />
+                            Clicked="ResetTotalButton_Clicked"
+                            VerticalOptions="Center" />
                     </Grid>
                     <Label
                         x:Name="TotalTimeLabel"
@@ -180,11 +182,11 @@
 
                 <!-- Общий список задач -->
                 <CollectionView
-                    x:Name="TaskItemsCollection"
-                    ItemsSource="{Binding Tasks}"
-                    HeightRequest="300"
-                    SelectionMode="Single"
-                    SelectionChanged="TaskItemsCollection_SelectionChanged">
+    x:Name="TaskItemsCollection"
+    ItemsSource="{Binding Tasks}"
+    HeightRequest="300"
+    SelectionMode="Single"
+    SelectionChanged="TaskItemsCollection_SelectionChanged">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Frame Padding="20,5,20,5" BackgroundColor="Transparent">
@@ -205,51 +207,78 @@
                                 <Frame CornerRadius="15">
                                     <Grid ColumnSpacing="10">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
+                                            <!-- Название -->
+                                            <ColumnDefinition Width="1.5*" />
+                                            <!-- Три столбца -->
+                                            <ColumnDefinition Width="4*" />
+                                            <!-- Удаление -->
                                             <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <StackLayout
-                                            Grid.Column="0"
-                                            HorizontalOptions="Start"
-                                            VerticalOptions="Center"
-                                            Orientation="Horizontal">
-                                            <Label
-                                                Text="{Binding Name}"
-                                                FontSize="25"
-                                                FontFamily="VisionRegular"
-                                                TextColor="Black"
-                                                VerticalOptions="Center" />
-                                            <Label
-                                                Text="{Binding DisplayWorkDuration}"
-                                                FontSize="20"
-                                                FontFamily="VisionRegular"
-                                                TextColor="Gray"
-                                                Margin="10,0,0,0"
-                                                VerticalOptions="Center" />
-                                            <Label
-                                                Text="{Binding DisplayRestDuration}"
-                                                FontSize="20"
-                                                FontFamily="VisionRegular"
-                                                TextColor="Gray"
-                                                VerticalOptions="Center" />
-                                        </StackLayout>
+
+                                        <!-- Название задачи -->
+                                        <Label
+                            Grid.Column="0"
+                            Text="{Binding Name}"
+                            FontSize="22"
+                            FontFamily="VisionRegular"
+                            TextColor="Black"
+                            VerticalOptions="Center" />
+
+                                        <!-- Блок Работа / Отдых / Всего -->
+                                        <Grid
+                            Grid.Column="1"
+                            VerticalOptions="Center"
+                            HorizontalOptions="StartAndExpand"
+                            Margin="0,0,10,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <!-- Заголовки -->
+                                            <Label Grid.Row="0" Grid.Column="0" Text="Работа" FontSize="12" HorizontalOptions="Center" />
+                                            <Label Grid.Row="0" Grid.Column="1" Text="Отдых" FontSize="12" HorizontalOptions="Center" />
+                                            <Label Grid.Row="0" Grid.Column="2" Text="Всего" FontSize="12" HorizontalOptions="Center" />
+
+                                            <!-- Значения (уменьшен шрифт) -->
+                                            <Label Grid.Row="1" Grid.Column="0"
+                                   Text="{Binding DisplayWorkDuration}"
+                                   FontSize="14"
+                                   HorizontalOptions="Center" />
+                                            <Label Grid.Row="1" Grid.Column="1"
+                                   Text="{Binding DisplayRestDuration}"
+                                   FontSize="14"
+                                   HorizontalOptions="Center" />
+                                            <Label Grid.Row="1" Grid.Column="2"
+                                   Text="{Binding DisplayTotalTime}"
+                                   FontSize="14"
+                                   HorizontalOptions="Center" />
+                                        </Grid>
+
+                                        <!-- Кнопка удаления -->
                                         <Image
-                                            Grid.Column="1"
-                                            Source="{local:ImageResource Hobby.Images.trash.png}" />
+                            Grid.Column="2"
+                            Source="{local:ImageResource Hobby.Images.trash.png}" />
                                         <Button
-                                            Grid.Column="1"
-                                            WidthRequest="20"
-                                            HeightRequest="20"
-                                            BackgroundColor="Transparent"
-                                            Command="{Binding DeleteCommand}"
-                                            HorizontalOptions="End"
-                                            VerticalOptions="Center" />
+                            Grid.Column="2"
+                            WidthRequest="20"
+                            HeightRequest="20"
+                            BackgroundColor="Transparent"
+                            Command="{Binding DeleteCommand}"
+                            HorizontalOptions="End"
+                            VerticalOptions="Center" />
                                     </Grid>
                                 </Frame>
                             </Frame>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
 
                 <!-- Кнопка добавления -->
                 <Grid Margin="10">
@@ -323,6 +352,7 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="80" />
                         </Grid.RowDefinitions>
+
                         <Label
                             Grid.Row="0"
                             Grid.Column="0"

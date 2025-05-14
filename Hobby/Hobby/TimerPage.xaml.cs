@@ -6,18 +6,53 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using Hobby.DataBase;
 using SQLite;
+using System.ComponentModel;
 
 namespace Hobby
 {
-    public class TaskItem : DbItem
+    public class TaskItem : DbItem, INotifyPropertyChanged
     {
         [Ignore] public Command DeleteCommand { get; set; }
-        public bool IsWork { get; set; } = true;
-        public bool IsRunning { get; set; }
+
+        private bool _isWork = true;
+        public bool IsWork
+        {
+            get => _isWork;
+            set { _isWork = value; OnPropertyChanged(nameof(IsWork)); }
+        }
+
+        private bool _isRunning;
+        public bool IsRunning
+        {
+            get => _isRunning;
+            set { _isRunning = value; OnPropertyChanged(nameof(IsRunning)); }
+        }
+
+        // Используем базовые поля WorkDuration и RestDuration из DbItem
         public string DisplayWorkDuration =>
             TimeSpan.FromMilliseconds(WorkDuration).ToString(@"mm\:ss");
         public string DisplayRestDuration =>
             TimeSpan.FromMilliseconds(RestDuration).ToString(@"mm\:ss");
+
+        // Новый свойство для отображения всего
+        public string DisplayTotalTime =>
+            TimeSpan.FromMilliseconds(TotalWorkTime).ToString(@"hh\:mm\:ss");
+
+        // Когда меняется TotalWorkTime, отсылаем PropertyChanged для DisplayTotalTime
+        public new long TotalWorkTime
+        {
+            get => base.TotalWorkTime;
+            set
+            {
+                base.TotalWorkTime = value;
+                OnPropertyChanged(nameof(TotalWorkTime));
+                OnPropertyChanged(nameof(DisplayTotalTime));
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string name) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
     [XamlCompilation(XamlCompilationOptions.Compile)]
@@ -37,12 +72,14 @@ namespace Hobby
             LoadInitialData();
             FreeTimerContainer.IsVisible = false;
 
+            // Сохраняем при уходе в фон
             MessagingCenter.Subscribe<App>(this, "AppGoingToSleep", _ =>
             {
                 if (CurrentTaskItem != null)
                     App.Db.SaveItem(CurrentTaskItem);
             });
         }
+
 
         protected override void OnAppearing()
         {
@@ -127,6 +164,7 @@ namespace Hobby
             RefreshAllTimersInUI();
         }
 
+
         #region Pomodoro
 
         async void PomodoroStartButton_Clicked(object sender, EventArgs e)
@@ -136,13 +174,17 @@ namespace Hobby
                 await DisplayAlert("Ошибка", "Выберите задачу", "OK");
                 return;
             }
+
             if (CurrentTaskItem.IsRunning)
             {
+                // остановка
                 CurrentTaskItem.IsRunning = false;
                 PomodoroStartButtonImage.Source = PicSource("play.png");
                 App.Db.SaveItem(CurrentTaskItem);
                 return;
             }
+
+            // запуск
             CurrentTaskItem.IsRunning = true;
             PomodoroStartButtonImage.Source = PicSource("pause.png");
 
@@ -151,7 +193,10 @@ namespace Hobby
                 await Task.Delay(100);
                 CurrentTaskItem.TimeRemaining -= 100;
                 if (CurrentTaskItem.IsWork)
+                {
+                    // при увеличении TotalWorkTime автоматически вызовется OnPropertyChanged
                     CurrentTaskItem.TotalWorkTime += 100;
+                }
                 Device.BeginInvokeOnMainThread(RefreshAllTimersInUI);
                 App.Db.SaveItem(CurrentTaskItem);
 
@@ -184,6 +229,7 @@ namespace Hobby
                 .ToString(@"mm\:ss");
             App.Db.SaveItem(CurrentTaskItem);
         }
+
 
         #endregion
 
@@ -228,6 +274,7 @@ namespace Hobby
             FreeTimerLabel.Text = "00:00";
         }
 
+
         void ResetTotalButton_Clicked(object sender, EventArgs e)
         {
             if (CurrentTaskItem == null) return;
@@ -236,11 +283,11 @@ namespace Hobby
             App.Db.SaveItem(CurrentTaskItem);
         }
 
+
         #endregion
 
         #region ModePicker
 
-        // <-- Вот эти два метода были пропущены в предыдущей версии
         void SelectedMode_Clicked(object sender, EventArgs e)
         {
             PickerBackground.IsVisible = !PickerBackground.IsVisible;
@@ -252,7 +299,6 @@ namespace Hobby
 
         void UnSelectedMode_Clicked(object sender, EventArgs e)
         {
-            // Меняем текст кнопок и переключаем контейнеры
             var tmp = SelectedMode.Text;
             SelectedMode.Text = UnSelectedMode.Text;
             UnSelectedMode.Text = tmp;
