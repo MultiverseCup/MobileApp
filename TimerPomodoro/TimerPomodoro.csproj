@@ -65,9 +65,19 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="PurposesPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="ShedulePage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="TimerPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="ViewModel\" />
 	</ItemGroup>
 
 </Project>

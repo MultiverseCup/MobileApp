@@ -4,16 +4,19 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:TimerPomodoro"
-    Shell.FlyoutBehavior="Disabled">
+    Shell.FlyoutBehavior="Disabled"
+    Shell.NavBarIsVisible="False"
+     >
 
     <TabBar>
-        <ShellContent Title="Главная" 
+        <ShellContent Title="Расписание" 
+              
+              ContentTemplate="{DataTemplate local:ShedulePage}"/>
+        <ShellContent Title="Таймер" 
                       
-                      ContentTemplate="{DataTemplate local:HomePage}" />
-
-        <ShellContent Title="Настройки" 
+                      ContentTemplate="{DataTemplate local:TimerPage}"/>
+        <ShellContent Title="Планировщик" 
                       
-                      ContentTemplate="{DataTemplate local:SettingsPage}" />
+                      ContentTemplate="{DataTemplate local:PurposesPage}" />
     </TabBar>
-
 </Shell>
