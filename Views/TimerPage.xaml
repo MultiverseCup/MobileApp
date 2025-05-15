@@ -2,15 +2,72 @@
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:PomodoroProject.ViewModels"
     x:Class="PomodoroProject.Views.TimerPage"
-    
-    BackgroundImageSource="bg.jpg"
-    Title="Timer">
+    Title="Timer"
+    BackgroundImageSource="bg.jpg">
 
-    <VerticalStackLayout>
-        <Label Text="Тут будет таймер"
-               HorizontalOptions="Center"
-               VerticalOptions="Center" />
-    </VerticalStackLayout>
+    <!-- Устанавливаем VM как BindingContext -->
+    <ContentPage.BindingContext>
+        <vm:TimerViewModel />
+    </ContentPage.BindingContext>
 
+    <Grid Padding="20">
+        <!-- Выбор задачи -->
+        <CollectionView
+        ItemsSource="{Binding Tasks}"
+        SelectedItem="{Binding CurrentTask}"
+        SelectionMode="Single"
+        HeightRequest="200">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Margin="5">
+                        <Grid>
+                            <Label Text="{Binding Name}" FontSize="20" />
+                            <Button Text="🗑"
+                      Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TimerViewModel}}, Path=DeleteTaskCommand}"
+                      CommandParameter="{Binding .}"
+                      BackgroundColor="Transparent"
+                      HorizontalOptions="End" />
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Таймер Pomodoro -->
+        <StackLayout Grid.Row="1" Margin="0,20,0,0">
+            <Label Text="{Binding PomodoroTime}"
+             FontSize="60"
+             HorizontalOptions="Center" />
+
+            <Grid ColumnSpacing="20">
+                <Button Text="⏮"
+                Command="{Binding ResetPomodoroCommand}" />
+                <Button Text="▶/⏸"
+                Command="{Binding StartPomodoroCommand}" />
+            </Grid>
+        </StackLayout>
+
+        <!-- Free Timer -->
+        <StackLayout Grid.Row="2" Margin="0,20,0,0">
+            <Label Text="{Binding FreeTime}"
+             FontSize="40"
+             HorizontalOptions="Center" />
+            <Grid ColumnSpacing="20">
+                <Button Text="▶/⏸"
+                Command="{Binding StartFreeCommand}" />
+                <Button Text="⏮"
+                Command="{Binding ResetFreeCommand}" />
+            </Grid>
+        </StackLayout>
+
+        <!-- Общее время -->
+        <Label Text="{Binding TotalWorkTime}"
+           Grid.Row="3"
+           FontSize="20"
+           HorizontalOptions="Center"
+           Margin="0,20,0,0" />
+    </Grid>
 </ContentPage>
+    
