@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35818.85 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PomodoroProject", "PomodoroProject.csproj", "{F42D8254-1732-4DF9-BEB3-8D8FCFA8F72A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F42D8254-1732-4DF9-BEB3-8D8FCFA8F72A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F42D8254-1732-4DF9-BEB3-8D8FCFA8F72A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F42D8254-1732-4DF9-BEB3-8D8FCFA8F72A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F42D8254-1732-4DF9-BEB3-8D8FCFA8F72A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {08D54CD4-A0AA-42D9-9080-36E45437B81E}
+	EndGlobalSection
+EndGlobal
