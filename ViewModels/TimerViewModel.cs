@@ -10,5 +10,6 @@ namespace PomodoroProject.ViewModels
 {
     class TimerViewModel : ObservableObject
     {
+        bool isPomodoroSelected;
     }
 }
