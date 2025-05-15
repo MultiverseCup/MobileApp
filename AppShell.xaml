@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="PomodoroProject.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:PomodoroProject.Views"
+    Shell.NavBarIsVisible="False"
+    Shell.FlyoutBehavior="Disabled"
+    Shell.TabBarBackgroundColor="#FFFFFF"
+    Shell.TabBarForegroundColor="Black"
+    Shell.TabBarTitleColor="Black"
+    Shell.TabBarUnselectedColor="Gray"
+    BackgroundColor="#FF7E7E">
+
+    <TabBar>
+
+        <ShellContent
+            Title="Schedule"
+            Icon="calendar.png"
+            ContentTemplate="{DataTemplate views:SchedulePage}" />
+
+        <ShellContent
+            Title="Timer"
+            Icon="clock.png"
+            ContentTemplate="{DataTemplate views:TimerPage}" />
+
+        <ShellContent
+            Title="Purposes"
+            Icon="checkcircle.png"
+            ContentTemplate="{DataTemplate views:PurposesPage}" />
+
+    </TabBar>
+</Shell>
