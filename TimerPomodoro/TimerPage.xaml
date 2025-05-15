@@ -2,16 +2,82 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TimerPomodoro.TimerPage"
-             Title="TimerPage"
+
              BackgroundImageSource="timer_bg.png">
     
-    <VerticalStackLayout Spacing="20" Padding="15">
-        <Label Text="Добро пожаловать!"
-               FontSize="24"
-               HorizontalOptions="Center" />
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        
+        <VerticalStackLayout Grid.Row="0">
+            
+            <!-- Выбор режима таймера (фиксированный размер) -->
+            <Grid   WidthRequest="200"
+                    HeightRequest="90"
+                    HorizontalOptions="Start"
+                    Margin="20,30,0,0"
+                    RowSpacing="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="45" />
+                    <RowDefinition Height="45" />
+                </Grid.RowDefinitions>
+                
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="140" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-        <Image Source="dotnet_bot.png"
-               HeightRequest="200"
-               HorizontalOptions="Center" />
-    </VerticalStackLayout>
+                <Border BackgroundColor="#B55757"
+                    IsVisible="False"
+                    StrokeShape="RoundRectangle 10"
+                    Grid.RowSpan="2"
+                    Grid.ColumnSpan="2"
+                    WidthRequest="200"
+                    HeightRequest="90" />
+
+                <Button
+                    Text="Pomodoro Timer"
+                    TextColor="White"
+                    TextTransform="None"
+                    FontSize="25"
+                    FontFamily="VisionRegular"
+                    BackgroundColor="Transparent"
+                    Grid.Row="0"
+                    WidthRequest="140"
+                    HeightRequest="45" />
+
+                <Button
+                    IsVisible="False"
+                    Text="Free Timer"
+                    TextColor="White"
+                    TextTransform="None"
+                    FontFamily="VisionRegular"
+                    FontSize="25"
+                    BackgroundColor="Transparent"
+                    Grid.Row="1"
+                    WidthRequest="140"
+                    HeightRequest="45" />
+
+                <Image  
+                    
+                    Grid.Column="1"
+                    Grid.Row="0"
+                    Margin="10,0,10,0"
+                    WidthRequest="45"
+                    HeightRequest="45"
+                    VerticalOptions="Center" />
+                <Image  
+                    
+                    Grid.Column="1"
+                    Grid.Row="0"
+                    Margin="10,0,10,0"
+                    WidthRequest="45"
+                    HeightRequest="45"
+                    VerticalOptions="Center" />
+            </Grid>
+
+        </VerticalStackLayout>
+
+    </Grid>
 </ContentPage>
