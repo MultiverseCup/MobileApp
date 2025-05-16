@@ -12,7 +12,7 @@ namespace PomodoroProject.Data
     {
         private readonly SQLiteAsyncConnection _db;
 
-        public AppDatabase(string dbPath) => _db = new SQLiteAsyncConnection(dbPath);
+        public AppDatabase(string dbPath) => _db = new(dbPath);
 
         public Task InitializeAsync()
         {
