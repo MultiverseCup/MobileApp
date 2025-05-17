@@ -2,264 +2,307 @@
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:conv="clr-namespace:PomodoroProject.Converters"
     x:Class="PomodoroProject.Views.TimerPage"
     Title="Таймер"
     BackgroundColor="#FF6347">
 
-    <ContentPage.Content>
-        <Grid>
+    <!-- Конвертер для поворота стрелки -->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <conv:BoolToRotationConverter x:Key="BoolToRotation" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-            <!-- Основной макет: Grid с тремя рядами -->
-            <Grid RowDefinitions="Auto,*,Auto">
+    <!-- Корневая сетка: 0-picker, 1-таймер+кнопки, 2-список, 3-кнопка + -->
+    <Grid RowDefinitions="Auto,Auto,300,Auto">
 
-                <!-- Верхняя секция -->
-                <Grid Grid.Row="0" Margin="20,30,20,0">
-                    <!-- Выбор режима таймера -->
-                    <Grid x:Name="ModePickerContainer"
-                WidthRequest="200"
-                HeightRequest="90"
-                HorizontalOptions="Start"
-                Margin="0,0,0,20">
+        <!-- 0: Mode picker -->
+        <Grid 
+            Grid.Row="0"
+            Margin="20,10,20,0"
+            WidthRequest="200"
+            HeightRequest="90"
+            HorizontalOptions="Start">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="45"/>
+                <RowDefinition Height="45"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="140"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Фон выпадающего -->
+            <Frame 
+                BackgroundColor="#B55757"
+                CornerRadius="10"
+                Grid.RowSpan="2"
+                Grid.ColumnSpan="2"
+                IsVisible="{Binding IsPickerOpen}" />
+
+            <!-- Активный режим -->
+            <Button
+                Grid.Row="0"
+                Text="{Binding SelectedModeText}"
+                TextColor="White"
+                FontSize="25"
+                FontFamily="VisionRegular"
+                BackgroundColor="Transparent"
+                Command="{Binding ToggleModeCommand}" />
+
+            <!-- Альтернативный режим -->
+            <Button
+                Grid.Row="1"
+                Text="{Binding AlternativeModeText}"
+                TextColor="White"
+                FontSize="25"
+                FontFamily="VisionRegular"
+                BackgroundColor="Transparent"
+                IsVisible="{Binding IsPickerOpen}"
+                Command="{Binding ToggleModeCommand}" />
+
+            <!-- Стрелка -->
+            <Image
+                Grid.Column="1"
+                Grid.Row="0"
+                Source="arrowDown.png"
+                VerticalOptions="Center"
+                Margin="10,0"
+                Rotation="{Binding IsPickerOpen, Converter={StaticResource BoolToRotation}}" />
+        </Grid>
+
+        <!-- 1: Timer + controls -->
+        <Grid Grid.Row="1" Margin="0,0,0,20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Помодоро таймер -->
+            <StackLayout 
+                Grid.Row="0"
+                Padding="50,0,50,20"
+                IsVisible="{Binding IsPomodoroVisible}">
+                <Label
+                    Text="{Binding PomodoroTime}"
+                    FontFamily="VisionBold"
+                    FontSize="80"
+                    TextColor="White"
+                    HorizontalOptions="Center" />
+            </StackLayout>
+
+            <!-- Кнопки -->
+            <Grid 
+                Grid.Row="1"
+                HorizontalOptions="Center"
+                Margin="0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <ImageButton
+                    Grid.Column="0"
+                    Source="rotateccw.png"
+                    Command="{Binding ResetPomodoroCommand}"
+                    WidthRequest="40"
+                    HeightRequest="40" />
+
+                <ImageButton
+                    Grid.Column="1"
+                    Source="{Binding PomodoroButtonIcon}"
+                    Command="{Binding StartPomodoroCommand}"
+                    WidthRequest="40"
+                    HeightRequest="40" />
+            </Grid>
+        </Grid>
+
+        <!-- 2: Task list (растягивается за счёт звёздочной строки) -->
+        <CollectionView
+            Grid.Row="2"
+            ItemsSource="{Binding Tasks}"
+            SelectedItem="{Binding CurrentTask}"
+            SelectionMode="Single"
+            Margin="20,0"
+            VerticalOptions="FillAndExpand"
+            HorizontalOptions="FillAndExpand"
+            ItemSizingStrategy="MeasureAllItems">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame
+                        BackgroundColor="Transparent"
+                        CornerRadius="15"
+                        Margin="0,5"
+                        Padding="0"
+                        HorizontalOptions="FillAndExpand"
+                        VerticalOptions="FillAndExpand">
+
+                        <Frame
+                            BackgroundColor="White"
+                            CornerRadius="15"
+                            Margin="0"
+                            Padding="10"
+                            HasShadow="False"
+                            HorizontalOptions="FillAndExpand"
+                            VerticalOptions="FillAndExpand">
+
+                            <Grid
+                                ColumnSpacing="10"
+                                HorizontalOptions="FillAndExpand"
+                                VerticalOptions="CenterAndExpand">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1.5*" />
+                                    <ColumnDefinition Width="4*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Название -->
+                                <Label
+                                    Grid.Column="0"
+                                    Text="{Binding Name}"
+                                    FontSize="22"
+                                    FontFamily="VisionRegular"
+                                    TextColor="Black"
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="Start" />
+
+                                <!-- Время -->
+                                <Grid
+                                    Grid.Column="1"
+                                    HorizontalOptions="FillAndExpand"
+                                    VerticalOptions="Center">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Grid.Row="0" Grid.Column="0" Text="Работа" FontSize="12" HorizontalOptions="Center"/>
+                                    <Label Grid.Row="0" Grid.Column="1" Text="Отдых" FontSize="12" HorizontalOptions="Center"/>
+                                    <Label Grid.Row="0" Grid.Column="2" Text="Всего"  FontSize="12" HorizontalOptions="Center"/>
+
+                                    <Label Grid.Row="1" Grid.Column="0" Text="{Binding DisplayWorkDuration}" FontSize="14" HorizontalOptions="Center"/>
+                                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding DisplayRestDuration}" FontSize="14" HorizontalOptions="Center"/>
+                                    <Label Grid.Row="1" Grid.Column="2" Text="{Binding DisplayTotalTime}" FontSize="14" HorizontalOptions="Center"/>
+                                </Grid>
+
+                                <!-- Удаление -->
+                                <ImageButton
+                                    Grid.Column="2"
+                                    Source="trash.png"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteTaskCommand}"
+                                    CommandParameter="{Binding .}"
+                                    WidthRequest="24"
+                                    HeightRequest="24"
+                                    BackgroundColor="Transparent"
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="End" />
+                            </Grid>
+                        </Frame>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- 3: Add button -->
+        <ImageButton
+            Grid.Row="3"
+            Source="pluscircle.png"
+            Command="{Binding ShowAddMenuCommand}"
+            WidthRequest="40"
+            HeightRequest="40"
+            HorizontalOptions="Center"
+            VerticalOptions="End"
+            Margin="0,0,0,20" />
+
+        <!-- Overlay -->
+        <BoxView
+            Grid.RowSpan="4"
+            Color="#80000000"
+            Opacity="{Binding AddMenuOpacity}"
+            IsVisible="{Binding IsAddMenuOpen}"
+            InputTransparent="False" />
+
+        <ImageButton Grid.Row="3"
+             Source="pluscircle.png"
+             Command="{Binding ShowAddMenuCommand}"
+             WidthRequest="40"
+             HeightRequest="40"
+             HorizontalOptions="Center"
+             VerticalOptions="End"
+             Margin="0,0,0,20" />
+
+        <!-- Add menu -->
+        <Grid
+            Grid.Row="3"
+            VerticalOptions="End"
+            TranslationY="{Binding AddMenuTranslationY}">
+            <Frame
+                CornerRadius="50"
+                BackgroundColor="White"
+                HasShadow="True">
+                <StackLayout Spacing="0">
+                    <Label
+                        Text="Добавить занятие"
+                        FontFamily="VisionBold"
+                        FontSize="35"
+                        Margin="30,30,30,0" />
+
+                    <Frame
+                        BackgroundColor="#D9D9D9"
+                        Margin="30,0,30,10"
+                        CornerRadius="30">
+                        <Entry
+                            Placeholder="Введите новое занятие"
+                            FontFamily="VisionRegular"
+                            FontSize="25"
+                            Text="{Binding NewTaskName}" />
+                    </Frame>
+
+                    <Grid Margin="30,0,30,10">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="45"/>
-                            <RowDefinition Height="45"/>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="80" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="140"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="60" />
+                            <ColumnDefinition Width="5" />
+                            <ColumnDefinition Width="60" />
                         </Grid.ColumnDefinitions>
 
-                        <Frame x:Name="PickerBackground"
-                   BackgroundColor="#B55757"
-                   IsVisible="{Binding IsPickerOpen}"
-                   CornerRadius="10"
-                   Grid.RowSpan="2"
-                   Grid.ColumnSpan="2"
-                   WidthRequest="200"
-                   HeightRequest="90"/>
+                        <!-- Work -->
+                        <Label Grid.Row="0" Grid.Column="0" Text="Время работы:" FontSize="25" />
+                        <Entry Grid.Row="0" Grid.Column="1" Text="{Binding NewWorkMinutes}" FontSize="25" />
+                        <Label Grid.Row="0" Grid.Column="2" Text=":" FontSize="25" />
+                        <Entry Grid.Row="0" Grid.Column="3" Text="{Binding NewWorkSeconds}" FontSize="25" />
 
-                        <Button x:Name="SelectedMode"
-                    Text="{Binding SelectedModeText}"
-                    TextColor="White"
-                    FontSize="25"
-                    FontFamily="VisionRegular"
-                    BackgroundColor="Transparent"
-                    Grid.Row="0"
-                    WidthRequest="140"
-                    HeightRequest="45"
-                    Command="{Binding ToggleModeCommand}"/>
+                        <!-- Rest -->
+                        <Label Grid.Row="1" Grid.Column="0" Text="Время отдыха:" FontSize="25" />
+                        <Entry Grid.Row="1" Grid.Column="1" Text="{Binding NewRestMinutes}" FontSize="25" />
+                        <Label Grid.Row="1" Grid.Column="2" Text=":" FontSize="25" />
+                        <Entry Grid.Row="1" Grid.Column="3" Text="{Binding NewRestSeconds}" FontSize="25" />
 
-                        <Button x:Name="UnSelectedMode"
-                    Text="Free Timer"
-                    IsVisible="{Binding IsFreeModeVisible}"
-                    TextColor="White"
-                    FontSize="25"
-                    FontFamily="VisionRegular"
-                    BackgroundColor="Transparent"
-                    Grid.Row="1"
-                    WidthRequest="140"
-                    HeightRequest="45"
-                    Command="{Binding ToggleModeCommand}"
-                    CommandParameter="FreeTimer"/>
-
-                        <Image x:Name="ModePickerArrow"
-                   Source="Images/arrow_down.png"
-                   Grid.Column="1"
-                   Grid.Row="0"
-                   WidthRequest="24"
-                   HeightRequest="24"
-                   VerticalOptions="Center"
-                   HorizontalOptions="Center"/>
+                        <!-- Confirm -->
+                        <ImageButton
+                            Grid.Row="2"
+                            Grid.Column="3"
+                            Source="confirm.png"
+                            Command="{Binding ConfirmAddTaskCommand}"
+                            WidthRequest="60"
+                            HeightRequest="60"
+                            HorizontalOptions="End" />
                     </Grid>
-
-                    <!-- Pomodoro таймер -->
-                    <StackLayout x:Name="PomodoroContainer"
-                       Padding="50,0,50,82"
-                       IsVisible="{Binding IsPomodoroVisible}">
-                        <Label Text="{Binding PomodoroTime}"
-                   FontFamily="VisionBold"
-                   FontSize="80"
-                   TextColor="White"
-                   HorizontalOptions="Center"/>
-                        <Grid ColumnSpacing="20" HorizontalOptions="Center">
-                            <ImageButton Source="Images/rotateccw.png"
-                           Command="{Binding ResetPomodoroCommand}"
-                           WidthRequest="40"
-                           HeightRequest="40"
-                           BackgroundColor="Transparent"/>
-                            <ImageButton Source="Images/play_pause.png"
-                           Command="{Binding StartPomodoroCommand}"
-                           WidthRequest="40"
-                           HeightRequest="40"
-                           BackgroundColor="Transparent"/>
-                        </Grid>
-                    </StackLayout>
-
-                    <!-- FreeTimer таймер -->
-                    <StackLayout x:Name="FreeTimerContainer"
-                       IsVisible="{Binding IsFreeModeVisible}"
-                       Padding="50,0,50,25">
-                        <Label Text="{Binding FreeTime}"
-                   FontSize="80"
-                   FontFamily="VisionBold"
-                   TextColor="White"
-                   HorizontalOptions="Center"/>
-                        <Grid ColumnSpacing="20" HorizontalOptions="Center">
-                            <ImageButton Source="Images/rotateccw.png"
-                           Command="{Binding ResetFreeCommand}"
-                           WidthRequest="40"
-                           HeightRequest="40"
-                           BackgroundColor="Transparent"/>
-                            <ImageButton Source="Images/play_pause.png"
-                           Command="{Binding StartFreeCommand}"
-                           WidthRequest="40"
-                           HeightRequest="40"
-                           BackgroundColor="Transparent"/>
-                            <ImageButton Source="Images/refreshccw.png"
-                           Command="{Binding ResetTotalCommand}"
-                           WidthRequest="40"
-                           HeightRequest="40"
-                           BackgroundColor="Transparent"/>
-                        </Grid>
-                        <Label Text="{Binding TotalWorkTime}"
-                   FontFamily="VisionBold"
-                   FontSize="30"
-                   TextColor="#FFC0C0"
-                   HorizontalOptions="Center"/>
-                    </StackLayout>
-                </Grid>
-
-                <!-- Список задач -->
-                <CollectionView Grid.Row="1"
-                        x:Name="TaskItemsCollection"
-                        ItemsSource="{Binding Tasks}"
-                        SelectionMode="Single"
-                        SelectedItem="{Binding CurrentTask}"
-                        Margin="20,0,20,90">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Frame Padding="20,5" BackgroundColor="Transparent">
-                                <Frame CornerRadius="15" BackgroundColor="White">
-                                    <Grid ColumnSpacing="10">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="1.5*"/>
-                                            <ColumnDefinition Width="4*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Label Grid.Column="0"
-                           Text="{Binding Name}"
-                           FontSize="22"
-                           FontFamily="VisionRegular"
-                           TextColor="Black"
-                           VerticalOptions="Center"/>
-                                        <Grid Grid.Column="1" Margin="0,0,10,0">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Label Grid.Row="0" Grid.Column="0" Text="Работа" FontSize="12" HorizontalOptions="Center"/>
-                                            <Label Grid.Row="0" Grid.Column="1" Text="Отдых" FontSize="12" HorizontalOptions="Center"/>
-                                            <Label Grid.Row="0" Grid.Column="2" Text="Всего" FontSize="12" HorizontalOptions="Center"/>
-                                            <Label Grid.Row="1" Grid.Column="0" Text="{Binding DisplayWorkDuration}" FontSize="14" HorizontalOptions="Center"/>
-                                            <Label Grid.Row="1" Grid.Column="1" Text="{Binding DisplayRestDuration}" FontSize="14" HorizontalOptions="Center"/>
-                                            <Label Grid.Row="1" Grid.Column="2" Text="{Binding DisplayTotalTime}" FontSize="14" HorizontalOptions="Center"/>
-                                        </Grid>
-                                        <ImageButton Grid.Column="2"
-                                 Source="Images/trash.png"
-                                 Command="{Binding Path=BindingContext.DeleteTaskCommand, Source={x:Reference TaskItemsCollection}}"
-                                 CommandParameter="{Binding .}"
-                                 WidthRequest="20"
-                                 HeightRequest="20"
-                                 BackgroundColor="Transparent"
-                                 HorizontalOptions="End"
-                                 VerticalOptions="Center"/>
-                                    </Grid>
-                                </Frame>
-                            </Frame>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-
-                <!-- Нижняя панель -->
-                <Grid Grid.Row="2"
-              Margin="0,0,0,20"
-              HorizontalOptions="Center"
-              VerticalOptions="End">
-                    <ImageButton Source="Images/pluscircle.png"
-                       Command="{Binding ShowAddMenuCommand}"
-                       WidthRequest="40"
-                       HeightRequest="40"
-                       BackgroundColor="Transparent"/>
-                </Grid>
-            </Grid>
-
-            <!-- Затемнённый фон Overlay -->
-            <BoxView
-        Grid.Row="0"
-        Grid.RowSpan="3"
-        BackgroundColor="#80000000"
-        Opacity="{Binding AddMenuOpacity}"
-        IsVisible="{Binding IsAddMenuOpen}" />
-
-            <!-- Модальное меню добавления -->
-            <Grid
-        x:Name="BottomMenu"
-        VerticalOptions="End"
-        HorizontalOptions="FillAndExpand"
-        Margin="0,0,0,20"
-        TranslationY="{Binding AddMenuTranslationY}">
-                <Frame CornerRadius="50" BackgroundColor="White">
-                    <StackLayout Spacing="0">
-                        <StackLayout Margin="30">
-                            <Label Text="Добавить занятие"
-                     TextColor="Black"
-                     FontFamily="VisionBold"
-                     FontSize="35"
-                     HorizontalTextAlignment="Start"/>
-                        </StackLayout>
-                        <Frame BackgroundColor="#D9D9D9" Margin="30,0,30,10" CornerRadius="30">
-                            <Entry Placeholder="Введите новое занятие"
-                     FontFamily="VisionRegular"
-                     FontSize="25"
-                     Text="{Binding NewTaskName}"/>
-                        </Frame>
-                        <Grid Margin="30,0,30,10">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="80"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="60"/>
-                                <ColumnDefinition Width="5"/>
-                                <ColumnDefinition Width="60"/>
-                            </Grid.ColumnDefinitions>
-                            <Label Grid.Row="0" Grid.Column="0" Text="Время работы:" FontSize="25" FontFamily="VisionRegular"/>
-                            <Entry Grid.Row="0" Grid.Column="1" Text="{Binding NewWorkMinutes}" FontFamily="VisionRegular" FontSize="25"/>
-                            <Label Grid.Row="0" Grid.Column="2" Text=":" FontSize="25" FontFamily="VisionRegular"/>
-                            <Entry Grid.Row="0" Grid.Column="3" Text="{Binding NewWorkSeconds}" FontFamily="VisionRegular" FontSize="25"/>
-                            <Label Grid.Row="1" Grid.Column="0" Text="Время отдыха:" FontSize="25" FontFamily="VisionRegular"/>
-                            <Entry Grid.Row="1" Grid.Column="1" Text="{Binding NewRestMinutes}" FontFamily="VisionRegular" FontSize="25"/>
-                            <Label Grid.Row="1" Grid.Column="2" Text=":" FontSize="25" FontFamily="VisionRegular"/>
-                            <Entry Grid.Row="1" Grid.Column="3" Text="{Binding NewRestSeconds}" FontFamily="VisionRegular" FontSize="25"/>
-                            <ImageButton Grid.Row="2" Grid.Column="3"
-                           Source="Images/confirm.png"
-                           Command="{Binding ConfirmAddTaskCommand}"
-                           WidthRequest="60"
-                           HeightRequest="60"
-                           HorizontalOptions="End"
-                           BackgroundColor="Transparent"/>
-                        </Grid>
-                    </StackLayout>
-                </Frame>
-            </Grid>
-
+                </StackLayout>
+            </Frame>
         </Grid>
-    </ContentPage.Content>
+    </Grid>
 </ContentPage>

@@ -30,6 +30,7 @@ namespace PomodoroProject.ViewModels
         private double _addMenuTranslationY = 500;
         private double _addMenuOpacity = 0;
         private string _newTaskName;
+        private bool _isWorkPhase = true;
         private string _newWorkMinutes = "25";
         private string _newWorkSeconds = "00";
         private string _newRestMinutes = "5";
@@ -64,6 +65,16 @@ namespace PomodoroProject.ViewModels
                 RefreshTimers();
             }
         }
+
+        public string AlternativeModeText =>
+            SelectedModeText == "Pomodoro" ? "Free Timer" : "Pomodoro";
+
+        public string PomodoroButtonIcon =>
+            _pomodoroRunning ? "pause.png" : "play.png";
+
+        public string FreeButtonIcon =>
+            _freeRunning ? "pause.png" : "play.png";
+
         public bool IsPickerOpen
         {
             get => _isPickerOpen;
@@ -76,6 +87,12 @@ namespace PomodoroProject.ViewModels
                 }
             }
         }
+        public bool IsWorkPhase
+        {
+            get => _isWorkPhase;
+            private set { _isWorkPhase = value; OnPropertyChanged(); }
+        }
+
         public bool IsAddMenuOpen
         {
             get => _isAddMenuOpen;
@@ -174,6 +191,13 @@ namespace PomodoroProject.ViewModels
         public ICommand ToggleModeCommand { get; }
         public ICommand CancelAddTaskCommand { get; }
 
+        public ICommand SaveCurrentTaskCommand =>
+        new Command(async () =>
+        {
+            if (CurrentTask != null)
+                await App.Database.SaveTaskAsync(CurrentTask);
+        });
+
         // === Конструктор ===
         public TimerViewModel(Func<PomodoroTask, Task<bool>> confirmDelete)
         {
@@ -210,8 +234,10 @@ namespace PomodoroProject.ViewModels
             if (CurrentTask == null) return;
             PomodoroTime = TimeSpan.FromMilliseconds(CurrentTask.TimeRemaining).ToString(@"mm\:ss");
             TotalWorkTime = TimeSpan.FromMilliseconds(CurrentTask.TotalWorkTime).ToString(@"hh\:mm\:ss");
-            FreeTime = "00:00";
+            FreeTime = TimeSpan.FromMilliseconds(_freeElapsed).ToString(@"mm\:ss");
         }
+
+
         private async Task HideAddMenuAsync()
         {
             for (double t = 1; t >= 0; t -= 0.1)
@@ -226,21 +252,39 @@ namespace PomodoroProject.ViewModels
         {
             if (CurrentTask == null) return;
             _pomodoroRunning = !_pomodoroRunning;
-
             if (!_pomodoroRunning)
             {
                 await App.Database.SaveTaskAsync(CurrentTask);
                 return;
             }
 
-            while (_pomodoroRunning && CurrentTask.TimeRemaining > 0)
+            while (_pomodoroRunning)
             {
+                if (CurrentTask.TimeRemaining <= 0)
+                {
+                    // переключаем фазу
+                    IsWorkPhase = !IsWorkPhase;
+                    CurrentTask.TimeRemaining = IsWorkPhase
+                        ? CurrentTask.WorkDuration
+                        : CurrentTask.RestDuration;
+
+                    // обновляем текст
+                    RefreshTimers();
+
+                    // показываем алерт
+                    string title = IsWorkPhase ? "Пора работать!" : "Пора отдыхать!";
+                    await Application.Current.MainPage.DisplayAlert("Время!", title, "OK");
+                }
+
                 await Task.Delay(100);
                 CurrentTask.TimeRemaining -= 100;
-                CurrentTask.TotalWorkTime += 100;
+                if (IsWorkPhase)
+                    CurrentTask.TotalWorkTime += 100;
+
                 RefreshTimers();
             }
 
+            // по окончании сохраняем
             _pomodoroRunning = false;
             await App.Database.SaveTaskAsync(CurrentTask);
         }
@@ -259,14 +303,23 @@ namespace PomodoroProject.ViewModels
         {
             if (CurrentTask == null) return;
             _freeRunning = !_freeRunning;
-            if (!_freeRunning) return;
+            if (!_freeRunning)
+            {
+                // при остановке сохраняем общее время
+                await App.Database.SaveTaskAsync(CurrentTask);
+                return;
+            }
+
             while (_freeRunning)
             {
                 await Task.Delay(100);
                 _freeElapsed += 100;
                 CurrentTask.TotalWorkTime += 100;
+
                 RefreshTimers();
             }
+
+            // при полной остановке
             await App.Database.SaveTaskAsync(CurrentTask);
         }
 
@@ -351,6 +404,7 @@ namespace PomodoroProject.ViewModels
         private async Task OnDeleteTaskAsync(PomodoroTask task)
         {
             if (task == null) return;
+
             bool confirmed = await _confirmDelete(task);
             if (!confirmed) return;
 

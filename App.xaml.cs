@@ -27,5 +27,6 @@ namespace PomodoroProject
             Database = new AppDatabase(path);
             await Database.InitializeAsync();
         }
+
     }
 }
