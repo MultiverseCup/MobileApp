@@ -66,7 +66,8 @@ namespace PomodoroProject.ViewModels
             }
         }
 
-        public string AlternativeModeText =>
+
+        public string AlternativeModeText => 
             SelectedModeText == "Pomodoro" ? "Free Timer" : "Pomodoro";
 
         public string PomodoroButtonIcon =>
@@ -176,6 +177,7 @@ namespace PomodoroProject.ViewModels
             get => _selectedModeText;
             private set { _selectedModeText = value; OnPropertyChanged(); }
         }
+        
 
         // === Команды ===
         public ICommand LoadTasksCommand { get; }
@@ -189,6 +191,8 @@ namespace PomodoroProject.ViewModels
         public ICommand ConfirmAddTaskCommand { get; }
         public ICommand DeleteTaskCommand { get; }
         public ICommand ToggleModeCommand { get; }
+        public ICommand OpenModePickerCommand { get; }
+
         public ICommand CancelAddTaskCommand { get; }
 
         public ICommand SaveCurrentTaskCommand =>
@@ -214,6 +218,7 @@ namespace PomodoroProject.ViewModels
             ShowAddMenuCommand = new Command(async () => await ShowAddMenuAsync());
             ConfirmAddTaskCommand = new Command(async () => await ConfirmAddTaskAsync());
             ToggleModeCommand = new Command(OnToggleMode);
+            OpenModePickerCommand = new Command(OnOpenModePicker);
             DeleteTaskCommand = new Command<PomodoroTask>(async task => await OnDeleteTaskAsync(task));
             CancelAddTaskCommand = new Command(async () => await HideAddMenuAsync());
 
@@ -252,6 +257,8 @@ namespace PomodoroProject.ViewModels
         {
             if (CurrentTask == null) return;
             _pomodoroRunning = !_pomodoroRunning;
+            OnPropertyChanged(nameof(PomodoroButtonIcon));
+
             if (!_pomodoroRunning)
             {
                 await App.Database.SaveTaskAsync(CurrentTask);
@@ -287,6 +294,7 @@ namespace PomodoroProject.ViewModels
             // по окончании сохраняем
             _pomodoroRunning = false;
             await App.Database.SaveTaskAsync(CurrentTask);
+            
         }
 
         private async Task OnResetPomodoro()
@@ -303,6 +311,7 @@ namespace PomodoroProject.ViewModels
         {
             if (CurrentTask == null) return;
             _freeRunning = !_freeRunning;
+            OnPropertyChanged(nameof(FreeButtonIcon));
             if (!_freeRunning)
             {
                 // при остановке сохраняем общее время
@@ -389,16 +398,22 @@ namespace PomodoroProject.ViewModels
 
         private void OnToggleMode(object obj)
         {
-            // Переключаем меню выбора
-            IsPickerOpen = !IsPickerOpen;
-
             // Переключаем режим
             bool isPomodoro = SelectedModeText == "Pomodoro";
             IsPomodoroVisible = !isPomodoro;
             IsFreeModeVisible = isPomodoro;
             SelectedModeText = isPomodoro ? "Free Timer" : "Pomodoro";
+            
+
             OnPropertyChanged(nameof(SelectedModeText));
+            OnPropertyChanged(nameof(AlternativeModeText));
             RefreshTimers();
+        }
+        private void OnOpenModePicker(object obj)
+        {
+            // Переключаем меню выбора
+            IsPickerOpen = !IsPickerOpen;
+            
         }
 
         private async Task OnDeleteTaskAsync(PomodoroTask task)
