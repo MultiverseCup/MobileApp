@@ -188,6 +188,7 @@ namespace PomodoroProject.ViewModels
         public ICommand ResetFreeCommand { get; }
         public ICommand ResetTotalCommand { get; }
         public ICommand ShowAddMenuCommand { get; }
+        public ICommand HideAddMenuCommand { get; }
         public ICommand ConfirmAddTaskCommand { get; }
         public ICommand DeleteTaskCommand { get; }
         public ICommand ToggleModeCommand { get; }
@@ -216,6 +217,7 @@ namespace PomodoroProject.ViewModels
             ResetFreeCommand = new Command(() => OnResetFree());
             ResetTotalCommand = new Command(async () => await OnResetTotal());
             ShowAddMenuCommand = new Command(async () => await ShowAddMenuAsync());
+            HideAddMenuCommand = new Command(async () => await HideAddMenuAsync());
             ConfirmAddTaskCommand = new Command(async () => await ConfirmAddTaskAsync());
             ToggleModeCommand = new Command(OnToggleMode);
             OpenModePickerCommand = new Command(OnOpenModePicker);
@@ -243,16 +245,7 @@ namespace PomodoroProject.ViewModels
         }
 
 
-        private async Task HideAddMenuAsync()
-        {
-            for (double t = 1; t >= 0; t -= 0.1)
-            {
-                AddMenuTranslationY = 500 * (1 - t);
-                AddMenuOpacity = t;
-                await Task.Delay(16);
-            }
-            IsAddMenuOpen = false;
-        }
+        
         private async Task OnStartPomodoro()
         {
             if (CurrentTask == null) return;
@@ -347,15 +340,25 @@ namespace PomodoroProject.ViewModels
         private async Task ShowAddMenuAsync()
         {
             IsAddMenuOpen = true;
-            AddMenuTranslationY = 500;
+            AddMenuTranslationY = 600;
             AddMenuOpacity = 0;
             await Task.Delay(1);
             for (double t = 0; t <= 1.0; t += 0.1)
             {
-                AddMenuTranslationY = 500 * (1 - t);
-                AddMenuOpacity = t;
+                AddMenuTranslationY = 600 * (1 - t);
+                AddMenuOpacity = 0.8 * t;
                 await Task.Delay(16);
             }
+        }
+        private async Task HideAddMenuAsync()
+        {
+            for (double t = 1; t >= 0; t -= 0.1)
+            {
+                AddMenuTranslationY = 600 * (1 - t);
+                AddMenuOpacity = 0.8 * t;
+                await Task.Delay(16);
+            }
+            IsAddMenuOpen = false;
         }
 
         private async Task ConfirmAddTaskAsync()
@@ -387,12 +390,8 @@ namespace PomodoroProject.ViewModels
             OnPropertyChanged(nameof(NewWorkSeconds));
             OnPropertyChanged(nameof(NewRestMinutes));
             OnPropertyChanged(nameof(NewRestSeconds));
-            for (double t = 1; t >= 0; t -= 0.1)
-            {
-                AddMenuTranslationY = 500 * (1 - t);
-                AddMenuOpacity = t;
-                await Task.Delay(16);
-            }
+
+            await HideAddMenuAsync();
             IsAddMenuOpen = false;
         }
 
