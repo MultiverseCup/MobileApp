@@ -66,7 +66,8 @@ namespace PomodoroProject.ViewModels
             }
         }
 
-        public string AlternativeModeText =>
+
+        public string AlternativeModeText => 
             SelectedModeText == "Pomodoro" ? "Free Timer" : "Pomodoro";
 
         public string PomodoroButtonIcon =>
@@ -176,6 +177,7 @@ namespace PomodoroProject.ViewModels
             get => _selectedModeText;
             private set { _selectedModeText = value; OnPropertyChanged(); }
         }
+        
 
         // === Команды ===
         public ICommand LoadTasksCommand { get; }
@@ -186,9 +188,12 @@ namespace PomodoroProject.ViewModels
         public ICommand ResetFreeCommand { get; }
         public ICommand ResetTotalCommand { get; }
         public ICommand ShowAddMenuCommand { get; }
+        public ICommand HideAddMenuCommand { get; }
         public ICommand ConfirmAddTaskCommand { get; }
         public ICommand DeleteTaskCommand { get; }
         public ICommand ToggleModeCommand { get; }
+        public ICommand OpenModePickerCommand { get; }
+
         public ICommand CancelAddTaskCommand { get; }
 
         public ICommand SaveCurrentTaskCommand =>
@@ -212,8 +217,10 @@ namespace PomodoroProject.ViewModels
             ResetFreeCommand = new Command(() => OnResetFree());
             ResetTotalCommand = new Command(async () => await OnResetTotal());
             ShowAddMenuCommand = new Command(async () => await ShowAddMenuAsync());
+            HideAddMenuCommand = new Command(async () => await HideAddMenuAsync());
             ConfirmAddTaskCommand = new Command(async () => await ConfirmAddTaskAsync());
             ToggleModeCommand = new Command(OnToggleMode);
+            OpenModePickerCommand = new Command(OnOpenModePicker);
             DeleteTaskCommand = new Command<PomodoroTask>(async task => await OnDeleteTaskAsync(task));
             CancelAddTaskCommand = new Command(async () => await HideAddMenuAsync());
 
@@ -238,20 +245,13 @@ namespace PomodoroProject.ViewModels
         }
 
 
-        private async Task HideAddMenuAsync()
-        {
-            for (double t = 1; t >= 0; t -= 0.1)
-            {
-                AddMenuTranslationY = 500 * (1 - t);
-                AddMenuOpacity = t;
-                await Task.Delay(16);
-            }
-            IsAddMenuOpen = false;
-        }
+        
         private async Task OnStartPomodoro()
         {
             if (CurrentTask == null) return;
             _pomodoroRunning = !_pomodoroRunning;
+            OnPropertyChanged(nameof(PomodoroButtonIcon));
+
             if (!_pomodoroRunning)
             {
                 await App.Database.SaveTaskAsync(CurrentTask);
@@ -287,6 +287,7 @@ namespace PomodoroProject.ViewModels
             // по окончании сохраняем
             _pomodoroRunning = false;
             await App.Database.SaveTaskAsync(CurrentTask);
+            
         }
 
         private async Task OnResetPomodoro()
@@ -303,6 +304,7 @@ namespace PomodoroProject.ViewModels
         {
             if (CurrentTask == null) return;
             _freeRunning = !_freeRunning;
+            OnPropertyChanged(nameof(FreeButtonIcon));
             if (!_freeRunning)
             {
                 // при остановке сохраняем общее время
@@ -338,15 +340,25 @@ namespace PomodoroProject.ViewModels
         private async Task ShowAddMenuAsync()
         {
             IsAddMenuOpen = true;
-            AddMenuTranslationY = 500;
+            AddMenuTranslationY = 600;
             AddMenuOpacity = 0;
             await Task.Delay(1);
             for (double t = 0; t <= 1.0; t += 0.1)
             {
-                AddMenuTranslationY = 500 * (1 - t);
-                AddMenuOpacity = t;
+                AddMenuTranslationY = 600 * (1 - t);
+                AddMenuOpacity = 0.8 * t;
                 await Task.Delay(16);
             }
+        }
+        private async Task HideAddMenuAsync()
+        {
+            for (double t = 1; t >= 0; t -= 0.1)
+            {
+                AddMenuTranslationY = 600 * (1 - t);
+                AddMenuOpacity = 0.8 * t;
+                await Task.Delay(16);
+            }
+            IsAddMenuOpen = false;
         }
 
         private async Task ConfirmAddTaskAsync()
@@ -378,27 +390,29 @@ namespace PomodoroProject.ViewModels
             OnPropertyChanged(nameof(NewWorkSeconds));
             OnPropertyChanged(nameof(NewRestMinutes));
             OnPropertyChanged(nameof(NewRestSeconds));
-            for (double t = 1; t >= 0; t -= 0.1)
-            {
-                AddMenuTranslationY = 500 * (1 - t);
-                AddMenuOpacity = t;
-                await Task.Delay(16);
-            }
+
+            await HideAddMenuAsync();
             IsAddMenuOpen = false;
         }
 
         private void OnToggleMode(object obj)
         {
-            // Переключаем меню выбора
-            IsPickerOpen = !IsPickerOpen;
-
             // Переключаем режим
             bool isPomodoro = SelectedModeText == "Pomodoro";
             IsPomodoroVisible = !isPomodoro;
             IsFreeModeVisible = isPomodoro;
             SelectedModeText = isPomodoro ? "Free Timer" : "Pomodoro";
+            
+
             OnPropertyChanged(nameof(SelectedModeText));
+            OnPropertyChanged(nameof(AlternativeModeText));
             RefreshTimers();
+        }
+        private void OnOpenModePicker(object obj)
+        {
+            // Переключаем меню выбора
+            IsPickerOpen = !IsPickerOpen;
+            
         }
 
         private async Task OnDeleteTaskAsync(PomodoroTask task)

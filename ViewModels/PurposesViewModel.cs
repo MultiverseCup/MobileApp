@@ -1,14 +1,26 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
-using System.Collections.Generic;
+﻿
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PomodoroProject.ViewModels
+namespace PomodoroProject.ViewModels;
+
+public partial class PurposesViewModel : INotifyPropertyChanged
 {
-    class PurposesViewModel : ObservableObject
+    public event PropertyChangedEventHandler? PropertyChanged;
+    void OnPropertyChanged(string name) =>
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+
+    bool isModePickerOpen;
+    public bool IsModePickerOpen
     {
+        get => isModePickerOpen;
+        set
+        {
+            isModePickerOpen = value;
+            OnPropertyChanged(nameof(IsModePickerOpen));
+        }
     }
+    
+
+
 }
