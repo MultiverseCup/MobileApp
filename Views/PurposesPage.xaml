@@ -3,11 +3,33 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PomodoroProject.Views.PurposesPage"
              Title="PurposesPage"
-             BackgroundImageSource="bg1.jpg">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             BackgroundColor="#E5E5E5"
+             xmlns:viewmodel="clr-namespace:PomodoroProject.ViewModels"
+             xmlns:model="clr-namespace:PomodoroProject.Data.Models"
+             x:DataType="viewmodel:PurposesViewModel">
+    <AbsoluteLayout>
+
+        <StackLayout
+            AbsoluteLayout.LayoutBounds="0,0,1,1"
+            AbsoluteLayout.LayoutFlags="All">
+
+            <Border
+                BackgroundColor="#FF7E7E"
+                StrokeShape="RoundRectangle 0,0,50,50"
+                StrokeThickness="0"
+                HeightRequest="100">
+                <Label Text="Планировщик задач" 
+                       FontFamily="VisionBold"
+                       FontSize="25"
+                       TextColor="White"
+                       HorizontalOptions="Center" 
+                       VerticalOptions="Center"/>
+            </Border>
+
+            <CollectionView>
+                
+            </CollectionView>
+            
+        </StackLayout>
+    </AbsoluteLayout>
 </ContentPage>
