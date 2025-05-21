@@ -1,3 +1,4 @@
+using PomodoroProject.Data.Models;
 using PomodoroProject.ViewModels;
 
 namespace PomodoroProject.Views
@@ -9,8 +10,13 @@ namespace PomodoroProject.Views
         public PurposesPage()
 		{
             InitializeComponent();
-            _viewModel = new PurposesViewModel();
+            _viewModel = new PurposesViewModel(ConfirmDeleteAsync);
             BindingContext = _viewModel;
         }
-	}
+
+        private async Task<bool> ConfirmDeleteAsync(TaskDeadline deadline)
+        {
+            return await DisplayAlert("Удаление", $"Удалить дэдлайн \"{deadline.DeadlineName}\"?", "Да", "Нет");
+        }
+    }
 }

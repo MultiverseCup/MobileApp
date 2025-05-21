@@ -25,6 +25,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
     private readonly Func<PomodoroTask, Task<bool>> _confirmDelete;
 
     private ObservableCollection<PomodoroTask> _tasks = new();
+    private ObservableCollection<TaskDeadline> _deadlines = new();
     private PomodoroTask _currentTask;
     private bool _isAddMenuOpen;
     private double _addMenuTranslationY = 500;
@@ -53,7 +54,11 @@ public partial class TimerViewModel : INotifyPropertyChanged
         get => _tasks;
         set { _tasks = value; OnPropertyChanged(); }
     }
-
+    public ObservableCollection<TaskDeadline> Deadlines
+    {
+        get => _deadlines;
+        set { _deadlines = value; OnPropertyChanged(); }
+    }
     public PomodoroTask CurrentTask
     {
         get => _currentTask;
@@ -181,6 +186,8 @@ public partial class TimerViewModel : INotifyPropertyChanged
 
     // === Команды ===
     public ICommand LoadTasksCommand { get; }
+
+    public ICommand LoadDeadlinesCommand { get; }
     public ICommand SelectTaskCommand { get; }
     public ICommand StartPomodoroCommand { get; }
     public ICommand ResetPomodoroCommand { get; }
@@ -210,6 +217,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
 
         // Инициализация команд
         LoadTasksCommand = new Command(async () => await LoadTasksAsync());
+        LoadDeadlinesCommand = new Command(async () => await LoadDeadlinesAsync());
         SelectTaskCommand = new Command<PomodoroTask>(task => CurrentTask = task);
         StartPomodoroCommand = new Command(async () => await OnStartPomodoro());
         ResetPomodoroCommand = new Command(async () => await OnResetPomodoro());
@@ -225,6 +233,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
         CancelAddTaskCommand = new Command(async () => await HideAddMenuAsync());
 
         LoadTasksCommand.Execute(null);
+        LoadDeadlinesCommand.Execute(null);
     }
 
     // === Методы ===
@@ -235,7 +244,13 @@ public partial class TimerViewModel : INotifyPropertyChanged
         foreach (var task in all) Tasks.Add(task);
         if (Tasks.Count > 0) CurrentTask = Tasks[0];
     }
+    private async Task LoadDeadlinesAsync()
+    {
+        Deadlines.Clear();
+        var all = await App.Database.GetAllDeadlineAsync();
+        foreach (var task in all) Deadlines.Add(task);
 
+    }
     private void RefreshTimers()
     {
         if (CurrentTask == null) return;
@@ -254,6 +269,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
 
         if (!_pomodoroRunning)
         {
+
             await App.Database.SaveTaskAsync(CurrentTask);
             return;
         }

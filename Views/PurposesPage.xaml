@@ -35,10 +35,10 @@
                 Margin="30">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="model:TaskDeadline">
-                        <StackLayout>
+                        <StackLayout Padding="0,8,0,0">
                             <StackLayout Orientation="Horizontal">
-                                <Label Text="{Binding Deadline}"/>
-                                <Label Text="-"/>
+                                <Label Text="{Binding DisplayDeadline}"/>
+                                <Label Text="    -    "/>
                                 <Label Text="{Binding DisplayPlannedTime}"/>
                                 <Label Text=" ч."/>
                             </StackLayout>
@@ -48,25 +48,29 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
-                                    <Label Grid.Column="0" Grid.Row="0" Text="{Binding DeadlineName}" FontSize="16"/>
+                                    <Label Grid.ColumnSpan="3" Grid.Row="0" Text="{Binding DeadlineName}" FontSize="16"/>
                                     <Label Grid.Column="0" Grid.Row="1" Text="Прогресс:"/>
                                     <Label Grid.Column="0" Grid.Row="2" Text="{Binding InitialTotalTime}"/>
-                                    <Label Grid.Column="1" Grid.Row="1" Text="Занятие:" HorizontalOptions="End"/>
-                                    <Label Grid.Column="1" Grid.Row="2"  Text="{Binding TaskName}" HorizontalOptions="End"/>
-
+                                    <Label Grid.Column="1" Grid.Row="1" Text="Занятие:" />
+                                    <Label Grid.Column="1" Grid.Row="2"  Text="{Binding TaskName}" />
+                                    <Label Grid.Column="2" Grid.Row="1" Text="Статус:" />
+                                    <Label Grid.Column="2" Grid.Row="2"  Text="{Binding DisplayStatus}"/>
+                                    
                                     <ImageButton
-                                        WidthRequest="10"
-                                        Grid.Column="2"
+                                        MaximumWidthRequest="30"
+                                        IsVisible="{Binding IsActual}"
+                                        Grid.Column="3"
                                         Grid.RowSpan="3"
-                                        Source="confirm.png"
-                                        />
+                                        Source="trash.png"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:PurposesViewModel}}, Path=DeleteDeadlineCommand}"
+                                        CommandParameter="{Binding .}"   />
                                 </Grid>
                             </Border>
                         </StackLayout>

@@ -22,10 +22,11 @@ public partial class PurposesViewModel : INotifyPropertyChanged
     }
 
     // === Поля ===
+
     private List<PomodoroTask> _tasks = new();
     private ObservableCollection<TaskDeadline> _deadlines = new();
 
-    
+    private readonly Func<TaskDeadline, Task<bool>> _confirmDelete;
     private bool _isAddMenuOpen = false;
     private double _addMenuTranslationY;
     private double _addMenuOpacity = 0;
@@ -106,7 +107,7 @@ public partial class PurposesViewModel : INotifyPropertyChanged
     public ICommand ShowAddMenuCommand { get; }
     public ICommand HideAddMenuCommand { get; }
     public ICommand ConfirmAddDeadlineCommand { get; }
-    
+    public ICommand DeleteDeadlineCommand { get; }
 
 
 
@@ -114,8 +115,9 @@ public partial class PurposesViewModel : INotifyPropertyChanged
 
 
     // === Конструктор ===
-    public PurposesViewModel()
+    public PurposesViewModel(Func<TaskDeadline, Task<bool>> confirmDelete)
     {
+        _confirmDelete = confirmDelete;
         // Инициализация команд
         LoadTasksCommand = new Command(async () => await LoadTasksAsync());
         LoadDeadlinesCommand = new Command(async () => await LoadDeadlinesAsync());
@@ -123,7 +125,7 @@ public partial class PurposesViewModel : INotifyPropertyChanged
         ShowAddMenuCommand = new Command(async () => await ShowAddMenuAsync());
         HideAddMenuCommand = new Command(async () => await HideAddMenuAsync());
         ConfirmAddDeadlineCommand = new Command(async () => await ConfirmAddDeadLineAsync());
-
+        DeleteDeadlineCommand = new Command<TaskDeadline>(async deadline => await OnDeleteDeadlineAsync(deadline));
 
 
 
@@ -197,7 +199,7 @@ public partial class PurposesViewModel : INotifyPropertyChanged
         {
             TaskId = picked.Id,
             PlannedTime = plannedMs,
-            Deadline = DeadlineDate.ToString("D", new CultureInfo("ru-RU")),
+            Deadline = DeadlineDate,
             InitialTotalTime = picked.TotalWorkTime,
             DeadlineName = NewDeadlineName,
             TaskName = picked.Name
@@ -207,5 +209,15 @@ public partial class PurposesViewModel : INotifyPropertyChanged
         Deadlines.Add(item);
 
         await HideAddMenuAsync();
+    }
+    private async Task OnDeleteDeadlineAsync(TaskDeadline deadline)
+    {
+        if (deadline == null) return;
+
+        bool confirmed = await _confirmDelete(deadline);
+        if (!confirmed) return;
+
+        await App.Database.DeleteDeadlineAsync(deadline.Id);
+        Deadlines.Remove(deadline);
     }
 }

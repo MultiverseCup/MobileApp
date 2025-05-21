@@ -106,6 +106,12 @@
                         Command="{Binding StartPomodoroCommand}"
                         WidthRequest="40" HeightRequest="40" />
                 </Grid>
+                <Label 
+                    Text="{Binding TotalWorkTime}"
+                    FontFamily="VisionBold"
+                    FontSize="20"
+                    TextColor="Black"
+                    HorizontalOptions="Center"/>
             </StackLayout>
 
             <!-- 1.2: FreeTimer + controls -->
