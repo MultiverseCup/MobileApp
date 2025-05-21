@@ -7,8 +7,8 @@
              xmlns:viewmodel="clr-namespace:PomodoroProject.ViewModels"
              xmlns:model="clr-namespace:PomodoroProject.Data.Models"
              x:DataType="viewmodel:PurposesViewModel">
-    <AbsoluteLayout>
 
+    <AbsoluteLayout>
         <StackLayout
             AbsoluteLayout.LayoutBounds="0,0,1,1"
             AbsoluteLayout.LayoutFlags="All">
@@ -26,10 +26,103 @@
                        VerticalOptions="Center"/>
             </Border>
 
-            <CollectionView>
-                
+            <CollectionView 
+                SelectionMode="None"
+                ItemsSource="{Binding Deadlines}"
+                MaximumHeightRequest="400"
+                ItemSizingStrategy="MeasureAllItems">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="model:TaskDeadline">
+                        <Grid >
+                            <Label Text="{Binding DeadlineData}"/>
+                            <Label Text="-"/>
+                            <Label Text="{Binding PlannedTime}"/>
+                            <Border>
+                                <Grid>
+                                    <Label Text="{Binding DeadlineName}"/>
+                                    <Label Text="{Binding InitialTotalTime}"/>
+                                    <Label Text="Занятие:"/>
+                                    <Label Text="{Binding TaskName}"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
             </CollectionView>
             
+            <ImageButton 
+                Source="pluscircle.png"
+                
+                WidthRequest="40"
+                HeightRequest="40"
+                HorizontalOptions="Center"
+                Margin="0,10" />
+            
+            
         </StackLayout>
+
+        <ImageButton
+            AbsoluteLayout.LayoutBounds="0,0,1,1"
+            AbsoluteLayout.LayoutFlags="All"
+    
+            BackgroundColor="#000000"
+            Opacity="{Binding AddMenuOpacity}"
+            IsVisible="{Binding IsAddMenuOpen}"
+            InputTransparent="False" 
+            Command="{Binding HideAddMenuCommand}"/>
+
+
+        <!-- 3) Плавающее AddMenu фиксированной высоты -->
+        <Grid
+            AbsoluteLayout.LayoutBounds="0,1,1,0.8"
+            AbsoluteLayout.LayoutFlags="All"
+            IsVisible="{Binding IsAddMenuOpen}"
+            TranslationY="{Binding AddMenuTranslationY}">
+            <Border
+                StrokeThickness="0"
+                BackgroundColor="White"
+                Padding="20"
+                StrokeShape="RoundRectangle 50,0,0,0">
+                <StackLayout Spacing="0">
+                    <Label 
+                        Text="Добавить deadline"
+                        FontFamily="VisionBold"
+                        FontSize="35"
+                        Margin="10,30,10,0" />
+                    <Label 
+                        Text="Занятие:"
+                        FontFamily="VisionBold"
+                        FontSize="35"
+                        Margin="10,30,10,0" />
+                    <Picker Title="Выберите занятие" 
+                            ItemsSource="{Binding Tasks}" 
+                            SelectedIndex="{Binding SelectedTaskIndex}"/>
+                    <Label 
+                        Text="Нужное время:"
+                        FontFamily="VisionBold"
+                        FontSize="35"
+                        Margin="10,30,10,0" />
+                    <Entry Text="{Binding PlannedTime}"/>
+                    <Label 
+                        Text="Дата окончания:"
+                        FontFamily="VisionBold"
+                        FontSize="35"
+                        Margin="10,30,10,0" />
+                    <DatePicker Date="{Binding DeadlineDate}"/>
+                    
+                    <!-- Confirm -->
+                    <ImageButton 
+                        Grid.Row="2" 
+                        Grid.Column="3"
+                        Source="confirm.png"
+                        
+                        WidthRequest="60"
+                        HeightRequest="60"
+                        HorizontalOptions="End"/>
+                    
+                </StackLayout>
+            </Border>
+        </Grid>
+
     </AbsoluteLayout>
 </ContentPage>

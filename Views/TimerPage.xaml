@@ -118,6 +118,7 @@
                     FontSize="80"
                     TextColor="White"
                     HorizontalOptions="Center"/>
+                
 
                 <Grid  Margin="0,10">
                     <Grid.ColumnDefinitions>
@@ -143,6 +144,12 @@
                         Command="{Binding ResetTotalCommand}"
                         WidthRequest="40" HeightRequest="40" />
                 </Grid>
+                <Label 
+                    Text="{Binding TotalWorkTime}"
+                    FontFamily="VisionBold"
+                    FontSize="20"
+                    TextColor="Black"
+                    HorizontalOptions="Center"/>
             </StackLayout>
 
             <!-- 2: Task list (динамическая высота задаётся в VM через TaskListHeight) -->
@@ -150,7 +157,7 @@
                 ItemsSource="{Binding Tasks}"
                 SelectedItem="{Binding CurrentTask}"
                 SelectionMode="Single"
-                HeightRequest="{Binding TaskListHeight}"
+                
                 MaximumHeightRequest="400"
                 ItemSizingStrategy="MeasureAllItems">
                 <CollectionView.ItemTemplate>

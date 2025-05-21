@@ -29,6 +29,12 @@ public static class MauiProgram
         builder.Services.AddSingleton<TimerViewModel>();
         builder.Services.AddSingleton<TimerPage>();
 
+        builder.Services.AddSingleton<PurposesViewModel>();
+        builder.Services.AddSingleton<PurposesPage>();
+
+        builder.Services.AddSingleton<ScheduleViewModel>();
+        builder.Services.AddSingleton<SchedulePage>();
+
 #if DEBUG
         builder.Logging.AddDebug();
 #endif

@@ -1,4 +1,5 @@
-﻿using SQLite;
+﻿
+using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,11 @@ namespace PomodoroProject.Data.Models
         public int TaskId { get; set; } // Foreign key
 
         public long PlannedTime { get; set; }
-        public string Deadline { get; set; }
+        public string DeadlineData { get; set; } 
         public long InitialTotalTime { get; set; }
+
+        public int TaskName { get; set; } // Foreign key
+
+        public int DeadlineName { get; set; }
     }
 }
