@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="PomodoroProject.Views.PurposesPage"
-             Title="PurposesPage"
-             BackgroundColor="#E5E5E5"
-             xmlns:viewmodel="clr-namespace:PomodoroProject.ViewModels"
-             xmlns:model="clr-namespace:PomodoroProject.Data.Models"
-             x:DataType="viewmodel:PurposesViewModel">
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:conv="clr-namespace:PomodoroProject.Converters"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"
+            x:Class="PomodoroProject.Views.PurposesPage"
+            BackgroundColor="#E5E5E5"
+            xmlns:viewmodel="clr-namespace:PomodoroProject.ViewModels"
+            xmlns:model="clr-namespace:PomodoroProject.Data.Models"
+            x:DataType="viewmodel:PurposesViewModel">
 
     <AbsoluteLayout>
         <StackLayout
@@ -29,30 +30,53 @@
             <CollectionView 
                 SelectionMode="None"
                 ItemsSource="{Binding Deadlines}"
-                MaximumHeightRequest="400"
-                ItemSizingStrategy="MeasureAllItems">
+                MaximumHeightRequest="800"
+                ItemSizingStrategy="MeasureAllItems"
+                Margin="30">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="model:TaskDeadline">
-                        <Grid >
-                            <Label Text="{Binding DeadlineData}"/>
-                            <Label Text="-"/>
-                            <Label Text="{Binding PlannedTime}"/>
-                            <Border>
+                        <StackLayout>
+                            <StackLayout Orientation="Horizontal">
+                                <Label Text="{Binding Deadline}"/>
+                                <Label Text="-"/>
+                                <Label Text="{Binding DisplayPlannedTime}"/>
+                                <Label Text=" ч."/>
+                            </StackLayout>
+                            <Border BackgroundColor="White" Padding="5" StrokeShape="RoundRectangle 20" StrokeThickness="0">
                                 <Grid>
-                                    <Label Text="{Binding DeadlineName}"/>
-                                    <Label Text="{Binding InitialTotalTime}"/>
-                                    <Label Text="Занятие:"/>
-                                    <Label Text="{Binding TaskName}"/>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Column="0" Grid.Row="0" Text="{Binding DeadlineName}" FontSize="16"/>
+                                    <Label Grid.Column="0" Grid.Row="1" Text="Прогресс:"/>
+                                    <Label Grid.Column="0" Grid.Row="2" Text="{Binding InitialTotalTime}"/>
+                                    <Label Grid.Column="1" Grid.Row="1" Text="Занятие:" HorizontalOptions="End"/>
+                                    <Label Grid.Column="1" Grid.Row="2"  Text="{Binding TaskName}" HorizontalOptions="End"/>
+
+                                    <ImageButton
+                                        WidthRequest="10"
+                                        Grid.Column="2"
+                                        Grid.RowSpan="3"
+                                        Source="confirm.png"
+                                        />
                                 </Grid>
                             </Border>
-                        </Grid>
+                        </StackLayout>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
             
             <ImageButton 
                 Source="pluscircle.png"
-                
+                Command="{Binding ShowAddMenuCommand}"
                 WidthRequest="40"
                 HeightRequest="40"
                 HorizontalOptions="Center"
@@ -79,6 +103,7 @@
             IsVisible="{Binding IsAddMenuOpen}"
             TranslationY="{Binding AddMenuTranslationY}">
             <Border
+                InputTransparent="False"
                 StrokeThickness="0"
                 BackgroundColor="White"
                 Padding="20"
@@ -89,33 +114,36 @@
                         FontFamily="VisionBold"
                         FontSize="35"
                         Margin="10,30,10,0" />
+                    <Entry Placeholder="Описание"  Text="{Binding NewDeadlineName}"/>
                     <Label 
                         Text="Занятие:"
                         FontFamily="VisionBold"
                         FontSize="35"
                         Margin="10,30,10,0" />
+                    
                     <Picker Title="Выберите занятие" 
-                            ItemsSource="{Binding Tasks}" 
+                            ItemsSource="{Binding TasksNames}" 
                             SelectedIndex="{Binding SelectedTaskIndex}"/>
                     <Label 
                         Text="Нужное время:"
                         FontFamily="VisionBold"
                         FontSize="35"
                         Margin="10,30,10,0" />
-                    <Entry Text="{Binding PlannedTime}"/>
+                    <Entry Text="{Binding NewPlannedTime}"/>
                     <Label 
                         Text="Дата окончания:"
                         FontFamily="VisionBold"
                         FontSize="35"
                         Margin="10,30,10,0" />
-                    <DatePicker Date="{Binding DeadlineDate}"/>
+                    
+                    <DatePicker Date="{Binding DeadlineDate}" MinimumDate="{x:Static sys:DateTime.Today}" Format="D"/>
                     
                     <!-- Confirm -->
                     <ImageButton 
                         Grid.Row="2" 
                         Grid.Column="3"
                         Source="confirm.png"
-                        
+                        Command="{Binding ConfirmAddDeadlineCommand}"
                         WidthRequest="60"
                         HeightRequest="60"
                         HorizontalOptions="End"/>

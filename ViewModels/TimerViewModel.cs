@@ -219,8 +219,8 @@ public partial class TimerViewModel : INotifyPropertyChanged
         ShowAddMenuCommand = new Command(async () => await ShowAddMenuAsync());
         HideAddMenuCommand = new Command(async () => await HideAddMenuAsync());
         ConfirmAddTaskCommand = new Command(async () => await ConfirmAddTaskAsync());
-        ToggleModeCommand = new Command(OnToggleMode);
-        OpenModePickerCommand = new Command(OnOpenModePicker);
+        ToggleModeCommand = new Command(async () => await OnToggleMode());
+        OpenModePickerCommand = new Command(async () => await OnOpenModePicker());
         DeleteTaskCommand = new Command<PomodoroTask>(async task => await OnDeleteTaskAsync(task));
         CancelAddTaskCommand = new Command(async () => await HideAddMenuAsync());
 
@@ -382,6 +382,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
         };
         await App.Database.SaveTaskAsync(newTask);
         Tasks.Add(newTask);
+
         NewTaskName = string.Empty;
         NewWorkMinutes = "25";
         NewWorkSeconds = "00";
@@ -393,10 +394,10 @@ public partial class TimerViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(NewRestSeconds));
 
         await HideAddMenuAsync();
-        IsAddMenuOpen = false;
+        
     }
 
-    private void OnToggleMode(object obj)
+    private async Task OnToggleMode()
     {
         // Переключаем режим
         bool isPomodoro = SelectedModeText == "Pomodoro";
@@ -408,8 +409,9 @@ public partial class TimerViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(SelectedModeText));
         OnPropertyChanged(nameof(AlternativeModeText));
         RefreshTimers();
+        OnOpenModePicker();
     }
-    private void OnOpenModePicker(object obj)
+    private async Task OnOpenModePicker()
     {
         // Переключаем меню выбора
         IsPickerOpen = !IsPickerOpen;

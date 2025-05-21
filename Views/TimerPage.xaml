@@ -272,6 +272,7 @@
             IsVisible="{Binding IsAddMenuOpen}"
             TranslationY="{Binding AddMenuTranslationY}">
             <Border
+                InputTransparent="False"
                 StrokeThickness="0"
                 BackgroundColor="White"
                 Padding="20"

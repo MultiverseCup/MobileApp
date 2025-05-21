@@ -1,10 +1,16 @@
+using PomodoroProject.ViewModels;
+
 namespace PomodoroProject.Views
 {
 	public partial class PurposesPage : ContentPage
-	{
-		public PurposesPage()
+    {
+        private readonly PurposesViewModel _viewModel;
+        
+        public PurposesPage()
 		{
-			InitializeComponent();
-		}
+            InitializeComponent();
+            _viewModel = new PurposesViewModel();
+            BindingContext = _viewModel;
+        }
 	}
 }

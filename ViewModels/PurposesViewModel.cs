@@ -1,10 +1,13 @@
 ﻿
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using PomodoroProject.Data;
 using PomodoroProject.Data.Models;
+
 
 namespace PomodoroProject.ViewModels;
 
@@ -19,15 +22,20 @@ public partial class PurposesViewModel : INotifyPropertyChanged
     }
 
     // === Поля ===
-    private List<PomodoroTask> _tasks;
+    private List<PomodoroTask> _tasks = new();
     private ObservableCollection<TaskDeadline> _deadlines = new();
 
+    
     private bool _isAddMenuOpen = false;
     private double _addMenuTranslationY;
     private double _addMenuOpacity = 0;
+    private string _newDeadlineName;
     private int _selectedTaskIndex;
-    private int _deadlineDate;
-    private string _plannedTime;
+    private DateTime _deadlineDate;
+    private string _newPlannedTime;
+
+
+    
 
     // === Свойства ===
     public ObservableCollection<TaskDeadline> Deadlines
@@ -54,8 +62,8 @@ public partial class PurposesViewModel : INotifyPropertyChanged
         set { _addMenuOpacity = value; OnPropertyChanged(); }
     }
 
-    public int SelectedTaskIndex 
-    { 
+    public int SelectedTaskIndex
+    {
         get => _selectedTaskIndex;
         set
         {
@@ -63,46 +71,64 @@ public partial class PurposesViewModel : INotifyPropertyChanged
         }
     }
 
-    public List<PomodoroTask> Tasks { 
+    public List<PomodoroTask> Tasks
+    {
         get => _tasks;
-        set { _tasks = value; OnPropertyChanged(); } 
+        set { _tasks = value; OnPropertyChanged(); }
     }
 
-    public int DeadlineDate { 
+    public DateTime DeadlineDate
+    {
         get => _deadlineDate;
-        set { _deadlineDate = value; OnPropertyChanged();}
+        set { _deadlineDate = value; OnPropertyChanged(); }
     }
 
-    public string PlannedTime { 
-        get => _plannedTime;
-        set { _plannedTime = value; OnPropertyChanged(); } 
+    public string NewPlannedTime
+    {
+        get => _newPlannedTime;
+        set { _newPlannedTime = value; OnPropertyChanged(); }
     }
+    public List<string> TasksNames => _tasks.Select(x => x.Name).ToList();
+
+    public string NewDeadlineName
+    {
+        get => _newDeadlineName;
+        set { _newDeadlineName = value; OnPropertyChanged(); }
+    }
+
+
+
+
     // === Команды ===
     public ICommand LoadTasksCommand { get; }
-    
-    
+    public ICommand LoadDeadlinesCommand { get; }
+
     public ICommand ShowAddMenuCommand { get; }
     public ICommand HideAddMenuCommand { get; }
-    public ICommand ConfirmAddTaskCommand { get; }
-
-
-
+    public ICommand ConfirmAddDeadlineCommand { get; }
     
+
+
+
+
+
 
     // === Конструктор ===
     public PurposesViewModel()
     {
-        
-
         // Инициализация команд
         LoadTasksCommand = new Command(async () => await LoadTasksAsync());
-        
+        LoadDeadlinesCommand = new Command(async () => await LoadDeadlinesAsync());
+
         ShowAddMenuCommand = new Command(async () => await ShowAddMenuAsync());
         HideAddMenuCommand = new Command(async () => await HideAddMenuAsync());
-        ConfirmAddTaskCommand = new Command(async () => await ConfirmAddDeadLineAsync());
-        
+        ConfirmAddDeadlineCommand = new Command(async () => await ConfirmAddDeadLineAsync());
+
+
+
 
         LoadTasksCommand.Execute(null);
+        LoadDeadlinesCommand.Execute(null);
     }
 
 
@@ -114,8 +140,20 @@ public partial class PurposesViewModel : INotifyPropertyChanged
         var all = await App.Database.GetAllTasksAsync();
         foreach (var task in all) Tasks.Add(task);
     }
+
+    private async Task LoadDeadlinesAsync()
+    {
+        Deadlines.Clear();
+        var all = await App.Database.GetAllDeadlineAsync();
+        foreach (var task in all) Deadlines.Add(task);
+        
+    }
+
     private async Task ShowAddMenuAsync()
     {
+        await LoadTasksAsync();
+        OnPropertyChanged(nameof(TasksNames));
+
         IsAddMenuOpen = true;
         AddMenuTranslationY = 600;
         AddMenuOpacity = 0;
@@ -127,6 +165,7 @@ public partial class PurposesViewModel : INotifyPropertyChanged
             await Task.Delay(16);
         }
     }
+
     private async Task HideAddMenuAsync()
     {
         for (double t = 1; t >= 0; t -= 0.1)
@@ -140,19 +179,14 @@ public partial class PurposesViewModel : INotifyPropertyChanged
     private async Task ConfirmAddDeadLineAsync()
     {
         if (SelectedTaskIndex < 0
-            || !double.TryParse(PlannedTime, out double hours))
+            || !double.TryParse(NewPlannedTime, out double hours))
         {
-            //await DisplayAlert("Ошибка", "Заполните все поля корректно", "OK");
             return;
         }
 
         const double maxHours = int.MaxValue / 3600000.0; // ≈596.5
         if (hours > maxHours)
         {
-            //await DisplayAlert(
-            //    "Ошибка",
-            //    $"Слишком большое время (максимум {maxHours:F1} ч).",
-            //    "OK");
             return;
         }
 
@@ -163,10 +197,15 @@ public partial class PurposesViewModel : INotifyPropertyChanged
         {
             TaskId = picked.Id,
             PlannedTime = plannedMs,
-            DeadlineData = DeadlineDate.ToString("o"),
-            InitialTotalTime = picked.TotalWorkTime
+            Deadline = DeadlineDate.ToString("D", new CultureInfo("ru-RU")),
+            InitialTotalTime = picked.TotalWorkTime,
+            DeadlineName = NewDeadlineName,
+            TaskName = picked.Name
         };
 
-        
+        await App.Database.SaveDeadlineAsync(item);
+        Deadlines.Add(item);
+
+        await HideAddMenuAsync();
     }
 }
