@@ -13,7 +13,7 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <conv:BoolToRotationConverter x:Key="BoolToRotation" />
-            <conv:SelectedItemToVisibleConverter x:Key="SelectedVisibleConverter"/>
+            
         </ResourceDictionary>
     </ContentPage.Resources>
 
