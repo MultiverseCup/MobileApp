@@ -13,6 +13,7 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <conv:BoolToRotationConverter x:Key="BoolToRotation" />
+            <conv:SelectedItemToVisibleConverter x:Key="SelectedVisibleConverter"/>
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -159,7 +160,8 @@
             </StackLayout>
 
             <!-- 2: Task list (динамическая высота задаётся в VM через TaskListHeight) -->
-            <CollectionView 
+            
+            <CollectionView   x:Name="MyCollectionView"
                 ItemsSource="{Binding Tasks}"
                 SelectedItem="{Binding CurrentTask}"
                 SelectionMode="Single"
@@ -179,13 +181,13 @@
                             <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup x:Name="CommonStates">
                                         <VisualState x:Name="Normal">
-                                            <VisualState.Setters>
-                                                <Setter Property="BackgroundColor" 
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" 
                                                         Value="White"/>
-                                            </VisualState.Setters>
-                                        </VisualState>
-                                        <VisualState x:Name="Selected">
-                                            <VisualState.Setters>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Selected">
+                                        <VisualState.Setters>
                                                 <Setter Property="BackgroundColor" 
                                                         Value="#D4FFB9"/>
                                             </VisualState.Setters>
@@ -227,7 +229,10 @@
 
                                     <Label Grid.Row="1" Grid.Column="0" Text="{Binding DisplayWorkDuration}" FontSize="12" HorizontalOptions="Center"/>
                                     <Label Grid.Row="1" Grid.Column="1" Text="{Binding DisplayRestDuration}" FontSize="12" HorizontalOptions="Center"/>
+
                                     <Label Grid.Row="1" Grid.Column="2" Text="{Binding DisplayTotalTime}" FontSize="12" HorizontalOptions="Center"/>
+                                    
+
                                 </Grid>
 
                                 <ImageButton 
@@ -246,7 +251,7 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-
+            
             <!-- 3: Add-button сразу под списком -->
             <ImageButton 
                 Source="pluscircle.png"

@@ -22,10 +22,13 @@ public partial class TimerViewModel : INotifyPropertyChanged
     }
 
     // === Поля ===
+    
+
     private readonly Func<PomodoroTask, Task<bool>> _confirmDelete;
 
     private ObservableCollection<PomodoroTask> _tasks = new();
     private ObservableCollection<TaskDeadline> _deadlines = new();
+
     private PomodoroTask _currentTask;
     private bool _isAddMenuOpen;
     private double _addMenuTranslationY = 500;
@@ -213,6 +216,8 @@ public partial class TimerViewModel : INotifyPropertyChanged
     // === Конструктор ===
     public TimerViewModel(Func<PomodoroTask, Task<bool>> confirmDelete)
     {
+
+
         _confirmDelete = confirmDelete;
 
         // Инициализация команд
@@ -259,18 +264,18 @@ public partial class TimerViewModel : INotifyPropertyChanged
         FreeTime = TimeSpan.FromMilliseconds(_freeElapsed).ToString(@"mm\:ss");
     }
 
-
+    
     
     private async Task OnStartPomodoro()
     {
         if (CurrentTask == null) return;
         _pomodoroRunning = !_pomodoroRunning;
         OnPropertyChanged(nameof(PomodoroButtonIcon));
-
+        
         if (!_pomodoroRunning)
         {
-
             await App.Database.SaveTaskAsync(CurrentTask);
+            
             return;
         }
 

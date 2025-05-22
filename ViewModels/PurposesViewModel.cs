@@ -22,6 +22,7 @@ public partial class PurposesViewModel : INotifyPropertyChanged
     }
 
     // === Поля ===
+    
 
     private List<PomodoroTask> _tasks = new();
     private ObservableCollection<TaskDeadline> _deadlines = new();
@@ -117,6 +118,7 @@ public partial class PurposesViewModel : INotifyPropertyChanged
     // === Конструктор ===
     public PurposesViewModel(Func<TaskDeadline, Task<bool>> confirmDelete)
     {
+
         _confirmDelete = confirmDelete;
         // Инициализация команд
         LoadTasksCommand = new Command(async () => await LoadTasksAsync());
@@ -131,6 +133,7 @@ public partial class PurposesViewModel : INotifyPropertyChanged
 
         LoadTasksCommand.Execute(null);
         LoadDeadlinesCommand.Execute(null);
+        
     }
 
 

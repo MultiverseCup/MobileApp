@@ -26,7 +26,9 @@ public static class MauiProgram
                 FileSystem.AppDataDirectory,
                 "pomodoro.db3")));
 
-        builder.Services.AddSingleton<TimerViewModel>();
+       
+
+        builder.Services.AddSingleton<TimerViewModel>( );
         builder.Services.AddSingleton<TimerPage>();
 
         builder.Services.AddSingleton<PurposesViewModel>();
