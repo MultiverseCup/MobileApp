@@ -13,6 +13,9 @@ namespace PomodoroProject.Data.Models
     public class TaskDeadline : INotifyPropertyChanged
     {
         private long _elapsedTotalTime;
+        private bool _isCompleted;
+        private bool _isOverdue;
+        private bool _isActual = true;
 
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
@@ -24,26 +27,29 @@ namespace PomodoroProject.Data.Models
         public long InitialTotalTime { get; set; }
         public long ElapsedTotalTime { 
             get => _elapsedTotalTime; 
-            set { _elapsedTotalTime = value; OnPropertyChanged(nameof(DisplayElapsedTotalTime)); } }
+            set { _elapsedTotalTime = value; 
+                OnPropertyChanged(nameof(DisplayElapsedTotalTime));
+                
+                
+            } }
 
         public string TaskName { get; set; } // Foreign key
         public string DeadlineName { get; set; }
 
 
-
-        public bool IsActual => DateTime.Now < Deadline;
-        public bool IsCompleted => !IsActual && ElapsedTotalTime >= PlannedTime;
-        public bool IsOverdue => !IsActual && ElapsedTotalTime < PlannedTime;
-
+        public bool IsCompleted { get => _isCompleted; 
+            set { _isCompleted = value; OnPropertyChanged(nameof(DisplayStatus)); OnPropertyChanged(); } }
+        public bool IsOverdue { get => _isOverdue; 
+            set { _isOverdue = value; OnPropertyChanged(nameof(DisplayStatus)); OnPropertyChanged(); } }
+        public bool IsActual { 
+            get => _isActual;
+            set { _isActual = value; OnPropertyChanged(); } }
         public string DisplayElapsedTotalTime => TimeSpan.FromMilliseconds(ElapsedTotalTime).ToString(@"hh\:mm\:ss");
         public string DisplayStatus => IsCompleted ? "Выполнено" : IsOverdue ? "Просрочено" : "В работе";
         public string DisplayDeadline => Deadline.ToString("D", new CultureInfo("ru-RU"));
-        public string DisplayPlannedTime => Math.Round((PlannedTime / 3600000.0),1).ToString();
+        public string DisplayPlannedTime => Math.Round((PlannedTime / 3600000.0),2).ToString();
 
-
-
-
-
+        
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

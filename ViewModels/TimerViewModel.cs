@@ -264,11 +264,11 @@ public partial class TimerViewModel : INotifyPropertyChanged
         FreeTime = TimeSpan.FromMilliseconds(_freeElapsed).ToString(@"mm\:ss");
     }
 
-    private void SendCurrToDead()
+    private void SendCurrentTaskToDeadlines()
     {
         MessagingCenter.Send<object, PomodoroTask>(
                 this,     // Отправитель (обычно `this`)
-                "DataUpdated", // Уникальное имя сообщения
+                "Task", // Уникальное имя сообщения
                 CurrentTask     // Данные (может быть любой тип)
             );
     }
@@ -278,7 +278,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
         if (CurrentTask == null) return;
         _pomodoroRunning = !_pomodoroRunning;
         OnPropertyChanged(nameof(PomodoroButtonIcon));
-        SendCurrToDead();
+        SendCurrentTaskToDeadlines();
         if (!_pomodoroRunning)
         {
             
@@ -302,7 +302,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
                 // обновляем текст
                 RefreshTimers();
 
-                SendCurrToDead();
+                SendCurrentTaskToDeadlines();
                 // показываем алерт
                 string title = IsWorkPhase ? "Пора работать!" : "Пора отдыхать!";
                 await Application.Current.MainPage.DisplayAlert("Время!", title, "OK");
@@ -339,6 +339,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
         if (CurrentTask == null) return;
         _freeRunning = !_freeRunning;
         OnPropertyChanged(nameof(FreeButtonIcon));
+        SendCurrentTaskToDeadlines();
         if (!_freeRunning)
         {
             // при остановке сохраняем общее время
@@ -368,7 +369,9 @@ public partial class TimerViewModel : INotifyPropertyChanged
 
     private async Task OnResetTotal()
     {
-        await OnResetPomodoro();
+        RefreshTimers();
+        CurrentTask.TotalWorkTime = 0;
+        SendCurrentTaskToDeadlines();
     }
 
     private async Task ShowAddMenuAsync()

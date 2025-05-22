@@ -109,6 +109,7 @@ public partial class PurposesViewModel : INotifyPropertyChanged
     public ICommand HideAddMenuCommand { get; }
     public ICommand ConfirmAddDeadlineCommand { get; }
     public ICommand DeleteDeadlineCommand { get; }
+    public ICommand DeleteDeadlineFastCommand { get; }
 
 
 
@@ -120,16 +121,22 @@ public partial class PurposesViewModel : INotifyPropertyChanged
     {
         MessagingCenter.Subscribe<object, PomodoroTask>(
             this,     // Подписчик (обычно `this`)
-            "DataUpdated",
+            "Task",
             async (sender, task) =>
             {
                 foreach(var d in Deadlines)
                 {
                     if (d.TaskId == task.Id)
                     {
+                        if (task.TotalWorkTime == 0) d.InitialTotalTime = 0;
                         d.ElapsedTotalTime += task.TotalWorkTime - d.InitialTotalTime;
                         d.InitialTotalTime = task.TotalWorkTime;
+
+                        d.IsCompleted = d.ElapsedTotalTime >= d.PlannedTime;
+                        d.IsOverdue = (DateTime.Now > d.Deadline) && d.ElapsedTotalTime < d.PlannedTime;
+                        d.IsActual = !(d.IsCompleted || d.IsOverdue);
                         await App.Database.SaveDeadlineAsync(d);
+
                     }
                 }
             }
@@ -145,7 +152,7 @@ public partial class PurposesViewModel : INotifyPropertyChanged
         HideAddMenuCommand = new Command(async () => await HideAddMenuAsync());
         ConfirmAddDeadlineCommand = new Command(async () => await ConfirmAddDeadLineAsync());
         DeleteDeadlineCommand = new Command<TaskDeadline>(async deadline => await OnDeleteDeadlineAsync(deadline));
-
+        DeleteDeadlineFastCommand = new Command<TaskDeadline>(async deadline => await OnDeleteDeadlineFastAsync(deadline));
 
 
         LoadTasksCommand.Execute(null);
@@ -237,6 +244,12 @@ public partial class PurposesViewModel : INotifyPropertyChanged
         bool confirmed = await _confirmDelete(deadline);
         if (!confirmed) return;
 
+        await App.Database.DeleteDeadlineAsync(deadline.Id);
+        Deadlines.Remove(deadline);
+    }
+
+    private async Task OnDeleteDeadlineFastAsync(TaskDeadline deadline)
+    {
         await App.Database.DeleteDeadlineAsync(deadline.Id);
         Deadlines.Remove(deadline);
     }

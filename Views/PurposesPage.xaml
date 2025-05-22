@@ -9,6 +9,14 @@
             xmlns:model="clr-namespace:PomodoroProject.Data.Models"
             x:DataType="viewmodel:PurposesViewModel">
 
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <conv:BoolToInverse x:Key="Inverse"/>
+            <conv:BoolToGreenColor x:Key="BoolToGreen"/>
+            <conv:BoolToStrike x:Key="BoolToStrike"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
     <AbsoluteLayout>
         <StackLayout
             AbsoluteLayout.LayoutBounds="0,0,1,1"
@@ -35,14 +43,14 @@
                 Margin="30">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="model:TaskDeadline">
-                        <StackLayout Padding="0,8,0,0">
-                            <StackLayout Orientation="Horizontal">
-                                <Label Text="{Binding DisplayDeadline}"/>
-                                <Label Text="    -    "/>
-                                <Label Text="{Binding DisplayPlannedTime}"/>
-                                <Label Text=" ч."/>
+                        <StackLayout >
+                            <StackLayout Orientation="Horizontal" Spacing="10">
+                                <Label Text="{Binding DisplayDeadline}" VerticalOptions="Center"/>
+                                <Label Text="·" FontSize="28"/>
+                                <Label Text="{Binding DisplayPlannedTime}" VerticalOptions="Center"/>
+                                <Label Text=" ч." VerticalOptions="Center"/>
                             </StackLayout>
-                            <Border BackgroundColor="White" Padding="5" StrokeShape="RoundRectangle 20" StrokeThickness="0">
+                            <Border BackgroundColor="White" Padding="7" StrokeShape="RoundRectangle 25" StrokeThickness="0">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -55,13 +63,27 @@
                                         <RowDefinition Height="*"/>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
-                                    <Label Grid.ColumnSpan="3" Grid.Row="0" Text="{Binding DeadlineName}" FontSize="16"/>
+                                    <Label Grid.ColumnSpan="3" Grid.Row="0" Text="{Binding DeadlineName}" 
+                                           FontSize="16" 
+                                           TextColor="{Binding IsCompleted,Converter={StaticResource BoolToGreen}}"
+                                           TextDecorations="{Binding IsOverdue, Converter={StaticResource BoolToStrike}}"/>
                                     <Label Grid.Column="0" Grid.Row="1" Text="Прогресс:"/>
                                     <Label Grid.Column="0" Grid.Row="2" Text="{Binding DisplayElapsedTotalTime}"/>
                                     <Label Grid.Column="1" Grid.Row="1" Text="Занятие:" />
-                                    <Label Grid.Column="1" Grid.Row="2"  Text="{Binding TaskName}" />
-                                    <Label Grid.Column="2" Grid.Row="1" Text="Статус:" />
-                                    <Label Grid.Column="2" Grid.Row="2"  Text="{Binding DisplayStatus}"/>
+                                    <Label Grid.Column="1" Grid.Row="2"  Text="{Binding TaskName}"/>
+                                    <Label Grid.Column="2" Grid.Row="1" Text="Статус:" 
+                                           TextColor="{Binding IsCompleted,Converter={StaticResource BoolToGreen}}"
+                                           TextDecorations="{Binding IsOverdue, Converter={StaticResource BoolToStrike}}"/>
+                                    <Label Grid.Column="2" Grid.Row="2"  Text="{Binding DisplayStatus}" 
+                                           TextColor="{Binding IsCompleted,Converter={StaticResource BoolToGreen}}"
+                                           TextDecorations="{Binding IsOverdue, Converter={StaticResource BoolToStrike}}"/>
+                                    
+                                    <ImageButton
+                                        IsVisible="{Binding IsActual, Converter={StaticResource Inverse}}"
+                                        Grid.ColumnSpan="4"
+                                        Grid.RowSpan="3"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:PurposesViewModel}}, Path=DeleteDeadlineFastCommand}"
+                                        CommandParameter="{Binding .}"   />
                                     
                                     <ImageButton
                                         MaximumWidthRequest="30"
@@ -139,7 +161,7 @@
                         FontFamily="VisionBold"
                         FontSize="35"
                         Margin="10,30,10,0" />
-                    
+
                     <DatePicker Date="{Binding DeadlineDate}" MinimumDate="{x:Static sys:DateTime.Today}" Format="D"/>
                     
                     <!-- Confirm -->
