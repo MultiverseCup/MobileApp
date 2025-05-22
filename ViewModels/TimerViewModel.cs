@@ -264,18 +264,25 @@ public partial class TimerViewModel : INotifyPropertyChanged
         FreeTime = TimeSpan.FromMilliseconds(_freeElapsed).ToString(@"mm\:ss");
     }
 
-    
+    private void SendCurrToDead()
+    {
+        MessagingCenter.Send<object, PomodoroTask>(
+                this,     // Отправитель (обычно `this`)
+                "DataUpdated", // Уникальное имя сообщения
+                CurrentTask     // Данные (может быть любой тип)
+            );
+    }
     
     private async Task OnStartPomodoro()
     {
         if (CurrentTask == null) return;
         _pomodoroRunning = !_pomodoroRunning;
         OnPropertyChanged(nameof(PomodoroButtonIcon));
-        
+        SendCurrToDead();
         if (!_pomodoroRunning)
         {
-            await App.Database.SaveTaskAsync(CurrentTask);
             
+            await App.Database.SaveTaskAsync(CurrentTask);
             return;
         }
 
@@ -285,13 +292,17 @@ public partial class TimerViewModel : INotifyPropertyChanged
             {
                 // переключаем фазу
                 IsWorkPhase = !IsWorkPhase;
-                CurrentTask.TimeRemaining = IsWorkPhase
-                    ? CurrentTask.WorkDuration
-                    : CurrentTask.RestDuration;
+                foreach (var t in Tasks)
+                {
+                    t.TimeRemaining = IsWorkPhase
+                        ? t.WorkDuration
+                        : t.RestDuration;
+                }
 
                 // обновляем текст
                 RefreshTimers();
 
+                SendCurrToDead();
                 // показываем алерт
                 string title = IsWorkPhase ? "Пора работать!" : "Пора отдыхать!";
                 await Application.Current.MainPage.DisplayAlert("Время!", title, "OK");
@@ -317,7 +328,8 @@ public partial class TimerViewModel : INotifyPropertyChanged
         if (CurrentTask == null) return;
         _pomodoroRunning = false;
         CurrentTask.TimeRemaining = CurrentTask.WorkDuration;
-        CurrentTask.TotalWorkTime = 0;
+        IsWorkPhase = true;
+        //CurrentTask.TotalWorkTime = 0;
         RefreshTimers();
         await App.Database.SaveTaskAsync(CurrentTask);
     }

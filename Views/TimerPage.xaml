@@ -19,7 +19,7 @@
 
     <!-- Корневая абсолютная вёрстка -->
     <AbsoluteLayout>
-
+        
         <!-- 1) Основной контент -->
         <StackLayout
             AbsoluteLayout.LayoutBounds="0,0,1,1"

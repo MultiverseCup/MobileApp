@@ -118,6 +118,23 @@ public partial class PurposesViewModel : INotifyPropertyChanged
     // === Конструктор ===
     public PurposesViewModel(Func<TaskDeadline, Task<bool>> confirmDelete)
     {
+        MessagingCenter.Subscribe<object, PomodoroTask>(
+            this,     // Подписчик (обычно `this`)
+            "DataUpdated",
+            async (sender, task) =>
+            {
+                foreach(var d in Deadlines)
+                {
+                    if (d.TaskId == task.Id)
+                    {
+                        d.ElapsedTotalTime += task.TotalWorkTime - d.InitialTotalTime;
+                        d.InitialTotalTime = task.TotalWorkTime;
+                        await App.Database.SaveDeadlineAsync(d);
+                    }
+                }
+            }
+        );
+
 
         _confirmDelete = confirmDelete;
         // Инициализация команд
