@@ -3,6 +3,7 @@ using PomodoroProject.ViewModels;
 using Microsoft.Extensions.Logging;
 using PomodoroProject.Views;
 using CommunityToolkit.Maui; // Добавьте это для использования .UseMauiCommunityToolkit()
+using Plugin.LocalNotification;
 
 namespace PomodoroProject;
 
@@ -13,6 +14,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseLocalNotification()
             .UseMauiCommunityToolkit() // Добавлено: должно быть сразу после UseMauiApp
             .ConfigureFonts(fonts =>
             {

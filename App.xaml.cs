@@ -15,6 +15,8 @@ namespace PomodoroProject
             // Назначаем Shell сразу — UI сможет отрисоваться
             MainPage = new AppShell();
 
+            
+
             // А БД инициализируем в фоне, не блокируя UI
             _ = InitializeDatabaseAsync();
         }

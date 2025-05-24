@@ -2,11 +2,22 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PomodoroProject.Views.SchedulePage"
-             Title="SchedulePage">
+            
+             xmlns:viewmodel="clr-namespace:PomodoroProject.ViewModels"
+            xmlns:model="clr-namespace:PomodoroProject.Data.Models"
+            x:DataType="viewmodel:ScheduleViewModel">
     <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+        <Label Text="Выберите рабочие дни"/>
+        <StackLayout Orientation="Horizontal" HeightRequest="100">
+            <Button Text="ПН"/>
+            <Button Text="ВТ"/>
+            <Button Text="СР"/>
+            <Button Text="ЧТ"/>
+            <Button Text="ПТ"/>
+            <Button Text="СБ"/>
+            <Button Text="ВС"/>
+        </StackLayout>
+        <Button Command="{Binding TestNotificationCommand}"
+                BackgroundColor="{Binding CLR}"/>
     </VerticalStackLayout>
 </ContentPage>
