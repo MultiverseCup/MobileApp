@@ -1,4 +1,5 @@
-﻿using PomodoroProject.Data;
+﻿using Plugin.LocalNotification;
+using PomodoroProject.Data;
     
 
 namespace PomodoroProject
@@ -14,6 +15,7 @@ namespace PomodoroProject
 
             // Назначаем Shell сразу — UI сможет отрисоваться
             MainPage = new AppShell();
+
 
             
 

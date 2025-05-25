@@ -7,17 +7,37 @@
             xmlns:model="clr-namespace:PomodoroProject.Data.Models"
             x:DataType="viewmodel:ScheduleViewModel">
     <VerticalStackLayout>
+        <Border
+            BackgroundColor="#FF7E7E"
+            StrokeShape="RoundRectangle 0,0,50,50"
+            StrokeThickness="0"
+            HeightRequest="100">
+                <Label Text="Расписание" 
+                   FontFamily="VisionBold"
+                   FontSize="25"
+                   TextColor="White"
+                   HorizontalOptions="Center" 
+                   VerticalOptions="Center"/>
+        </Border>
+        
         <Label Text="Выберите рабочие дни"/>
+        
         <StackLayout Orientation="Horizontal" HeightRequest="100">
-            <Button Text="ПН"/>
-            <Button Text="ВТ"/>
-            <Button Text="СР"/>
-            <Button Text="ЧТ"/>
-            <Button Text="ПТ"/>
-            <Button Text="СБ"/>
-            <Button Text="ВС"/>
+            <Button Text="ПН" BackgroundColor="LightGray"/>
+            <Button Text="ВТ" BackgroundColor="LightGray"/>
+            <Button Text="СР" BackgroundColor="LightGray"/>
+            <Button Text="ЧТ" BackgroundColor="LightGray"/>
+            <Button Text="ПТ" BackgroundColor="LightGray"/>
+            <Button Text="СБ" BackgroundColor="LightGray"/>
+            <Button Text="ВС" BackgroundColor="LightGray"/>
         </StackLayout>
-        <Button Command="{Binding TestNotificationCommand}"
+
+        <Button Text="Start SPAM"
+            Command="{Binding TestNotificationCommand}"
                 BackgroundColor="{Binding CLR}"/>
+
+        <Button Text="Stop"
+            Command="{Binding StopTestNotificationCommand}"
+            BackgroundColor="{Binding CLR}"/>
     </VerticalStackLayout>
 </ContentPage>

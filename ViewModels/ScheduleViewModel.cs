@@ -38,11 +38,13 @@ namespace PomodoroProject.ViewModels
         //Команды
 
         public ICommand TestNotificationCommand { get; }
+        public ICommand StopTestNotificationCommand { get; }
 
         //Конструктор
         public ScheduleViewModel()
         {
             TestNotificationCommand = new Command(async () => await TestNotification());
+            StopTestNotificationCommand = new Command(async () => await StopTestNotification());
         }
         //Методы
 
@@ -53,14 +55,22 @@ namespace PomodoroProject.ViewModels
                 NotificationId = 1,
                 Title = "TEST",
                 Description = "bb'",
-
                 Schedule = new NotificationRequestSchedule
                 {
-                    NotifyTime = DateTime.Now.AddSeconds(3)
+                    NotifyTime = DateTime.Now.AddSeconds(3),
+                    RepeatType = NotificationRepeat.TimeInterval,
+                    NotifyRepeatInterval = TimeSpan.FromSeconds(5)
                 }
             };
 
             await LocalNotificationCenter.Current.Show(request);
+            CLR = Colors.Aqua;
+        }
+
+        private async Task StopTestNotification()
+        {
+            
+            LocalNotificationCenter.Current.Cancel(1);
             CLR = Colors.Aqua;
         }
     }
