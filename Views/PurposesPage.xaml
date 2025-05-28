@@ -124,7 +124,7 @@
 
         <!-- 3) Плавающее AddMenu фиксированной высоты -->
         <Grid
-            AbsoluteLayout.LayoutBounds="0,1,1,0.8"
+            AbsoluteLayout.LayoutBounds="0,0.2,1,0.75"
             AbsoluteLayout.LayoutFlags="All"
             IsVisible="{Binding IsAddMenuOpen}"
             TranslationY="{Binding AddMenuTranslationY}">
@@ -133,43 +133,43 @@
                 StrokeThickness="0"
                 BackgroundColor="White"
                 Padding="20"
-                StrokeShape="RoundRectangle 50,0,0,0">
+                StrokeShape="RoundRectangle 50">
                 <StackLayout Spacing="0">
                     <Label 
-                        Text="Добавить deadline"
+                        Text="Добавить цель"
                         FontFamily="VisionBold"
-                        FontSize="35"
+                        FontSize="25"
                         Margin="10,30,10,0" />
                     <Entry Placeholder="Описание"  Text="{Binding NewDeadlineName}"/>
                     <Label 
                         Text="Занятие:"
                         FontFamily="VisionBold"
-                        FontSize="35"
+                        FontSize="25"
                         Margin="10,30,10,0" />
                     
                     <Picker Title="Выберите занятие" 
                             ItemsSource="{Binding TasksNames}" 
                             SelectedIndex="{Binding SelectedTaskIndex}"/>
                     <Label 
-                        Text="Нужное время:"
+                        Text="Нужное время в часах:"
                         FontFamily="VisionBold"
-                        FontSize="35"
+                        FontSize="25"
                         Margin="10,30,10,0" />
                     <Entry Text="{Binding NewPlannedTime}"/>
                     <Label 
                         Text="Дата окончания:"
                         FontFamily="VisionBold"
-                        FontSize="35"
+                        FontSize="25"
                         Margin="10,30,10,0" />
 
                     <DatePicker Date="{Binding DeadlineDate}" MinimumDate="{x:Static sys:DateTime.Today}" Format="D"/>
                     
                     <!-- Confirm -->
                     <ImageButton 
-                        Grid.Row="2" 
-                        Grid.Column="3"
+                        Margin="0,25,0,0"
                         Source="confirm.png"
                         Command="{Binding ConfirmAddDeadlineCommand}"
+                        
                         WidthRequest="60"
                         HeightRequest="60"
                         HorizontalOptions="End"/>

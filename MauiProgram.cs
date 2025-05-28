@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using PomodoroProject.Views;
 using CommunityToolkit.Maui; // Добавьте это для использования .UseMauiCommunityToolkit()
 using Plugin.LocalNotification;
+using Plugin.Maui.Audio;
 
 namespace PomodoroProject;
 
@@ -28,9 +29,9 @@ public static class MauiProgram
                 FileSystem.AppDataDirectory,
                 "pomodoro.db3")));
 
-       
+        builder.Services.AddSingleton(AudioManager.Current);
 
-        builder.Services.AddSingleton<TimerViewModel>( );
+        builder.Services.AddSingleton<TimerViewModel>();
         builder.Services.AddSingleton<TimerPage>();
 
         builder.Services.AddSingleton<PurposesViewModel>();

@@ -4,8 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:conv="clr-namespace:PomodoroProject.Converters"
     x:Class="PomodoroProject.Views.TimerPage"
-    Title="Таймер"
-    BackgroundImageSource="bg.jpg"
     xmlns:viewmodel="clr-namespace:PomodoroProject.ViewModels"
     xmlns:model="clr-namespace:PomodoroProject.Data.Models"
     x:DataType="viewmodel:TimerViewModel">
@@ -13,12 +11,23 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <conv:BoolToRotationConverter x:Key="BoolToRotation" />
-            
+            <conv:PhaseToBgColorConverter x:Key="PhaseToBgColor"/>
         </ResourceDictionary>
     </ContentPage.Resources>
 
     <!-- Корневая абсолютная вёрстка -->
     <AbsoluteLayout>
+        <!--Фон -->
+        <Border 
+            AbsoluteLayout.LayoutBounds="0,0,1,1"
+            AbsoluteLayout.LayoutFlags="All"
+            BackgroundColor="{Binding IsWorkPhase, Converter={StaticResource PhaseToBgColor}}"/>
+        
+        <Image 
+            AbsoluteLayout.LayoutBounds="0,0,1,1"
+            AbsoluteLayout.LayoutFlags="All"
+            VerticalOptions="End"
+            Source="square_with_shadow.png"/>
         
         <!-- 1) Основной контент -->
         <StackLayout
@@ -46,7 +55,8 @@
                     Grid.RowSpan="2" Grid.ColumnSpan="2"
                     StrokeShape="RoundRectangle 20"
                     StrokeThickness="0"
-                    BackgroundColor="#B55757"
+                    BackgroundColor="Black"
+                    Opacity="0.3"
                     IsVisible="{Binding IsPickerOpen}" />
 
                 <Button 
@@ -168,6 +178,7 @@
             
             <CollectionView   x:Name="MyCollectionView"
                 ItemsSource="{Binding Tasks}"
+                Margin="0,60,0,0"
                 SelectedItem="{Binding CurrentTask}"
                 SelectionMode="Single"
                 

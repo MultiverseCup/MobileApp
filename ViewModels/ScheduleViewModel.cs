@@ -57,7 +57,7 @@ namespace PomodoroProject.ViewModels
                 Description = "bb'",
                 Schedule = new NotificationRequestSchedule
                 {
-                    NotifyTime = DateTime.Now.AddSeconds(3),
+                    NotifyTime = new DateTime(),
                     RepeatType = NotificationRepeat.TimeInterval,
                     NotifyRepeatInterval = TimeSpan.FromSeconds(5)
                 }

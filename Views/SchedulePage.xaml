@@ -19,19 +19,33 @@
                    HorizontalOptions="Center" 
                    VerticalOptions="Center"/>
         </Border>
-        
-        <Label Text="Выберите рабочие дни"/>
-        
-        <StackLayout Orientation="Horizontal" HeightRequest="100">
-            <Button Text="ПН" BackgroundColor="LightGray"/>
-            <Button Text="ВТ" BackgroundColor="LightGray"/>
-            <Button Text="СР" BackgroundColor="LightGray"/>
-            <Button Text="ЧТ" BackgroundColor="LightGray"/>
-            <Button Text="ПТ" BackgroundColor="LightGray"/>
-            <Button Text="СБ" BackgroundColor="LightGray"/>
-            <Button Text="ВС" BackgroundColor="LightGray"/>
+
+        <Label 
+            Text="Выберите рабочие дни:"
+            FontFamily="VisionBold"
+            FontSize="25"
+            Margin="20"
+            HorizontalOptions="Center"
+             />
+
+        <StackLayout 
+            Margin="10"
+            Spacing="10"
+            WidthRequest="300"
+            >
+            <Button Text="ПН" BackgroundColor="Gray" />
+            <Button Text="ВТ" BackgroundColor="Gray" />
+            <Button Text="СР" BackgroundColor="Gray" />
+            <Button Text="ЧТ" BackgroundColor="Gray" />
+            <Button Text="ПТ" BackgroundColor="Gray" />
+            <Button Text="СБ" BackgroundColor="Gray" />
+            <Button Text="ВС" BackgroundColor="Gray" />
         </StackLayout>
 
+        
+        
+        
+        <!--Тестовые кнопки-->
         <Button Text="Start SPAM"
             Command="{Binding TestNotificationCommand}"
                 BackgroundColor="{Binding CLR}"/>

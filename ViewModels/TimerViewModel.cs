@@ -8,6 +8,8 @@ using CommunityToolkit.Mvvm.Input;
 using PomodoroProject.Data.Models;
 using PomodoroProject.Data;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Media;
+using Plugin.Maui.Audio;
 
 namespace PomodoroProject.ViewModels;
 
@@ -22,8 +24,8 @@ public partial class TimerViewModel : INotifyPropertyChanged
     }
 
     // === Поля ===
-    
 
+    private readonly IAudioManager _audioManager;
     private readonly Func<PomodoroTask, Task<bool>> _confirmDelete;
 
     private ObservableCollection<PomodoroTask> _tasks = new();
@@ -214,9 +216,9 @@ public partial class TimerViewModel : INotifyPropertyChanged
     });
 
     // === Конструктор ===
-    public TimerViewModel(Func<PomodoroTask, Task<bool>> confirmDelete)
+    public TimerViewModel(Func<PomodoroTask, Task<bool>> confirmDelete, IAudioManager audioManager)
     {
-
+        _audioManager = audioManager;
 
         _confirmDelete = confirmDelete;
 
@@ -272,7 +274,12 @@ public partial class TimerViewModel : INotifyPropertyChanged
                 CurrentTask     // Данные (может быть любой тип)
             );
     }
-    
+    private async Task PlaySound()
+    {
+        var player = _audioManager.CreatePlayer(
+            await FileSystem.OpenAppPackageFileAsync("budilnik1.wav"));
+        player.Play();
+    }
     private async Task OnStartPomodoro()
     {
         if (CurrentTask == null) return;
@@ -281,7 +288,6 @@ public partial class TimerViewModel : INotifyPropertyChanged
         SendCurrentTaskToDeadlines();
         if (!_pomodoroRunning)
         {
-            
             await App.Database.SaveTaskAsync(CurrentTask);
             return;
         }
@@ -304,6 +310,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
 
                 SendCurrentTaskToDeadlines();
                 // показываем алерт
+                await PlaySound();
                 string title = IsWorkPhase ? "Пора работать!" : "Пора отдыхать!";
                 await Application.Current.MainPage.DisplayAlert("Время!", title, "OK");
             }
@@ -333,7 +340,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
         RefreshTimers();
         await App.Database.SaveTaskAsync(CurrentTask);
     }
-
+    
     private async Task OnStartFree()
     {
         if (CurrentTask == null) return;
