@@ -2,10 +2,18 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="PomodoroProject.Views.SchedulePage"
-            
+            xmlns:conv="clr-namespace:PomodoroProject.Converters"
              xmlns:viewmodel="clr-namespace:PomodoroProject.ViewModels"
             xmlns:model="clr-namespace:PomodoroProject.Data.Models"
-            x:DataType="viewmodel:ScheduleViewModel">
+            x:DataType="viewmodel:ScheduleViewModel"
+             BackgroundColor="#E5E5E5">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <conv:BoolToWeekdayClrConverter x:Key="BoolToWeekdayClr"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
     <VerticalStackLayout>
         <Border
             BackgroundColor="#FF7E7E"
@@ -33,25 +41,63 @@
             Spacing="10"
             WidthRequest="300"
             >
-            <Button Text="ПН" BackgroundColor="Gray" />
-            <Button Text="ВТ" BackgroundColor="Gray" />
-            <Button Text="СР" BackgroundColor="Gray" />
-            <Button Text="ЧТ" BackgroundColor="Gray" />
-            <Button Text="ПТ" BackgroundColor="Gray" />
-            <Button Text="СБ" BackgroundColor="Gray" />
-            <Button Text="ВС" BackgroundColor="Gray" />
+            <Button Text="ПН" 
+                    FontSize="18"
+                    TextColor="Black"
+                    FontFamily="VisionRegular"
+                    BackgroundColor="{Binding IsMondayToggled, Converter={StaticResource BoolToWeekdayClr}}" 
+                    Command="{Binding ToggleMondayCommand}"/>
+            <Button Text="ВТ" 
+                    FontSize="18"
+                    TextColor="Black"
+                    FontFamily="VisionRegular"
+                    BackgroundColor="{Binding IsTuesdayToggled, Converter={StaticResource BoolToWeekdayClr}}"
+                    Command="{Binding ToggleTuesdayCommand}"/>
+            <Button Text="СР" 
+                    FontSize="18"
+                    TextColor="Black"
+                    FontFamily="VisionRegular"
+                    BackgroundColor="{Binding IsWednesdayToggled, Converter={StaticResource BoolToWeekdayClr}}" 
+                    Command="{Binding ToggleWednesdayCommand}"/>
+            <Button Text="ЧТ" 
+                    FontSize="18"
+                    TextColor="Black"
+                    FontFamily="VisionRegular"
+                    BackgroundColor="{Binding IsThursdayToggled, Converter={StaticResource BoolToWeekdayClr}}" 
+                    Command="{Binding ToggleThursdayCommand}"/>
+            <Button Text="ПТ"
+                    FontSize="18"
+                    TextColor="Black"
+                    FontFamily="VisionRegular"
+                    BackgroundColor="{Binding IsFridayToggled, Converter={StaticResource BoolToWeekdayClr}}" 
+                    Command="{Binding ToggleFridayCommand}"/>
+            <Button Text="СБ"
+                    FontSize="18"
+                    TextColor="Black"
+                    FontFamily="VisionRegular"
+                    BackgroundColor="{Binding IsSaturdayToggled, Converter={StaticResource BoolToWeekdayClr}}"
+                    Command="{Binding ToggleSaturdayCommand}"/>
+            <Button Text="ВС" 
+                    FontSize="18"
+                    TextColor="Black"
+                    FontFamily="VisionRegular"
+                    BackgroundColor="{Binding IsSundayToggled, Converter={StaticResource BoolToWeekdayClr}}"
+                    Command="{Binding ToggleSundayCommand}"/>
         </StackLayout>
 
         
         
         
         <!--Тестовые кнопки-->
-        <Button Text="Start SPAM"
+        <Button Margin="50"
+            Text="Start test 5 sec SPAM"
             Command="{Binding TestNotificationCommand}"
-                BackgroundColor="{Binding CLR}"/>
+                WidthRequest="200"
+                />
 
-        <Button Text="Stop"
-            Command="{Binding StopTestNotificationCommand}"
-            BackgroundColor="{Binding CLR}"/>
+        <Button Text="Stop test SPAM"
+            Command="{Binding StopTestNotificationCommand}" 
+                WidthRequest="100"
+            />
     </VerticalStackLayout>
 </ContentPage>

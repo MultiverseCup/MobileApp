@@ -25,6 +25,8 @@ public partial class TimerViewModel : INotifyPropertyChanged
 
     // === Поля ===
 
+    private int _karmaValue;
+
     private readonly IAudioManager _audioManager;
     private readonly Func<PomodoroTask, Task<bool>> _confirmDelete;
 
@@ -54,6 +56,13 @@ public partial class TimerViewModel : INotifyPropertyChanged
     private string _selectedModeText = "Pomodoro";
 
     // === Свойства ===
+    public int KarmaValue
+    {
+        get => _karmaValue;
+        set { _karmaValue = Math.Min(100, Math.Max(0, value));
+            Preferences.Set("karma", _karmaValue);
+            OnPropertyChanged(); }
+    }
     public ObservableCollection<PomodoroTask> Tasks
     {
         get => _tasks;
@@ -218,6 +227,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
     // === Конструктор ===
     public TimerViewModel(Func<PomodoroTask, Task<bool>> confirmDelete, IAudioManager audioManager)
     {
+        KarmaValue = Preferences.Get("karma", 50);
         _audioManager = audioManager;
 
         _confirmDelete = confirmDelete;
@@ -311,6 +321,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
                 SendCurrentTaskToDeadlines();
                 // показываем алерт
                 await PlaySound();
+                if (!IsWorkPhase) KarmaValue += 5;
                 string title = IsWorkPhase ? "Пора работать!" : "Пора отдыхать!";
                 await Application.Current.MainPage.DisplayAlert("Время!", title, "OK");
             }
