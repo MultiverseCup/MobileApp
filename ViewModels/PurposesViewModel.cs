@@ -22,7 +22,6 @@ public partial class PurposesViewModel : INotifyPropertyChanged
     }
 
     // === Поля ===
-    
 
     private List<PomodoroTask> _tasks = new();
     private ObservableCollection<TaskDeadline> _deadlines = new();
@@ -37,9 +36,18 @@ public partial class PurposesViewModel : INotifyPropertyChanged
     private string _newPlannedTime;
 
 
-    
+
 
     // === Свойства ===
+    public double KarmaValue
+    {
+        get => Preferences.Get("karma", 0.2);
+        set
+        {
+            Preferences.Set("karma", Math.Min(1, Math.Max(0, value)));
+            OnPropertyChanged();
+        }
+    }
     public ObservableCollection<TaskDeadline> Deadlines
     {
         get => _deadlines;
@@ -111,7 +119,7 @@ public partial class PurposesViewModel : INotifyPropertyChanged
     public ICommand DeleteDeadlineCommand { get; }
     public ICommand DeleteDeadlineFastCommand { get; }
 
-
+    public ICommand CheckDeadlinesCommand { get; }
 
 
 
@@ -120,7 +128,7 @@ public partial class PurposesViewModel : INotifyPropertyChanged
     public PurposesViewModel(Func<TaskDeadline, Task<bool>> confirmDelete)
     {
         MessagingCenter.Subscribe<object, PomodoroTask>(
-            this,     // Подписчик (обычно `this`)
+            this,     
             "Task",
             async (sender, task) =>
             {
@@ -141,8 +149,7 @@ public partial class PurposesViewModel : INotifyPropertyChanged
                 }
             }
         );
-
-
+    
         _confirmDelete = confirmDelete;
         // Инициализация команд
         LoadTasksCommand = new Command(async () => await LoadTasksAsync());
@@ -153,16 +160,28 @@ public partial class PurposesViewModel : INotifyPropertyChanged
         ConfirmAddDeadlineCommand = new Command(async () => await ConfirmAddDeadLineAsync());
         DeleteDeadlineCommand = new Command<TaskDeadline>(async deadline => await OnDeleteDeadlineAsync(deadline));
         DeleteDeadlineFastCommand = new Command<TaskDeadline>(async deadline => await OnDeleteDeadlineFastAsync(deadline));
-
+        CheckDeadlinesCommand = new Command(async () => await CheckDeadlines());
 
         LoadTasksCommand.Execute(null);
         LoadDeadlinesCommand.Execute(null);
-        
+        CheckDeadlinesCommand.Execute(null);
     }
 
-
+    
 
     // === Методы ===
+
+    private async Task CheckDeadlines()
+    {
+        foreach (var d in Deadlines)
+        {
+            d.IsCompleted = d.ElapsedTotalTime >= d.PlannedTime;
+            d.IsOverdue = (DateTime.Now > d.Deadline) && d.ElapsedTotalTime < d.PlannedTime;
+            d.IsActual = !(d.IsCompleted || d.IsOverdue);
+            await App.Database.SaveDeadlineAsync(d);
+        }
+    }
+
     private async Task LoadTasksAsync()
     {
         Tasks.Clear();
@@ -251,6 +270,8 @@ public partial class PurposesViewModel : INotifyPropertyChanged
     private async Task OnDeleteDeadlineFastAsync(TaskDeadline deadline)
     {
         await App.Database.DeleteDeadlineAsync(deadline.Id);
+        if (deadline.IsOverdue) KarmaValue -= 0.2;
+        if (deadline.IsCompleted) KarmaValue += 0.15;
         Deadlines.Remove(deadline);
     }
 }

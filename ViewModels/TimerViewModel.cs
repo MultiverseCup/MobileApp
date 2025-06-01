@@ -25,7 +25,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
 
     // === Поля ===
 
-    private int _karmaValue;
+    
 
     private readonly IAudioManager _audioManager;
     private readonly Func<PomodoroTask, Task<bool>> _confirmDelete;
@@ -56,11 +56,11 @@ public partial class TimerViewModel : INotifyPropertyChanged
     private string _selectedModeText = "Pomodoro";
 
     // === Свойства ===
-    public int KarmaValue
+    public double KarmaValue
     {
-        get => _karmaValue;
-        set { _karmaValue = Math.Min(100, Math.Max(0, value));
-            Preferences.Set("karma", _karmaValue);
+        get => Preferences.Get("karma", 0.2);
+        set { 
+            Preferences.Set("karma", Math.Min(1, Math.Max(0, value)));
             OnPropertyChanged(); }
     }
     public ObservableCollection<PomodoroTask> Tasks
@@ -227,7 +227,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
     // === Конструктор ===
     public TimerViewModel(Func<PomodoroTask, Task<bool>> confirmDelete, IAudioManager audioManager)
     {
-        KarmaValue = Preferences.Get("karma", 50);
+        KarmaValue = Preferences.Get("karma", 0.2);
         _audioManager = audioManager;
 
         _confirmDelete = confirmDelete;
@@ -279,9 +279,9 @@ public partial class TimerViewModel : INotifyPropertyChanged
     private void SendCurrentTaskToDeadlines()
     {
         MessagingCenter.Send<object, PomodoroTask>(
-                this,     // Отправитель (обычно `this`)
+                this,     
                 "Task", // Уникальное имя сообщения
-                CurrentTask     // Данные (может быть любой тип)
+                CurrentTask     
             );
     }
     private async Task PlaySound()
@@ -296,6 +296,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
         _pomodoroRunning = !_pomodoroRunning;
         OnPropertyChanged(nameof(PomodoroButtonIcon));
         SendCurrentTaskToDeadlines();
+        
         if (!_pomodoroRunning)
         {
             await App.Database.SaveTaskAsync(CurrentTask);
@@ -321,7 +322,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
                 SendCurrentTaskToDeadlines();
                 // показываем алерт
                 await PlaySound();
-                if (!IsWorkPhase) KarmaValue += 5;
+                if (!IsWorkPhase) KarmaValue += 0.15;
                 string title = IsWorkPhase ? "Пора работать!" : "Пора отдыхать!";
                 await Application.Current.MainPage.DisplayAlert("Время!", title, "OK");
             }
@@ -348,6 +349,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
         CurrentTask.TimeRemaining = CurrentTask.WorkDuration;
         IsWorkPhase = true;
         //CurrentTask.TotalWorkTime = 0;
+        
         RefreshTimers();
         await App.Database.SaveTaskAsync(CurrentTask);
     }

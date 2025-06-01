@@ -12,6 +12,7 @@
         <ResourceDictionary>
             <conv:BoolToRotationConverter x:Key="BoolToRotation" />
             <conv:PhaseToBgColorConverter x:Key="PhaseToBgColor"/>
+            <conv:KarmaConverter x:Key="Karma"/>
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -35,18 +36,15 @@
             AbsoluteLayout.LayoutFlags="All"
             Spacing="0">
 
-            <AbsoluteLayout HeightRequest="40"
-                            Margin="10">
+            <Grid Padding="5">
+
                 <Image 
-                    Source="progress.png"
-                    AbsoluteLayout.LayoutBounds="0,0,1,1"
-                    AbsoluteLayout.LayoutFlags="All"/>
+                    Source="progress.png"/>
                 <Image 
-                    Source="progress_point.png"
-                    AbsoluteLayout.LayoutBounds="0.05,0,0.1,1"
-                    AbsoluteLayout.LayoutFlags="All"
-                       />
-            </AbsoluteLayout>
+                    HorizontalOptions="Start"
+                    TranslationX="{Binding KarmaValue, Converter={StaticResource Karma}}"
+                    Source="progress_point.png"/>
+            </Grid>
 
 
             <!-- 0: Mode picker -->
@@ -207,6 +205,7 @@
                             MinimumHeightRequest="80"
                             StrokeShape="RoundRectangle 20"
                             StrokeThickness="0">
+                            
                             <!-- Стиль для выделения -->
                             <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup x:Name="CommonStates">

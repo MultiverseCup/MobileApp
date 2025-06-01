@@ -14,6 +14,7 @@
             <conv:BoolToInverse x:Key="Inverse"/>
             <conv:BoolToGreenColor x:Key="BoolToGreen"/>
             <conv:BoolToStrike x:Key="BoolToStrike"/>
+            <conv:KarmaConverter x:Key="Karma"/>
         </ResourceDictionary>
     </ContentPage.Resources>
     
@@ -27,12 +28,14 @@
                 StrokeShape="RoundRectangle 0,0,50,50"
                 StrokeThickness="0"
                 HeightRequest="100">
-                <Label Text="Планировщик задач" 
+                <Label 
+                        Text="Планировщик задач" 
                        FontFamily="VisionBold"
                        FontSize="25"
                        TextColor="White"
                        HorizontalOptions="Center" 
                        VerticalOptions="Center"/>
+
             </Border>
 
             <CollectionView 

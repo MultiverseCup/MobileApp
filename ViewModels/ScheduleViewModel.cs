@@ -24,6 +24,9 @@ namespace PomodoroProject.ViewModels
         }
 
         // === Поля ===
+
+        private TimeSpan _notifyTime;
+
         private bool _isMondayToggled;
         private bool _isTuesdayToggled;
         private bool _isWednesdayToggled;
@@ -33,7 +36,16 @@ namespace PomodoroProject.ViewModels
         private bool _isSundayToggled;
 
         //Свойства
-
+        public TimeSpan NotifyTime
+        {
+            get => _notifyTime;
+            set
+            {
+                _notifyTime = value;
+                OnPropertyChanged();
+                Preferences.Set("notifytime", value.ToString());
+            }
+        }
         public bool IsMondayToggled
         {
             get => _isMondayToggled;
@@ -110,10 +122,15 @@ namespace PomodoroProject.ViewModels
         public ICommand ToggleSaturdayCommand { get; }
         public ICommand ToggleSundayCommand { get; }
 
+        public ICommand RefreshNotificationsCommand { get; }
+
 
         //Конструктор
         public ScheduleViewModel()
         {
+            NotifyTime = TimeSpan.Parse(Preferences.Get("notifytime", "08:00:00"));
+
+
             IsMondayToggled = Preferences.Get("monday", false);
             IsTuesdayToggled = Preferences.Get("tuesday", false);
             IsWednesdayToggled = Preferences.Get("wednesday", false);
@@ -132,6 +149,7 @@ namespace PomodoroProject.ViewModels
             ToggleFridayCommand = new Command(async () => await ToggleFriday());
             ToggleSaturdayCommand = new Command(async () => await ToggleSaturday());
             ToggleSundayCommand = new Command(async () => await ToggleSunday());
+            RefreshNotificationsCommand = new Command(async () => await RefreshNotifications());
         }
 
         //Методы
@@ -151,23 +169,45 @@ namespace PomodoroProject.ViewModels
                 Description = description,
                 Schedule = new NotificationRequestSchedule
                 {
-                    NotifyTime = GetNextWeekday(DateTime.Today, weekDay),
+                    NotifyTime = GetNextWeekday(DateTime.Today.Add(NotifyTime), weekDay),
                     RepeatType = NotificationRepeat.TimeInterval,
                     NotifyRepeatInterval = TimeSpan.FromDays(7)
                 }
             };
-
             await LocalNotificationCenter.Current.Show(request);
         }
         private void CancelLocalNotification(int id)
         {
             LocalNotificationCenter.Current.Cancel(id);
         }
+        private async Task RefreshNotifications()
+        {
+            await ToggleMonday();
+            await ToggleMonday();
+
+            await ToggleTuesday();
+            await ToggleTuesday();
+
+            await ToggleWednesday();
+            await ToggleWednesday();
+
+            await ToggleThursday();
+            await ToggleThursday();
+
+            await ToggleFriday();
+            await ToggleFriday();
+
+            await ToggleSaturday();
+            await ToggleSaturday();
+
+            await ToggleSunday();
+            await ToggleSunday();
+        }
 
         private async Task ToggleMonday()
         {
             if (!IsMondayToggled)
-                await CreateLocalNotification(1, "", "", DayOfWeek.Monday);
+                await CreateLocalNotification(1, "Уже понедельник", "Пора за работу", DayOfWeek.Monday);
             else
                 CancelLocalNotification(1);
             IsMondayToggled = !IsMondayToggled;
@@ -175,7 +215,7 @@ namespace PomodoroProject.ViewModels
         private async Task ToggleTuesday()
         {
             if (!IsTuesdayToggled)
-                await CreateLocalNotification(2, "", "", DayOfWeek.Tuesday);
+                await CreateLocalNotification(2, "", "Пора за работу", DayOfWeek.Tuesday);
             else
                 CancelLocalNotification(2);
             IsTuesdayToggled = !IsTuesdayToggled;
@@ -183,7 +223,7 @@ namespace PomodoroProject.ViewModels
         private async Task ToggleWednesday()
         {
             if (!IsWednesdayToggled)
-                await CreateLocalNotification(3, "", "", DayOfWeek.Wednesday);
+                await CreateLocalNotification(3, "", "Пора за работу", DayOfWeek.Wednesday);
             else
                 CancelLocalNotification(3);
             IsWednesdayToggled = !IsWednesdayToggled;
@@ -191,7 +231,7 @@ namespace PomodoroProject.ViewModels
         private async Task ToggleThursday()
         {
             if (!IsThursdayToggled)
-                await CreateLocalNotification(4, "", "", DayOfWeek.Thursday);
+                await CreateLocalNotification(4, "", "Пора за работу", DayOfWeek.Thursday);
             else
                 CancelLocalNotification(4);
             IsThursdayToggled = !IsThursdayToggled;
@@ -199,7 +239,7 @@ namespace PomodoroProject.ViewModels
         private async Task ToggleFriday()
         {
             if (!IsFridayToggled)
-                await CreateLocalNotification(5, "", "", DayOfWeek.Friday);
+                await CreateLocalNotification(5, "", "Пора за работу", DayOfWeek.Friday);
             else
                 CancelLocalNotification(5);
             IsFridayToggled = !IsFridayToggled;
@@ -207,7 +247,7 @@ namespace PomodoroProject.ViewModels
         private async Task ToggleSaturday()
         {
             if (!IsSaturdayToggled)
-                await CreateLocalNotification(6, "", "", DayOfWeek.Saturday);
+                await CreateLocalNotification(6, "", "Пора за работу", DayOfWeek.Saturday);
             else
                 CancelLocalNotification(6);
             IsSaturdayToggled = !IsSaturdayToggled;
@@ -215,7 +255,7 @@ namespace PomodoroProject.ViewModels
         private async Task ToggleSunday()
         {
             if (!IsSundayToggled)
-                await CreateLocalNotification(7, "", "", DayOfWeek.Sunday);
+                await CreateLocalNotification(7, "", "Пора за работу", DayOfWeek.Sunday);
             else
                 CancelLocalNotification(7);
             IsSundayToggled = !IsSundayToggled;
@@ -232,7 +272,7 @@ namespace PomodoroProject.ViewModels
                 Subtitle = "это подзаголовок!!!",
                 Schedule = new NotificationRequestSchedule
                 {
-                    NotifyTime = DateTime.Now,
+                    NotifyTime = DateTime.Now.AddSeconds(5),
                     RepeatType = NotificationRepeat.TimeInterval,
                     NotifyRepeatInterval = TimeSpan.FromSeconds(5)
                 }

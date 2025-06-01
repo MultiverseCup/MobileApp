@@ -27,17 +27,36 @@
                    HorizontalOptions="Center" 
                    VerticalOptions="Center"/>
         </Border>
-
+        <Label Text="Время уведомлений:" 
+               HorizontalOptions="Center" 
+               FontSize="20" 
+               FontFamily="VisionBold"/>
+        <Grid HorizontalOptions="Center">
+            <Border 
+                BackgroundColor="White"   
+                StrokeShape="RoundRectangle 20"    
+                StrokeThickness="0"/>
+            <TimePicker 
+                Margin="5"
+                FontSize="30"   
+                Time="{Binding NotifyTime}"/>
+        </Grid>
+        <Button 
+            Text="Обновить время уведомлений" 
+            BackgroundColor="#FF7E7E"
+            Command="{Binding RefreshNotificationsCommand}"
+            HorizontalOptions="Center"/>
+        
+        
         <Label 
             Text="Выберите рабочие дни:"
             FontFamily="VisionBold"
             FontSize="25"
-            Margin="20"
+            Margin="10"
             HorizontalOptions="Center"
              />
 
         <StackLayout 
-            Margin="10"
             Spacing="10"
             WidthRequest="300"
             >
@@ -85,19 +104,21 @@
                     Command="{Binding ToggleSundayCommand}"/>
         </StackLayout>
 
-        
-        
-        
-        <!--Тестовые кнопки-->
-        <Button Margin="50"
-            Text="Start test 5 sec SPAM"
-            Command="{Binding TestNotificationCommand}"
-                WidthRequest="200"
+
+
+        <StackLayout Orientation="Horizontal"
+                     Margin="0,10,0,0"
+                     HorizontalOptions="Center">
+            <!--Тестовые кнопки-->
+            <Button 
+                Text="Start test"
+                Command="{Binding TestNotificationCommand}"
                 />
 
-        <Button Text="Stop test SPAM"
-            Command="{Binding StopTestNotificationCommand}" 
-                WidthRequest="100"
-            />
+            <Button 
+                Text="Stop test"
+                Command="{Binding StopTestNotificationCommand}"   
+                />
+        </StackLayout>
     </VerticalStackLayout>
 </ContentPage>
