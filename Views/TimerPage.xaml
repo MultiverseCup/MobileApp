@@ -22,7 +22,8 @@
         <Border 
             AbsoluteLayout.LayoutBounds="0,0,1,1"
             AbsoluteLayout.LayoutFlags="All"
-            BackgroundColor="{Binding IsWorkPhase, Converter={StaticResource PhaseToBgColor}}"/>
+            BackgroundColor="{Binding IsWorkPhase, Converter={StaticResource PhaseToBgColor}}"
+             />
         
         <Image 
             AbsoluteLayout.LayoutBounds="0,0,1,1"
@@ -134,12 +135,12 @@
                         Command="{Binding ResetTotalCommand}"
                         WidthRequest="40" HeightRequest="40" />
                 </Grid>
-                <Label 
+                <!--<Label 
                     Text="{Binding TotalWorkTime}"
                     FontFamily="VisionBold"
                     FontSize="20"
                     TextColor="Black"
-                    HorizontalOptions="Center"/>
+                    HorizontalOptions="Center"/>-->
             </StackLayout>
 
             <!-- 1.2: FreeTimer + controls -->
@@ -178,23 +179,23 @@
                         Command="{Binding ResetTotalCommand}"
                         WidthRequest="40" HeightRequest="40" />
                 </Grid>
-                <Label 
+                <!--<Label 
                     Text="{Binding TotalWorkTime}"
                     FontFamily="VisionBold"
                     FontSize="20"
                     TextColor="Black"
-                    HorizontalOptions="Center"/>
+                    HorizontalOptions="Center"/>-->
             </StackLayout>
 
             <!-- 2: Task list (динамическая высота задаётся в VM через TaskListHeight) -->
             
             <CollectionView   x:Name="MyCollectionView"
                 ItemsSource="{Binding Tasks}"
-                Margin="0,60,0,0"
+                Margin="0,0,0,0"
                 SelectedItem="{Binding CurrentTask}"
                 SelectionMode="Single"
                 
-                MaximumHeightRequest="400"
+                MaximumHeightRequest="350"
                 ItemSizingStrategy="MeasureAllItems">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="model:PomodoroTask">

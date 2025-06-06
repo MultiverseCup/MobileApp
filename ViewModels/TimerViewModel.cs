@@ -227,6 +227,15 @@ public partial class TimerViewModel : INotifyPropertyChanged
     // === Конструктор ===
     public TimerViewModel(Func<PomodoroTask, Task<bool>> confirmDelete, IAudioManager audioManager)
     {
+        MessagingCenter.Subscribe<object, double>(
+            this,
+            "karmaupdate",
+            (sender, karma) =>
+            {
+                KarmaValue = Preferences.Get("karma", 0.2);
+            }
+        );
+
         KarmaValue = Preferences.Get("karma", 0.2);
         _audioManager = audioManager;
 
