@@ -16,7 +16,7 @@
     
     <VerticalStackLayout>
         <Border
-            BackgroundColor="#FF7E7E"
+            BackgroundColor="{DynamicResource GlobalColor}"
             StrokeShape="RoundRectangle 0,0,50,50"
             StrokeThickness="0"
             HeightRequest="100">
@@ -43,7 +43,7 @@
         </Grid>
         <Button 
             Text="Обновить время уведомлений" 
-            BackgroundColor="#FF7E7E"
+            BackgroundColor="{DynamicResource GlobalColor}"
             Command="{Binding RefreshNotificationsCommand}"
             HorizontalOptions="Center"/>
         

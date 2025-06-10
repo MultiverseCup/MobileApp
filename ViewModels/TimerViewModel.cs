@@ -301,6 +301,12 @@ public partial class TimerViewModel : INotifyPropertyChanged
     }
     private async Task OnStartPomodoro()
     {
+        var random = new Random();
+        ThemeManager.Instance.GlobalColor = Color.FromRgb(
+            random.Next(256),
+            random.Next(256),
+            random.Next(256));
+
         if (CurrentTask == null) return;
         _pomodoroRunning = !_pomodoroRunning;
         OnPropertyChanged(nameof(PomodoroButtonIcon));

@@ -1,6 +1,7 @@
 ﻿using Plugin.LocalNotification;
 using PomodoroProject.Data;
-    
+using PomodoroProject.ViewModels;
+
 
 namespace PomodoroProject
 {
@@ -13,6 +14,7 @@ namespace PomodoroProject
         {
             InitializeComponent();
 
+            ThemeManager.Instance.UpdateApplicationResources();
             // Назначаем Shell сразу — UI сможет отрисоваться
             MainPage = new AppShell();
 

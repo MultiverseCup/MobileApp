@@ -35,7 +35,7 @@ public partial class PurposesViewModel : INotifyPropertyChanged
     private DateTime _deadlineDate;
     private string _newPlannedTime;
 
-
+    private bool _isDeadlinesRefreshing;
 
 
     // === Свойства ===
@@ -53,7 +53,11 @@ public partial class PurposesViewModel : INotifyPropertyChanged
         get => _deadlines;
         set { _deadlines = value; OnPropertyChanged(); }
     }
-
+    public bool IsDeadlinesRefreshing
+    {
+        get => _isDeadlinesRefreshing;
+        set { _isDeadlinesRefreshing = value; OnPropertyChanged(); }
+    }
     public bool IsAddMenuOpen
     {
         get => _isAddMenuOpen;
@@ -209,6 +213,7 @@ public partial class PurposesViewModel : INotifyPropertyChanged
             d.IsActual = !(d.IsCompleted || d.IsOverdue);
             await App.Database.SaveDeadlineAsync(d);
         }
+        IsDeadlinesRefreshing = false;
     }
 
     private async Task LoadTasksAsync()
