@@ -38,12 +38,7 @@
                 Opacity="0.1" />
             </Border.Shadow>
         </Border>
-        <!--<Image 
-            AbsoluteLayout.LayoutBounds="0,0,1,1"
-            AbsoluteLayout.LayoutFlags="All"
-            VerticalOptions="End"
-            Source="square_with_shadow.png"/>-->
-        
+
         <!-- 1) Основной контент -->
         <StackLayout
             AbsoluteLayout.LayoutBounds="0,0,1,1"
