@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Maui.Animations;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -41,6 +42,12 @@ public class ThemeManager : INotifyPropertyChanged
         if (Application.Current != null && Application.Current.Resources.TryGetValue("GlobalColor", out object _))
         {
             Application.Current.Resources["GlobalColor"] = GlobalColor;
+        }
+        if (Application.Current != null && Application.Current.Resources.TryGetValue("GlobalLightColor", out object _))
+        {
+
+            Application.Current.Resources["GlobalLightColor"] 
+                = GlobalColor.Lerp(Colors.White, 0.6);
         }
     }
 }

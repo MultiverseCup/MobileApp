@@ -11,7 +11,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <Color x:Key="GlobalColor">#FF7E7E</Color>
-
+            <Color x:Key="GlobalLightColor">#FFCBCB</Color>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
