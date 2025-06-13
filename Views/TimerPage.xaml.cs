@@ -1,6 +1,7 @@
 using PomodoroProject.Data.Models;
 using Microsoft.Maui.Controls;
 using PomodoroProject.ViewModels;
+using Plugin.Maui.Audio;
 
 namespace PomodoroProject.Views
 {
@@ -9,10 +10,10 @@ namespace PomodoroProject.Views
 
         private readonly TimerViewModel _viewModel;
 
-        public TimerPage()
+        public TimerPage(IAudioManager audio)
         {
             InitializeComponent();
-            _viewModel = new TimerViewModel(ConfirmDeleteAsync);
+            _viewModel = new TimerViewModel(ConfirmDeleteAsync, audio);
             BindingContext = _viewModel;
         }
 

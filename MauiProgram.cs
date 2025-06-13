@@ -3,6 +3,8 @@ using PomodoroProject.ViewModels;
 using Microsoft.Extensions.Logging;
 using PomodoroProject.Views;
 using CommunityToolkit.Maui; // Добавьте это для использования .UseMauiCommunityToolkit()
+using Plugin.LocalNotification;
+using Plugin.Maui.Audio;
 
 namespace PomodoroProject;
 
@@ -13,6 +15,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseLocalNotification()
             .UseMauiCommunityToolkit() // Добавлено: должно быть сразу после UseMauiApp
             .ConfigureFonts(fonts =>
             {
@@ -26,8 +29,16 @@ public static class MauiProgram
                 FileSystem.AppDataDirectory,
                 "pomodoro.db3")));
 
+        builder.Services.AddSingleton(AudioManager.Current);
+
         builder.Services.AddSingleton<TimerViewModel>();
         builder.Services.AddSingleton<TimerPage>();
+
+        builder.Services.AddSingleton<PurposesViewModel>();
+        builder.Services.AddSingleton<PurposesPage>();
+
+        builder.Services.AddSingleton<ScheduleViewModel>();
+        builder.Services.AddSingleton<SchedulePage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

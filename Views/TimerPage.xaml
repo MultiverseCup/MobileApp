@@ -4,8 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:conv="clr-namespace:PomodoroProject.Converters"
     x:Class="PomodoroProject.Views.TimerPage"
-    Title="Таймер"
-    BackgroundImageSource="bg.jpg"
     xmlns:viewmodel="clr-namespace:PomodoroProject.ViewModels"
     xmlns:model="clr-namespace:PomodoroProject.Data.Models"
     x:DataType="viewmodel:TimerViewModel">
@@ -13,21 +11,44 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <conv:BoolToRotationConverter x:Key="BoolToRotation" />
+            <conv:PhaseToBgColorConverter x:Key="PhaseToBgColor"/>
+            <conv:KarmaConverter x:Key="Karma"/>
         </ResourceDictionary>
     </ContentPage.Resources>
 
     <!-- Корневая абсолютная вёрстка -->
     <AbsoluteLayout>
+        <!--Фон -->
+        <Border 
+            AbsoluteLayout.LayoutBounds="0,0,1,1"
+            AbsoluteLayout.LayoutFlags="All"
+            BackgroundColor="{DynamicResource GlobalColor}"
+             />
+        <Border 
+            AbsoluteLayout.LayoutBounds="0,1,1,0.5"
+            AbsoluteLayout.LayoutFlags="All"
+            BackgroundColor="#E5E5E5"
+            StrokeShape="RoundRectangle 50,0,0,0"
+            StrokeThickness="0"
+            >
+            <Border.Shadow>
+                <Shadow Brush="Black"
+                Offset="0,-20"
+                Radius="20"
+                Opacity="0.1" />
+            </Border.Shadow>
+        </Border>
 
         <!-- 1) Основной контент -->
         <StackLayout
             AbsoluteLayout.LayoutBounds="0,0,1,1"
             AbsoluteLayout.LayoutFlags="All"
-            Spacing="0">
+            Spacing="0"
+            Margin="10,0,10,0">
 
             <!-- 0: Mode picker -->
             <Grid 
-                Margin="20,10,20,0"
+                Margin="0,5,0,5"
                 WidthRequest="200" HeightRequest="90"
                 HorizontalOptions="Start">
                 
@@ -45,7 +66,8 @@
                     Grid.RowSpan="2" Grid.ColumnSpan="2"
                     StrokeShape="RoundRectangle 20"
                     StrokeThickness="0"
-                    BackgroundColor="#B55757"
+                    BackgroundColor="Black"
+                    Opacity="0.3"
                     IsVisible="{Binding IsPickerOpen}" />
 
                 <Button 
@@ -75,106 +97,149 @@
                     Command="{Binding OpenModePickerCommand}"
                     Rotation="{Binding IsPickerOpen, Converter={StaticResource BoolToRotation}}" />
             </Grid>
+            
+            
+            <!-- 1.1: PomodoroTimer-->
+            
+            <Label Text="{Binding PomodoroTime}"
+                Margin="0,-20,0,-20"
+                FontFamily="VisionBold"
+                FontSize="80"
+                TextColor="White"
+                IsVisible="{Binding IsPomodoroVisible}"
+                HorizontalOptions="Center" />
+            <!-- 1.1: Free -->
+            <Label 
+                Text="{Binding FreeTime}"
+                Margin="0,-20,0,-20"
+                FontFamily="VisionBold"
+                FontSize="80"
+                TextColor="White"
+                HorizontalOptions="Center"
+                IsVisible="{Binding IsFreeModeVisible}"/>
 
-            <!-- 1.1: PomodoroTimer + controls -->
-            <StackLayout 
-                Padding="50,0,50,20"
+
+
+            <Grid ZIndex="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Border Grid.Column="0" 
+                        Grid.Row="0" 
+                       StrokeShape="RoundRectangle 30"
+                       BackgroundColor="White"/>
+                <Image Grid.Column="1" Grid.RowSpan="2" Source="cat.png" MaximumHeightRequest="110"/>
+            </Grid>
+
+            <Grid Margin="0,-20,0,20">
+                <Border HeightRequest="40"
+                        StrokeThickness="5"
+                        Stroke="White"
+                        StrokeShape="RoundRectangle 30">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0"
+                            EndPoint="1,0">
+                            <GradientStop Color="#FF5E00"
+                                Offset="0.0" />
+                            <GradientStop Color="#FFF1CC"
+                                Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+            </Grid>
+            <!-- 1.1: PomodoroTimer controls -->
+            <Grid 
                 IsVisible="{Binding IsPomodoroVisible}">
-                <Label Text="{Binding PomodoroTime}"
-                    FontFamily="VisionBold"
-                    FontSize="80"
-                    TextColor="White"
-                    HorizontalOptions="Center" />
-                
-                <Grid 
-                    Margin="0,10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    
-                    <ImageButton 
-                        Grid.Column="0"
-                        Source="rotateccw.png"
-                        Command="{Binding ResetPomodoroCommand}"
-                        WidthRequest="40" HeightRequest="40" />
-                    
-                    <ImageButton 
-                        Grid.Column="1"          
-                        Source="{Binding PomodoroButtonIcon}"
-                        Command="{Binding StartPomodoroCommand}"
-                        WidthRequest="40" HeightRequest="40" />
-                </Grid>
-            </StackLayout>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-            <!-- 1.2: FreeTimer + controls -->
-            <StackLayout 
-                Padding="50,0,50,20"
-                IsVisible="{Binding IsFreeModeVisible}">
-                <Label 
-                    Text="{Binding FreeTime}"
-                    FontFamily="VisionBold"
-                    FontSize="80"
-                    TextColor="White"
-                    HorizontalOptions="Center"/>
+                <ImageButton 
+                            Grid.Column="0"
+                            Source="rotateccw.png"
+                            Command="{Binding ResetPomodoroCommand}"
+                            MaximumWidthRequest="40" />
 
-                <Grid  Margin="0,10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <ImageButton 
+                <ImageButton 
+                            Grid.Column="1"          
+                            Source="{Binding PomodoroButtonIcon}"
+                            Command="{Binding StartPomodoroCommand}"
+                            WidthRequest="40" HeightRequest="40" />
+                <ImageButton 
+                            Grid.Column="2"
+                            Source = "refreshccw.png"
+                            Command="{Binding ResetTotalCommand}"
+                            MaximumWidthRequest="40" />
+            </Grid>
+
+            <!-- 1.2: FreeTimer controls -->
+
+            <Grid IsVisible="{Binding IsFreeModeVisible}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <ImageButton 
                         Grid.Column="0"
                         Source="rotateccw.png"
                         Command="{Binding ResetFreeCommand}"
-                        WidthRequest="40" HeightRequest="40" />
-                    
-                    <ImageButton 
+                        MaximumWidthRequest="40" />
+
+                <ImageButton 
                         Grid.Column="1"
                         Source="{Binding FreeButtonIcon}"
                         Command="{Binding StartFreeCommand}"
                         WidthRequest="40" HeightRequest="40" />
-                    
-                    <ImageButton 
+
+                <ImageButton 
                         Grid.Column="2"
                         Source = "refreshccw.png"
                         Command="{Binding ResetTotalCommand}"
-                        WidthRequest="40" HeightRequest="40" />
-                </Grid>
-            </StackLayout>
+                        MaximumWidthRequest="40" />
+            </Grid>
 
-            <!-- 2: Task list (динамическая высота задаётся в VM через TaskListHeight) -->
-            <CollectionView 
+            <!-- 2: Task list-->
+            
+            <CollectionView   x:Name="MyCollectionView"
                 ItemsSource="{Binding Tasks}"
+                Margin="0,20,0,0"
                 SelectedItem="{Binding CurrentTask}"
                 SelectionMode="Single"
-                HeightRequest="{Binding TaskListHeight}"
-                MaximumHeightRequest="400"
+                
+                MaximumHeightRequest="350"
                 ItemSizingStrategy="MeasureAllItems">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="model:PomodoroTask">
                         <Border 
                             BackgroundColor="Transparent"
-                            Margin="20,7,20,7"
+                            Margin="0,7,0,7"
                             Padding="20,0,20,0"
                             MinimumHeightRequest="80"
                             StrokeShape="RoundRectangle 20"
                             StrokeThickness="0">
+                            
                             <!-- Стиль для выделения -->
                             <VisualStateManager.VisualStateGroups>
                                     <VisualStateGroup x:Name="CommonStates">
                                         <VisualState x:Name="Normal">
-                                            <VisualState.Setters>
-                                                <Setter Property="BackgroundColor" 
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" 
                                                         Value="White"/>
-                                            </VisualState.Setters>
-                                        </VisualState>
-                                        <VisualState x:Name="Selected">
-                                            <VisualState.Setters>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Selected">
+                                        <VisualState.Setters>
                                                 <Setter Property="BackgroundColor" 
-                                                        Value="#D4FFB9"/>
+                                                        Value="{DynamicResource GlobalLightColor}"/>
                                             </VisualState.Setters>
                                         </VisualState>
                                     </VisualStateGroup>
@@ -214,7 +279,10 @@
 
                                     <Label Grid.Row="1" Grid.Column="0" Text="{Binding DisplayWorkDuration}" FontSize="12" HorizontalOptions="Center"/>
                                     <Label Grid.Row="1" Grid.Column="1" Text="{Binding DisplayRestDuration}" FontSize="12" HorizontalOptions="Center"/>
+
                                     <Label Grid.Row="1" Grid.Column="2" Text="{Binding DisplayTotalTime}" FontSize="12" HorizontalOptions="Center"/>
+                                    
+
                                 </Grid>
 
                                 <ImageButton 
@@ -233,7 +301,7 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-
+            
             <!-- 3: Add-button сразу под списком -->
             <ImageButton 
                 Source="pluscircle.png"
@@ -260,11 +328,13 @@
 
         <!-- 3) Плавающее AddMenu фиксированной высоты -->
         <Grid
+            InputTransparent="False"
             AbsoluteLayout.LayoutBounds="0,1,1,0.5"
             AbsoluteLayout.LayoutFlags="All"
             IsVisible="{Binding IsAddMenuOpen}"
             TranslationY="{Binding AddMenuTranslationY}">
             <Border
+                InputTransparent="False"
                 StrokeThickness="0"
                 BackgroundColor="White"
                 Padding="20"

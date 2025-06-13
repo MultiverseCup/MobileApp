@@ -13,7 +13,6 @@
     BackgroundColor="#FF7E7E">
 
     <TabBar>
-
         <ShellContent
             Title="Schedule"
             Icon="calendar.png"
