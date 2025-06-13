@@ -1,26 +1,312 @@
 ﻿
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using PomodoroProject.Data;
+using PomodoroProject.Data.Models;
+
 
 namespace PomodoroProject.ViewModels;
 
 public partial class PurposesViewModel : INotifyPropertyChanged
 {
-    public event PropertyChangedEventHandler? PropertyChanged;
-    void OnPropertyChanged(string name) =>
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    // === События ===
+    public event PropertyChangedEventHandler PropertyChanged;
 
-
-    bool isModePickerOpen;
-    public bool IsModePickerOpen
+    protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
     {
-        get => isModePickerOpen;
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    // === Поля ===
+
+    private List<PomodoroTask> _tasks = new();
+    private ObservableCollection<TaskDeadline> _deadlines = new();
+
+    private readonly Func<TaskDeadline, Task<bool>> _confirmDelete;
+    private bool _isAddMenuOpen = false;
+    private double _addMenuTranslationY;
+    private double _addMenuOpacity = 0;
+    private string _newDeadlineName;
+    private int _selectedTaskIndex;
+    private DateTime _deadlineDate;
+    private string _newPlannedTime;
+
+    private bool _isDeadlinesRefreshing;
+
+
+    // === Свойства ===
+    public double KarmaValue
+    {
+        get => Preferences.Get("karma", 0.2);
         set
         {
-            isModePickerOpen = value;
-            OnPropertyChanged(nameof(IsModePickerOpen));
+            Preferences.Set("karma", Math.Min(1, Math.Max(0, value)));
+            OnPropertyChanged();
         }
     }
-    
+    public ObservableCollection<TaskDeadline> Deadlines
+    {
+        get => _deadlines;
+        set { _deadlines = value; OnPropertyChanged(); }
+    }
+    public bool IsDeadlinesRefreshing
+    {
+        get => _isDeadlinesRefreshing;
+        set { _isDeadlinesRefreshing = value; OnPropertyChanged(); }
+    }
+    public bool IsAddMenuOpen
+    {
+        get => _isAddMenuOpen;
+        set { _isAddMenuOpen = value; OnPropertyChanged(); }
+    }
+
+    public double AddMenuTranslationY
+    {
+        get => _addMenuTranslationY;
+        set { _addMenuTranslationY = value; OnPropertyChanged(); }
+    }
+
+    public double AddMenuOpacity
+    {
+        get => _addMenuOpacity;
+        set { _addMenuOpacity = value; OnPropertyChanged(); }
+    }
+
+    public int SelectedTaskIndex
+    {
+        get => _selectedTaskIndex;
+        set
+        {
+            _selectedTaskIndex = value; OnPropertyChanged();
+        }
+    }
+
+    public List<PomodoroTask> Tasks
+    {
+        get => _tasks;
+        set { _tasks = value; OnPropertyChanged(); }
+    }
+
+    public DateTime DeadlineDate
+    {
+        get => _deadlineDate;
+        set { _deadlineDate = value; OnPropertyChanged(); }
+    }
+
+    public string NewPlannedTime
+    {
+        get => _newPlannedTime;
+        set { _newPlannedTime = value; OnPropertyChanged(); }
+    }
+    public List<string> TasksNames => _tasks.Select(x => x.Name).ToList();
+
+    public string NewDeadlineName
+    {
+        get => _newDeadlineName;
+        set { _newDeadlineName = value; OnPropertyChanged(); }
+    }
 
 
+
+
+    // === Команды ===
+    public ICommand LoadTasksCommand { get; }
+    public ICommand LoadDeadlinesCommand { get; }
+
+    public ICommand ShowAddMenuCommand { get; }
+    public ICommand HideAddMenuCommand { get; }
+    public ICommand ConfirmAddDeadlineCommand { get; }
+    public ICommand DeleteDeadlineCommand { get; }
+    public ICommand DeleteDeadlineFastCommand { get; }
+
+    public ICommand CheckDeadlinesCommand { get; }
+
+
+
+
+    // === Конструктор ===
+    public PurposesViewModel(Func<TaskDeadline, Task<bool>> confirmDelete)
+    {
+        MessagingCenter.Subscribe<object, PomodoroTask>(
+            this,     
+            "Task",
+            async (sender, task) =>
+            {
+                foreach(var d in Deadlines)
+                {
+                    if (d.TaskId == task.Id)
+                    {
+                        if (task.TotalWorkTime == 0) d.InitialTotalTime = 0;
+                        d.ElapsedTotalTime += task.TotalWorkTime - d.InitialTotalTime;
+                        d.InitialTotalTime = task.TotalWorkTime;
+
+                        d.IsCompleted = d.ElapsedTotalTime >= d.PlannedTime;
+                        d.IsOverdue = (DateTime.Now > d.Deadline) && d.ElapsedTotalTime < d.PlannedTime;
+                        d.IsActual = !(d.IsCompleted || d.IsOverdue);
+                        await App.Database.SaveDeadlineAsync(d);
+
+                    }
+                }
+            }
+        );
+
+        MessagingCenter.Subscribe<object, PomodoroTask>(
+            this,
+            "karmaupdate",
+            async (sender, task) =>
+            {
+                foreach (var d in Deadlines)
+                {
+                    if (d.TaskId == task.Id)
+                    {
+                        if (task.TotalWorkTime == 0) d.InitialTotalTime = 0;
+                        d.ElapsedTotalTime += task.TotalWorkTime - d.InitialTotalTime;
+                        d.InitialTotalTime = task.TotalWorkTime;
+
+                        d.IsCompleted = d.ElapsedTotalTime >= d.PlannedTime;
+                        d.IsOverdue = (DateTime.Now > d.Deadline) && d.ElapsedTotalTime < d.PlannedTime;
+                        d.IsActual = !(d.IsCompleted || d.IsOverdue);
+                        await App.Database.SaveDeadlineAsync(d);
+
+                    }
+                }
+            }
+        );
+        _confirmDelete = confirmDelete;
+        // Инициализация команд
+        LoadTasksCommand = new Command(async () => await LoadTasksAsync());
+        LoadDeadlinesCommand = new Command(async () => await LoadDeadlinesAsync());
+
+        ShowAddMenuCommand = new Command(async () => await ShowAddMenuAsync());
+        HideAddMenuCommand = new Command(async () => await HideAddMenuAsync());
+        ConfirmAddDeadlineCommand = new Command(async () => await ConfirmAddDeadLineAsync());
+        DeleteDeadlineCommand = new Command<TaskDeadline>(async deadline => await OnDeleteDeadlineAsync(deadline));
+        DeleteDeadlineFastCommand = new Command<TaskDeadline>(async deadline => await OnDeleteDeadlineFastAsync(deadline));
+        CheckDeadlinesCommand = new Command(async () => await CheckDeadlines());
+
+        LoadTasksCommand.Execute(null);
+        LoadDeadlinesCommand.Execute(null);
+        CheckDeadlinesCommand.Execute(null);
+    }
+
+
+
+    // === Методы ===
+    private void UpdateKarma()
+    {
+        MessagingCenter.Send<object, double>(
+                this,
+                "karmaupdate", // Уникальное имя сообщения
+                KarmaValue
+            );
+    }
+    private async Task CheckDeadlines()
+    {
+        foreach (var d in Deadlines)
+        {
+            d.IsCompleted = d.ElapsedTotalTime >= d.PlannedTime;
+            d.IsOverdue = (DateTime.Now > d.Deadline) && d.ElapsedTotalTime < d.PlannedTime;
+            d.IsActual = !(d.IsCompleted || d.IsOverdue);
+            await App.Database.SaveDeadlineAsync(d);
+        }
+        IsDeadlinesRefreshing = false;
+    }
+
+    private async Task LoadTasksAsync()
+    {
+        Tasks.Clear();
+        var all = await App.Database.GetAllTasksAsync();
+        foreach (var task in all) Tasks.Add(task);
+    }
+
+    private async Task LoadDeadlinesAsync()
+    {
+        Deadlines.Clear();
+        var all = await App.Database.GetAllDeadlineAsync();
+        foreach (var task in all) Deadlines.Add(task);
+        
+    }
+
+    private async Task ShowAddMenuAsync()
+    {
+        await LoadTasksAsync();
+        OnPropertyChanged(nameof(TasksNames));
+
+        IsAddMenuOpen = true;
+        AddMenuTranslationY = 600;
+        AddMenuOpacity = 0;
+        await Task.Delay(1);
+        for (double t = 0; t <= 1.0; t += 0.1)
+        {
+            AddMenuTranslationY = 600 * (1 - t);
+            AddMenuOpacity = 0.8 * t;
+            await Task.Delay(16);
+        }
+    }
+
+    private async Task HideAddMenuAsync()
+    {
+        for (double t = 1; t >= 0; t -= 0.1)
+        {
+            AddMenuTranslationY = 600 * (1 - t);
+            AddMenuOpacity = 0.8 * t;
+            await Task.Delay(16);
+        }
+        IsAddMenuOpen = false;
+    }
+    private async Task ConfirmAddDeadLineAsync()
+    {
+        if (SelectedTaskIndex < 0
+            || !double.TryParse(NewPlannedTime, out double hours))
+        {
+            return;
+        }
+
+        const double maxHours = int.MaxValue / 3600000.0; // ≈596.5
+        if (hours > maxHours)
+        {
+            return;
+        }
+
+        var picked = Tasks[SelectedTaskIndex];
+        var plannedMs = (int)(hours * 3_600_000);
+
+        var item = new TaskDeadline
+        {
+            TaskId = picked.Id,
+            PlannedTime = plannedMs,
+            Deadline = DeadlineDate,
+            InitialTotalTime = picked.TotalWorkTime,
+            DeadlineName = NewDeadlineName,
+            TaskName = picked.Name
+        };
+
+        await App.Database.SaveDeadlineAsync(item);
+        Deadlines.Add(item);
+
+        await HideAddMenuAsync();
+    }
+    private async Task OnDeleteDeadlineAsync(TaskDeadline deadline)
+    {
+        if (deadline == null) return;
+
+        bool confirmed = await _confirmDelete(deadline);
+        if (!confirmed) return;
+
+        await App.Database.DeleteDeadlineAsync(deadline.Id);
+        Deadlines.Remove(deadline);
+    }
+
+    private async Task OnDeleteDeadlineFastAsync(TaskDeadline deadline)
+    {
+        await App.Database.DeleteDeadlineAsync(deadline.Id);
+        if (deadline.IsOverdue) KarmaValue -= 0.2;
+        if (deadline.IsCompleted) KarmaValue += 0.15;
+        UpdateKarma();
+        Deadlines.Remove(deadline);
+    }
 }
