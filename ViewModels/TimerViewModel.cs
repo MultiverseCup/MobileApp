@@ -8,6 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 using PomodoroProject.Data.Models;
 using PomodoroProject.Data;
 using Microsoft.Maui.Controls;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace PomodoroProject.ViewModels
 {
@@ -65,7 +66,6 @@ namespace PomodoroProject.ViewModels
                 RefreshTimers();
             }
         }
-
 
         public string AlternativeModeText => 
             SelectedModeText == "Pomodoro" ? "Free Timer" : "Pomodoro";
@@ -239,13 +239,19 @@ namespace PomodoroProject.ViewModels
         private void RefreshTimers()
         {
             if (CurrentTask == null) return;
+
+            // Обновляем привязанные свойства в задаче
+            CurrentTask.TimeRemaining = CurrentTask.TimeRemaining; // Вызывает INotifyPropertyChanged
+            CurrentTask.TotalWorkTime = CurrentTask.TotalWorkTime; // Вызывает INotifyPropertyChanged
+
+            // Обновляем остальные поля
             PomodoroTime = TimeSpan.FromMilliseconds(CurrentTask.TimeRemaining).ToString(@"mm\:ss");
             TotalWorkTime = TimeSpan.FromMilliseconds(CurrentTask.TotalWorkTime).ToString(@"hh\:mm\:ss");
             FreeTime = TimeSpan.FromMilliseconds(_freeElapsed).ToString(@"mm\:ss");
         }
 
 
-        
+
         private async Task OnStartPomodoro()
         {
             if (CurrentTask == null) return;
@@ -260,20 +266,13 @@ namespace PomodoroProject.ViewModels
 
             while (_pomodoroRunning)
             {
+                // Логика таймера
                 if (CurrentTask.TimeRemaining <= 0)
                 {
-                    // переключаем фазу
                     IsWorkPhase = !IsWorkPhase;
-                    CurrentTask.TimeRemaining = IsWorkPhase
-                        ? CurrentTask.WorkDuration
-                        : CurrentTask.RestDuration;
-
-                    // обновляем текст
+                    CurrentTask.TimeRemaining = IsWorkPhase ? CurrentTask.WorkDuration : CurrentTask.RestDuration;
                     RefreshTimers();
-
-                    // показываем алерт
-                    string title = IsWorkPhase ? "Пора работать!" : "Пора отдыхать!";
-                    await Application.Current.MainPage.DisplayAlert("Время!", title, "OK");
+                    await Application.Current.MainPage.DisplayAlert("Время!", IsWorkPhase ? "Пора работать!" : "Пора отдыхать!", "OK");
                 }
 
                 await Task.Delay(100);
@@ -282,12 +281,13 @@ namespace PomodoroProject.ViewModels
                     CurrentTask.TotalWorkTime += 100;
 
                 RefreshTimers();
+
+                // Сохраняем в БД каждые 5 секунд
+                if (DateTime.Now.Second % 5 == 0)
+                    await App.Database.SaveTaskAsync(CurrentTask);
             }
 
-            // по окончании сохраняем
-            _pomodoroRunning = false;
             await App.Database.SaveTaskAsync(CurrentTask);
-            
         }
 
         private async Task OnResetPomodoro()
@@ -305,9 +305,9 @@ namespace PomodoroProject.ViewModels
             if (CurrentTask == null) return;
             _freeRunning = !_freeRunning;
             OnPropertyChanged(nameof(FreeButtonIcon));
+
             if (!_freeRunning)
             {
-                // при остановке сохраняем общее время
                 await App.Database.SaveTaskAsync(CurrentTask);
                 return;
             }
@@ -317,11 +317,12 @@ namespace PomodoroProject.ViewModels
                 await Task.Delay(100);
                 _freeElapsed += 100;
                 CurrentTask.TotalWorkTime += 100;
-
                 RefreshTimers();
+
+                if (DateTime.Now.Second % 5 == 0)
+                    await App.Database.SaveTaskAsync(CurrentTask);
             }
 
-            // при полной остановке
             await App.Database.SaveTaskAsync(CurrentTask);
         }
 
