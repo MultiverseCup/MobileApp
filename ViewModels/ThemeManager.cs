@@ -39,15 +39,7 @@ public class ThemeManager : INotifyPropertyChanged
 
     public void UpdateApplicationResources()
     {
-        if (Application.Current != null && Application.Current.Resources.TryGetValue("GlobalColor", out object _))
-        {
-            Application.Current.Resources["GlobalColor"] = GlobalColor;
-        }
-        if (Application.Current != null && Application.Current.Resources.TryGetValue("GlobalLightColor", out object _))
-        {
-
-            Application.Current.Resources["GlobalLightColor"] 
-                = GlobalColor.Lerp(Colors.White, 0.6);
-        }
+        Application.Current.Resources["GlobalColor"] = GlobalColor;
+        Application.Current.Resources["GlobalLightColor"] = GlobalColor.MultiplyAlpha(0.8f);
     }
 }

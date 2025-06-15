@@ -5,6 +5,7 @@ using PomodoroProject.Views;
 using CommunityToolkit.Maui; // Добавьте это для использования .UseMauiCommunityToolkit()
 using Plugin.LocalNotification;
 using Plugin.Maui.Audio;
+using System.Globalization;
 
 namespace PomodoroProject;
 
@@ -21,6 +22,8 @@ public static class MauiProgram
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                fonts.AddFont("VisionBold.ttf", "VisionBold");
+                fonts.AddFont("VisionRegular.ttf", "VisionRegular");
                 fonts.AddFont("CustomFont.ttf", "CustomFont"); // Объединены шрифты
             });
 
@@ -39,6 +42,7 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<ScheduleViewModel>();
         builder.Services.AddSingleton<SchedulePage>();
+
 
 #if DEBUG
         builder.Logging.AddDebug();

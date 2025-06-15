@@ -51,12 +51,12 @@
                 Margin="0,5,0,5"
                 WidthRequest="200" HeightRequest="90"
                 HorizontalOptions="Start">
-                
+
                 <Grid.RowDefinitions>
                     <RowDefinition Height="45" />
                     <RowDefinition Height="45" />
                 </Grid.RowDefinitions>
-                
+
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="140" />
                     <ColumnDefinition Width="*" />
@@ -97,10 +97,10 @@
                     Command="{Binding OpenModePickerCommand}"
                     Rotation="{Binding IsPickerOpen, Converter={StaticResource BoolToRotation}}" />
             </Grid>
-            
-            
+
+
             <!-- 1.1: PomodoroTimer-->
-            
+
             <Label Text="{Binding PomodoroTime}"
                 Margin="0,-20,0,-20"
                 FontFamily="VisionBold"
@@ -134,7 +134,12 @@
                         Grid.Row="0" 
                        StrokeShape="RoundRectangle 30"
                        BackgroundColor="White"/>
-                <Image Grid.Column="1" Grid.RowSpan="2" Source="cat.png" MaximumHeightRequest="110"/>
+                <Image 
+                    Grid.Column="1" 
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    Source="{Binding CurrentCatImage}"
+                    MaximumHeightRequest="110" />
             </Grid>
 
             <Grid Margin="0,-20,0,20">
@@ -208,7 +213,7 @@
             </Grid>
 
             <!-- 2: Task list-->
-            
+
             <CollectionView   x:Name="MyCollectionView"
                 ItemsSource="{Binding Tasks}"
                 Margin="0,20,0,0"
@@ -226,11 +231,11 @@
                             MinimumHeightRequest="80"
                             StrokeShape="RoundRectangle 20"
                             StrokeThickness="0">
-                            
+
                             <!-- Стиль для выделения -->
                             <VisualStateManager.VisualStateGroups>
-                                    <VisualStateGroup x:Name="CommonStates">
-                                        <VisualState x:Name="Normal">
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
                                         <VisualState.Setters>
                                             <Setter Property="BackgroundColor" 
                                                         Value="White"/>
@@ -238,13 +243,13 @@
                                     </VisualState>
                                     <VisualState x:Name="Selected">
                                         <VisualState.Setters>
-                                                <Setter Property="BackgroundColor" 
+                                            <Setter Property="BackgroundColor" 
                                                         Value="{DynamicResource GlobalLightColor}"/>
-                                            </VisualState.Setters>
-                                        </VisualState>
-                                    </VisualStateGroup>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
-                                
+
                             <!-- Grid с контентом задачи -->
                             <Grid ColumnSpacing="10">
                                 <Grid.ColumnDefinitions>
@@ -281,7 +286,7 @@
                                     <Label Grid.Row="1" Grid.Column="1" Text="{Binding DisplayRestDuration}" FontSize="12" HorizontalOptions="Center"/>
 
                                     <Label Grid.Row="1" Grid.Column="2" Text="{Binding DisplayTotalTime}" FontSize="12" HorizontalOptions="Center"/>
-                                    
+
 
                                 </Grid>
 
@@ -301,7 +306,7 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-            
+
             <!-- 3: Add-button сразу под списком -->
             <ImageButton 
                 Source="pluscircle.png"

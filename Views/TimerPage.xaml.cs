@@ -2,6 +2,7 @@ using PomodoroProject.Data.Models;
 using Microsoft.Maui.Controls;
 using PomodoroProject.ViewModels;
 using Plugin.Maui.Audio;
+using System.ComponentModel;
 
 namespace PomodoroProject.Views
 {
@@ -17,10 +18,8 @@ namespace PomodoroProject.Views
             BindingContext = _viewModel;
         }
 
-        private async Task<bool> ConfirmDeleteAsync(PomodoroTask task)
-        {
-            return await DisplayAlert("Удаление", $"Удалить задачу \"{task.Name}\"?", "Да", "Нет");
-        }
-
+        private async Task<bool> ConfirmDeleteAsync(PomodoroProject.Data.Models.PomodoroTask task)
+        =>
+            await DisplayAlert("Удаление", $"Удалить задачу \"{task.Name}\"?", "Да", "Нет");
     }
 }

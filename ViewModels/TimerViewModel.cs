@@ -25,7 +25,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
 
     // === Поля ===
 
-    
+
 
     private readonly IAudioManager _audioManager;
     private readonly Func<PomodoroTask, Task<bool>> _confirmDelete;
@@ -35,6 +35,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
 
     private PomodoroTask _currentTask;
     private bool _isAddMenuOpen;
+    private bool _isTimerRunning;
     private double _addMenuTranslationY = 500;
     private double _addMenuOpacity = 0;
     private string _newTaskName;
@@ -50,18 +51,24 @@ public partial class TimerViewModel : INotifyPropertyChanged
     private bool _isPickerOpen;
     private bool _freeRunning;
     private long _freeElapsed;
-    private bool _overlayIsVisible;
     private bool _isPomodoroVisible = true;
     private bool _isFreeModeVisible;
     private string _selectedModeText = "Pomodoro";
+    private string _currentCatImage = "cat.png";
+    private double _karmaValue;
+
 
     // === Свойства ===
     public double KarmaValue
     {
         get => Preferences.Get("karma", 0.2);
-        set { 
+        set
+        {
             Preferences.Set("karma", Math.Min(1, Math.Max(0, value)));
-            OnPropertyChanged(); }
+            _karmaValue = value;
+            OnPropertyChanged();
+            UpdateCatImageBasedOnKarma(value); // Обновление изображения
+        }
     }
     public ObservableCollection<PomodoroTask> Tasks
     {
@@ -86,7 +93,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
     }
 
 
-    public string AlternativeModeText => 
+    public string AlternativeModeText =>
         SelectedModeText == "Pomodoro" ? "Free Timer" : "Pomodoro";
 
     public string PomodoroButtonIcon =>
@@ -112,6 +119,26 @@ public partial class TimerViewModel : INotifyPropertyChanged
         get => _isWorkPhase;
         private set { _isWorkPhase = value; OnPropertyChanged(); }
     }
+
+    public bool IsTimerRunning
+    {
+        get => _isTimerRunning;
+        set
+        {
+            _isTimerRunning = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string CurrentCatImage
+    {
+        get => _currentCatImage;
+        set
+        {
+            _currentCatImage = value;
+            OnPropertyChanged();
+        }
+    }   
 
     public bool IsAddMenuOpen
     {
@@ -196,7 +223,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
         get => _selectedModeText;
         private set { _selectedModeText = value; OnPropertyChanged(); }
     }
-    
+
 
     // === Команды ===
     public ICommand LoadTasksCommand { get; }
@@ -260,6 +287,8 @@ public partial class TimerViewModel : INotifyPropertyChanged
 
         LoadTasksCommand.Execute(null);
         LoadDeadlinesCommand.Execute(null);
+
+        UpdateBackgroundColor();
     }
 
     // === Методы ===
@@ -269,6 +298,16 @@ public partial class TimerViewModel : INotifyPropertyChanged
         var all = await App.Database.GetAllTasksAsync();
         foreach (var task in all) Tasks.Add(task);
         if (Tasks.Count > 0) CurrentTask = Tasks[0];
+    }
+
+    private void UpdateCatImageBasedOnKarma(double karma)
+    {
+        if (karma >= 0.8)
+            CurrentCatImage = "catnormis.png"; // Высокая карма — довольный кот
+        else if (karma <= 0.4)
+            CurrentCatImage = "catsad.png";    // Низкая карма — грустный кот
+        else
+            CurrentCatImage = "cat.png";        // Средняя карма — обычный кот
     }
     private async Task LoadDeadlinesAsync()
     {
@@ -288,9 +327,9 @@ public partial class TimerViewModel : INotifyPropertyChanged
     private void SendCurrentTaskToDeadlines()
     {
         MessagingCenter.Send<object, PomodoroTask>(
-                this,     
+                this,
                 "Task", // Уникальное имя сообщения
-                CurrentTask     
+                CurrentTask
             );
     }
     private async Task PlaySound()
@@ -301,17 +340,13 @@ public partial class TimerViewModel : INotifyPropertyChanged
     }
     private async Task OnStartPomodoro()
     {
-        var random = new Random();
-        ThemeManager.Instance.GlobalColor = Color.FromRgb(
-            random.Next(256),
-            random.Next(256),
-            random.Next(256));
 
         if (CurrentTask == null) return;
         _pomodoroRunning = !_pomodoroRunning;
         OnPropertyChanged(nameof(PomodoroButtonIcon));
         SendCurrentTaskToDeadlines();
-        
+        UpdateBackgroundColor();
+
         if (!_pomodoroRunning)
         {
             await App.Database.SaveTaskAsync(CurrentTask);
@@ -340,6 +375,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
                 if (!IsWorkPhase) KarmaValue += 0.15;
                 string title = IsWorkPhase ? "Пора работать!" : "Пора отдыхать!";
                 await Application.Current.MainPage.DisplayAlert("Время!", title, "OK");
+                UpdateBackgroundColor();
             }
 
             await Task.Delay(100);
@@ -352,8 +388,8 @@ public partial class TimerViewModel : INotifyPropertyChanged
 
         // по окончании сохраняем
         _pomodoroRunning = false;
-        
         await App.Database.SaveTaskAsync(CurrentTask);
+        UpdateBackgroundColor();
 
     }
 
@@ -363,22 +399,24 @@ public partial class TimerViewModel : INotifyPropertyChanged
         _pomodoroRunning = false;
         CurrentTask.TimeRemaining = CurrentTask.WorkDuration;
         IsWorkPhase = true;
-        //CurrentTask.TotalWorkTime = 0;
-        
+
         RefreshTimers();
         await App.Database.SaveTaskAsync(CurrentTask);
+        UpdateBackgroundColor();
     }
-    
+
     private async Task OnStartFree()
     {
         if (CurrentTask == null) return;
         _freeRunning = !_freeRunning;
         OnPropertyChanged(nameof(FreeButtonIcon));
         SendCurrentTaskToDeadlines();
+        UpdateBackgroundColor();
         if (!_freeRunning)
         {
             // при остановке сохраняем общее время
             await App.Database.SaveTaskAsync(CurrentTask);
+            UpdateBackgroundColor();
             return;
         }
 
@@ -387,12 +425,13 @@ public partial class TimerViewModel : INotifyPropertyChanged
             await Task.Delay(100);
             _freeElapsed += 100;
             CurrentTask.TotalWorkTime += 100;
-
+            UpdateBackgroundColor();
             RefreshTimers();
         }
         OnPropertyChanged(nameof(Tasks));
         // при полной остановке
         await App.Database.SaveTaskAsync(CurrentTask);
+        UpdateBackgroundColor();
     }
 
     private void OnResetFree()
@@ -404,9 +443,12 @@ public partial class TimerViewModel : INotifyPropertyChanged
 
     private async Task OnResetTotal()
     {
-        RefreshTimers();
-        CurrentTask.TotalWorkTime = 0;
-        SendCurrentTaskToDeadlines();
+        if (await Application.Current.MainPage.DisplayAlert("Полный сброс", "Вы точно хотите сбросить общее время?", "OK", "NO"))
+        {        
+            RefreshTimers();
+            CurrentTask.TotalWorkTime = 0;
+            SendCurrentTaskToDeadlines();
+        }
     }
 
     private async Task ShowAddMenuAsync()
@@ -465,7 +507,20 @@ public partial class TimerViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(NewRestSeconds));
 
         await HideAddMenuAsync();
-        
+
+    }
+
+
+    private void UpdateBackgroundColor()
+    {
+        if (!_freeRunning && !_pomodoroRunning)
+            ThemeManager.Instance.GlobalColor = Color.FromArgb("#FF7E7E");
+        else if (IsWorkPhase || _freeRunning)
+            // Жёлтый (работа в Pomodoro или FreeTimer)
+            ThemeManager.Instance.GlobalColor = Color.FromArgb("#FFCC46");
+        else
+            // Зелёный (отдых в Pomodoro)
+            ThemeManager.Instance.GlobalColor = Color.FromArgb("#15BF2E");
     }
 
     private async Task OnToggleMode()
@@ -475,7 +530,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
         IsPomodoroVisible = !isPomodoro;
         IsFreeModeVisible = isPomodoro;
         SelectedModeText = isPomodoro ? "Free Timer" : "Pomodoro";
-        
+
 
         OnPropertyChanged(nameof(SelectedModeText));
         OnPropertyChanged(nameof(AlternativeModeText));
@@ -486,7 +541,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
     {
         // Переключаем меню выбора
         IsPickerOpen = !IsPickerOpen;
-        
+
     }
 
     private async Task OnDeleteTaskAsync(PomodoroTask task)

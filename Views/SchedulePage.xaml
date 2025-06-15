@@ -13,14 +13,14 @@
             <conv:BoolToWeekdayClrConverter x:Key="BoolToWeekdayClr"/>
         </ResourceDictionary>
     </ContentPage.Resources>
-    
+
     <VerticalStackLayout>
         <Border
             BackgroundColor="{DynamicResource GlobalColor}"
             StrokeShape="RoundRectangle 0,0,50,50"
             StrokeThickness="0"
             HeightRequest="100">
-                <Label Text="Расписание" 
+            <Label Text="Расписание" 
                    FontFamily="VisionBold"
                    FontSize="25"
                    TextColor="White"
@@ -39,15 +39,16 @@
             <TimePicker 
                 Margin="5"
                 FontSize="30"   
-                Time="{Binding NotifyTime}"/>
+                Time="{Binding NotifyTime}"
+                Format="HH:mm"/>
         </Grid>
         <Button 
             Text="Обновить время уведомлений" 
             BackgroundColor="{DynamicResource GlobalColor}"
             Command="{Binding RefreshNotificationsCommand}"
             HorizontalOptions="Center"/>
-        
-        
+
+
         <Label 
             Text="Выберите рабочие дни:"
             FontFamily="VisionBold"
