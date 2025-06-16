@@ -72,6 +72,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
                 _karmaValue = clampedValue;
                 OnPropertyChanged(nameof(KarmaValue));
                 UpdateKarma();
+                UpdateBackgroundColor();
                 UpdateCatImageBasedOnKarma(clampedValue);
             }
         }
@@ -248,8 +249,14 @@ public partial class TimerViewModel : INotifyPropertyChanged
     public ICommand DeleteTaskCommand { get; }
     public ICommand ToggleModeCommand { get; }
     public ICommand OpenModePickerCommand { get; }
-
     public ICommand CancelAddTaskCommand { get; }
+
+
+
+    // === Команды для тестирования кармы ===
+    public ICommand IncreaseKarmaCommand { get; }
+    public ICommand DecreaseKarmaCommand { get; }
+
 
     public ICommand SaveCurrentTaskCommand =>
     new Command(async () =>
@@ -287,6 +294,11 @@ public partial class TimerViewModel : INotifyPropertyChanged
         OpenModePickerCommand = new Command(async () => await OnOpenModePicker());
         DeleteTaskCommand = new Command<PomodoroTask>(async task => await OnDeleteTaskAsync(task));
         CancelAddTaskCommand = new Command(async () => await HideAddMenuAsync());
+
+
+        // Добавляем команды для тестирования
+        IncreaseKarmaCommand = new Command(() => KarmaValue += 0.1);
+        DecreaseKarmaCommand = new Command(() => KarmaValue -= 0.1);
 
         LoadTasksCommand.Execute(null);
         LoadDeadlinesCommand.Execute(null);
@@ -533,13 +545,45 @@ public partial class TimerViewModel : INotifyPropertyChanged
     private void UpdateBackgroundColor()
     {
         if (!_freeRunning && !_pomodoroRunning)
-            ThemeManager.Instance.GlobalColor = Color.FromArgb("#FF7E7E");
+            switch (KarmaValue)
+            {
+                case ( >= 0.8):
+                    ThemeManager.Instance.GlobalColor = Color.FromArgb("#FF7E7E");
+                    break;
+                case (<= 0.4):
+                    ThemeManager.Instance.GlobalColor = Color.FromArgb("#A84141");
+                    break;
+                default:
+                    ThemeManager.Instance.GlobalColor = Color.FromArgb("#E05C5C");
+                    break;
+            }
+            
         else if (IsWorkPhase || _freeRunning)
-            // Жёлтый (работа в Pomodoro или FreeTimer)
-            ThemeManager.Instance.GlobalColor = Color.FromArgb("#FFCC46");
+            switch (KarmaValue)
+            {
+                case (>= 0.8):
+                    ThemeManager.Instance.GlobalColor = Color.FromArgb("#FFCC46");
+                    break;
+                case (<= 0.4):
+                    ThemeManager.Instance.GlobalColor = Color.FromArgb("#A99254");
+                    break;
+                default:
+                    ThemeManager.Instance.GlobalColor = Color.FromArgb("#DFBA58");
+                    break;
+            }
         else
-            // Зелёный (отдых в Pomodoro)
-            ThemeManager.Instance.GlobalColor = Color.FromArgb("#15BF2E");
+            switch (KarmaValue)
+            {
+                case (>= 0.8):
+                    ThemeManager.Instance.GlobalColor = Color.FromArgb("#15BF2E");
+                    break;
+                case (<= 0.4):
+                    ThemeManager.Instance.GlobalColor = Color.FromArgb("#3E8047");
+                    break;
+                default:
+                    ThemeManager.Instance.GlobalColor = Color.FromArgb("#129425");
+                    break;
+            }
     }
 
     private async Task OnToggleMode()
