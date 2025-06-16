@@ -13,6 +13,7 @@
             <conv:BoolToRotationConverter x:Key="BoolToRotation" />
             <conv:PhaseToBgColorConverter x:Key="PhaseToBgColor"/>
             <conv:KarmaConverter x:Key="Karma"/>
+
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -142,21 +143,30 @@
                     MaximumHeightRequest="110" />
             </Grid>
 
-            <Grid Margin="0,-20,0,20">
-                <Border HeightRequest="40"
-                        StrokeThickness="5"
-                        Stroke="White"
-                        StrokeShape="RoundRectangle 30">
+            <Grid
+                x:Name="KarmaBar"
+                HeightRequest="30"
+                HorizontalOptions="Fill"
+                Margin="0, -16, 0, 25">
+                <Border
+                    StrokeThickness="5"
+                    Stroke="White"
+                    StrokeShape="RoundRectangle 30">    
                     <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0"
-                            EndPoint="1,0">
-                            <GradientStop Color="#FF5E00"
-                                Offset="0.0" />
-                            <GradientStop Color="#FFF1CC"
-                                Offset="1.0" />
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#FF5E00" Offset="0.0" />
+                            <GradientStop Color="#FFF1CC" Offset="1.0" />
                         </LinearGradientBrush>
                     </Border.Background>
                 </Border>
+
+                <Image
+                    x:Name="KarmaCursor"
+                    Source="karmacoursore.png"
+                    WidthRequest="23"
+                    HeightRequest="51"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Start" />    
             </Grid>
             <!-- 1.1: PomodoroTimer controls -->
             <Grid 
@@ -220,7 +230,7 @@
                 SelectedItem="{Binding CurrentTask}"
                 SelectionMode="Single"
                 
-                MaximumHeightRequest="350"
+                MaximumHeightRequest="325"
                 ItemSizingStrategy="MeasureAllItems">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="model:PomodoroTask">
@@ -314,7 +324,7 @@
                 WidthRequest="40"
                 HeightRequest="40"
                 HorizontalOptions="Center"
-                Margin="0,10" />
+                Margin="0, 0, 0, 10" />
 
         </StackLayout>
 

@@ -10,6 +10,7 @@ using PomodoroProject.Data;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Media;
 using Plugin.Maui.Audio;
+using System.Diagnostics;
 
 namespace PomodoroProject.ViewModels;
 
@@ -61,13 +62,18 @@ public partial class TimerViewModel : INotifyPropertyChanged
     // === Свойства ===
     public double KarmaValue
     {
-        get => Preferences.Get("karma", 0.2);
+        get => _karmaValue;
         set
         {
-            Preferences.Set("karma", Math.Min(1, Math.Max(0, value)));
-            _karmaValue = value;
-            OnPropertyChanged();
-            UpdateCatImageBasedOnKarma(value); // Обновление изображения
+            double clampedValue = Math.Min(1, Math.Max(0, value));
+            if (_karmaValue != clampedValue)
+            {
+                Preferences.Set("karma", clampedValue);
+                _karmaValue = clampedValue;
+                OnPropertyChanged(nameof(KarmaValue));
+                UpdateKarma();
+                UpdateCatImageBasedOnKarma(clampedValue);
+            }
         }
     }
     public ObservableCollection<PomodoroTask> Tasks
@@ -136,9 +142,10 @@ public partial class TimerViewModel : INotifyPropertyChanged
         set
         {
             _currentCatImage = value;
-            OnPropertyChanged();
+            Console.WriteLine($"Cat image changed to: {value}");
+            OnPropertyChanged(nameof(CurrentCatImage));
         }
-    }   
+    }
 
     public bool IsAddMenuOpen
     {
@@ -254,19 +261,15 @@ public partial class TimerViewModel : INotifyPropertyChanged
     // === Конструктор ===
     public TimerViewModel(Func<PomodoroTask, Task<bool>> confirmDelete, IAudioManager audioManager)
     {
-        MessagingCenter.Subscribe<object, double>(
-            this,
-            "karmaupdate",
-            (sender, karma) =>
-            {
-                KarmaValue = Preferences.Get("karma", 0.2);
-            }
-        );
-
         KarmaValue = Preferences.Get("karma", 0.2);
+        OnPropertyChanged(nameof(KarmaValue));
+
         _audioManager = audioManager;
 
         _confirmDelete = confirmDelete;
+
+
+        UpdateKarma();
 
         // Инициализация команд
         LoadTasksCommand = new Command(async () => await LoadTasksAsync());
@@ -300,14 +303,20 @@ public partial class TimerViewModel : INotifyPropertyChanged
         if (Tasks.Count > 0) CurrentTask = Tasks[0];
     }
 
-    private void UpdateCatImageBasedOnKarma(double karma)
+    public void UpdateCatImageBasedOnKarma(double karma)
     {
-        if (karma >= 0.8)
-            CurrentCatImage = "catnormis.png"; // Высокая карма — довольный кот
-        else if (karma <= 0.4)
-            CurrentCatImage = "catsad.png";    // Низкая карма — грустный кот
-        else
-            CurrentCatImage = "cat.png";        // Средняя карма — обычный кот
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            string newImage = karma switch
+            {
+                >= 0.8 => "cat.png",
+                <= 0.4 => "catsad.png",
+                _ => "catnormis.png"
+            };
+
+            if (CurrentCatImage != newImage)
+                CurrentCatImage = newImage;
+        });
     }
     private async Task LoadDeadlinesAsync()
     {
@@ -343,6 +352,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
 
         if (CurrentTask == null) return;
         _pomodoroRunning = !_pomodoroRunning;
+        IsTimerRunning = _pomodoroRunning;
         OnPropertyChanged(nameof(PomodoroButtonIcon));
         SendCurrentTaskToDeadlines();
         UpdateBackgroundColor();
@@ -372,7 +382,11 @@ public partial class TimerViewModel : INotifyPropertyChanged
                 SendCurrentTaskToDeadlines();
                 // показываем алерт
                 await PlaySound();
-                if (!IsWorkPhase) KarmaValue += 0.15;
+                if (!IsWorkPhase)
+                {
+                    KarmaValue += 0.15;
+                    Debug.WriteLine($"Karma updated to: {KarmaValue}"); // Для отладки
+                }
                 string title = IsWorkPhase ? "Пора работать!" : "Пора отдыхать!";
                 await Application.Current.MainPage.DisplayAlert("Время!", title, "OK");
                 UpdateBackgroundColor();
@@ -403,12 +417,16 @@ public partial class TimerViewModel : INotifyPropertyChanged
         RefreshTimers();
         await App.Database.SaveTaskAsync(CurrentTask);
         UpdateBackgroundColor();
+        UpdateKarma();
     }
+    private void UpdateKarma() =>
+        MessagingCenter.Send(this, "karmaupdate", KarmaValue);
 
     private async Task OnStartFree()
     {
         if (CurrentTask == null) return;
         _freeRunning = !_freeRunning;
+        IsTimerRunning = _freeRunning;
         OnPropertyChanged(nameof(FreeButtonIcon));
         SendCurrentTaskToDeadlines();
         UpdateBackgroundColor();
@@ -432,6 +450,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
         // при полной остановке
         await App.Database.SaveTaskAsync(CurrentTask);
         UpdateBackgroundColor();
+        UpdateKarma();
     }
 
     private void OnResetFree()
