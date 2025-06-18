@@ -1,5 +1,4 @@
-﻿
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;
@@ -49,7 +48,9 @@ namespace PomodoroProject.ViewModels
         public bool IsMondayToggled
         {
             get => _isMondayToggled;
-            set { _isMondayToggled = value;
+            set
+            {
+                _isMondayToggled = value;
                 OnPropertyChanged();
                 Preferences.Set("monday", value);
             }
@@ -58,7 +59,9 @@ namespace PomodoroProject.ViewModels
         public bool IsTuesdayToggled
         {
             get => _isTuesdayToggled;
-            set { _isTuesdayToggled = value; 
+            set
+            {
+                _isTuesdayToggled = value;
                 OnPropertyChanged();
                 Preferences.Set("tuesday", value);
             }
@@ -67,7 +70,9 @@ namespace PomodoroProject.ViewModels
         public bool IsWednesdayToggled
         {
             get => _isWednesdayToggled;
-            set { _isWednesdayToggled = value; 
+            set
+            {
+                _isWednesdayToggled = value;
                 OnPropertyChanged();
                 Preferences.Set("wednesday", value);
             }
@@ -76,7 +81,9 @@ namespace PomodoroProject.ViewModels
         public bool IsThursdayToggled
         {
             get => _isThursdayToggled;
-            set { _isThursdayToggled = value; 
+            set
+            {
+                _isThursdayToggled = value;
                 OnPropertyChanged();
                 Preferences.Set("thursday", value);
             }
@@ -85,7 +92,9 @@ namespace PomodoroProject.ViewModels
         public bool IsFridayToggled
         {
             get => _isFridayToggled;
-            set { _isFridayToggled = value; 
+            set
+            {
+                _isFridayToggled = value;
                 OnPropertyChanged();
                 Preferences.Set("friday", value);
             }
@@ -94,7 +103,9 @@ namespace PomodoroProject.ViewModels
         public bool IsSaturdayToggled
         {
             get => _isSaturdayToggled;
-            set { _isSaturdayToggled = value; 
+            set
+            {
+                _isSaturdayToggled = value;
                 OnPropertyChanged();
                 Preferences.Set("saturday", value);
             }
@@ -103,8 +114,10 @@ namespace PomodoroProject.ViewModels
         public bool IsSundayToggled
         {
             get => _isSundayToggled;
-            set { _isSundayToggled = value; 
-                OnPropertyChanged(); 
+            set
+            {
+                _isSundayToggled = value;
+                OnPropertyChanged();
                 Preferences.Set("sunday", value);
             }
         }
@@ -159,7 +172,7 @@ namespace PomodoroProject.ViewModels
             return start.AddDays(daysToAdd);
         }
 
-        private async Task CreateLocalNotification(int id, string title, 
+        private async Task CreateLocalNotification(int id, string title,
             string description, DayOfWeek weekDay)
         {
             var request = new NotificationRequest
@@ -279,14 +292,14 @@ namespace PomodoroProject.ViewModels
             };
 
             await LocalNotificationCenter.Current.Show(request);
-            
+
         }
 
         private async Task StopTestNotification()
         {
-            
+
             LocalNotificationCenter.Current.Cancel(555);
-            
+
         }
     }
 }

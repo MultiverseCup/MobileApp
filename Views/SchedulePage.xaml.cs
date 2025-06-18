@@ -7,7 +7,9 @@ namespace PomodoroProject.Views;
 
 public partial class SchedulePage : ContentPage
 {
-     private readonly ScheduleViewModel _viewModel;
+    private readonly ScheduleViewModel _viewModel;
+
+
     public SchedulePage()
 	{
 		InitializeComponent();

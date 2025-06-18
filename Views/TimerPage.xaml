@@ -13,6 +13,7 @@
             <conv:BoolToRotationConverter x:Key="BoolToRotation" />
             <conv:PhaseToBgColorConverter x:Key="PhaseToBgColor"/>
             <conv:KarmaConverter x:Key="Karma"/>
+
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -51,12 +52,12 @@
                 Margin="0,5,0,5"
                 WidthRequest="200" HeightRequest="90"
                 HorizontalOptions="Start">
-                
+
                 <Grid.RowDefinitions>
                     <RowDefinition Height="45" />
                     <RowDefinition Height="45" />
                 </Grid.RowDefinitions>
-                
+
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="140" />
                     <ColumnDefinition Width="*" />
@@ -97,10 +98,10 @@
                     Command="{Binding OpenModePickerCommand}"
                     Rotation="{Binding IsPickerOpen, Converter={StaticResource BoolToRotation}}" />
             </Grid>
-            
-            
+
+
             <!-- 1.1: PomodoroTimer-->
-            
+
             <Label Text="{Binding PomodoroTime}"
                 Margin="0,-20,0,-20"
                 FontFamily="VisionBold"
@@ -134,24 +135,65 @@
                         Grid.Row="0" 
                        StrokeShape="RoundRectangle 30"
                        BackgroundColor="White"/>
-                <Image Grid.Column="1" Grid.RowSpan="2" Source="cat.png" MaximumHeightRequest="110"/>
+                <Image 
+                    Grid.Column="1" 
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    Source="{Binding CurrentCatImage}"
+                    MaximumHeightRequest="110" />
+
+                <!-- Временные кнопки для тестирования -->
+                <StackLayout Grid.Column="2" Grid.Row="0" 
+                 Orientation="Horizontal"
+                 HorizontalOptions="End"
+                 VerticalOptions="Start"
+                 Spacing="5"
+                 Margin="0,10,10,0">
+
+                    <Button Text="+" 
+                Command="{Binding IncreaseKarmaCommand}"
+                WidthRequest="40"
+                HeightRequest="40"
+                BackgroundColor="Green"
+                TextColor="White"
+                FontSize="20"
+                CornerRadius="20"/>
+
+                    <Button Text="-" 
+                Command="{Binding DecreaseKarmaCommand}"
+                WidthRequest="40"
+                HeightRequest="40"
+                BackgroundColor="Red"
+                TextColor="White"
+                FontSize="20"
+                CornerRadius="20"/>
+                </StackLayout>
             </Grid>
 
-            <Grid Margin="0,-20,0,20">
-                <Border HeightRequest="40"
-                        StrokeThickness="5"
-                        Stroke="White"
-                        StrokeShape="RoundRectangle 30">
+            <Grid
+                x:Name="KarmaBar"
+                HeightRequest="30"
+                HorizontalOptions="Fill"
+                Margin="0, -16, 0, 25">
+                <Border
+                    StrokeThickness="5"
+                    Stroke="White"
+                    StrokeShape="RoundRectangle 30">    
                     <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0"
-                            EndPoint="1,0">
-                            <GradientStop Color="#FF5E00"
-                                Offset="0.0" />
-                            <GradientStop Color="#FFF1CC"
-                                Offset="1.0" />
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#FF5E00" Offset="0.0" />
+                            <GradientStop Color="#FFF1CC" Offset="1.0" />
                         </LinearGradientBrush>
                     </Border.Background>
                 </Border>
+
+                <Image
+                    x:Name="KarmaCursor"
+                    Source="karmacoursore.png"
+                    WidthRequest="23"
+                    HeightRequest="51"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Start" />    
             </Grid>
             <!-- 1.1: PomodoroTimer controls -->
             <Grid 
@@ -208,14 +250,14 @@
             </Grid>
 
             <!-- 2: Task list-->
-            
+
             <CollectionView   x:Name="MyCollectionView"
                 ItemsSource="{Binding Tasks}"
                 Margin="0,20,0,0"
                 SelectedItem="{Binding CurrentTask}"
                 SelectionMode="Single"
                 
-                MaximumHeightRequest="350"
+                MaximumHeightRequest="325"
                 ItemSizingStrategy="MeasureAllItems">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="model:PomodoroTask">
@@ -226,11 +268,11 @@
                             MinimumHeightRequest="80"
                             StrokeShape="RoundRectangle 20"
                             StrokeThickness="0">
-                            
+
                             <!-- Стиль для выделения -->
                             <VisualStateManager.VisualStateGroups>
-                                    <VisualStateGroup x:Name="CommonStates">
-                                        <VisualState x:Name="Normal">
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal">
                                         <VisualState.Setters>
                                             <Setter Property="BackgroundColor" 
                                                         Value="White"/>
@@ -238,13 +280,13 @@
                                     </VisualState>
                                     <VisualState x:Name="Selected">
                                         <VisualState.Setters>
-                                                <Setter Property="BackgroundColor" 
+                                            <Setter Property="BackgroundColor" 
                                                         Value="{DynamicResource GlobalLightColor}"/>
-                                            </VisualState.Setters>
-                                        </VisualState>
-                                    </VisualStateGroup>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
-                                
+
                             <!-- Grid с контентом задачи -->
                             <Grid ColumnSpacing="10">
                                 <Grid.ColumnDefinitions>
@@ -281,7 +323,7 @@
                                     <Label Grid.Row="1" Grid.Column="1" Text="{Binding DisplayRestDuration}" FontSize="12" HorizontalOptions="Center"/>
 
                                     <Label Grid.Row="1" Grid.Column="2" Text="{Binding DisplayTotalTime}" FontSize="12" HorizontalOptions="Center"/>
-                                    
+
 
                                 </Grid>
 
@@ -301,7 +343,7 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-            
+
             <!-- 3: Add-button сразу под списком -->
             <ImageButton 
                 Source="pluscircle.png"
@@ -309,7 +351,7 @@
                 WidthRequest="40"
                 HeightRequest="40"
                 HorizontalOptions="Center"
-                Margin="0,10" />
+                Margin="0, 0, 0, 10" />
 
         </StackLayout>
 
