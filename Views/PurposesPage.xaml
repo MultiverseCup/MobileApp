@@ -15,7 +15,6 @@
             <conv:BoolToInverse x:Key="Inverse"/>
             <conv:BoolToGreenColor x:Key="BoolToGreen"/>
             <conv:BoolToStrike x:Key="BoolToStrike"/>
-            <conv:KarmaConverter x:Key="Karma"/>
         </ResourceDictionary>
     </ContentPage.Resources>
     

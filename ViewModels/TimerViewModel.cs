@@ -11,6 +11,7 @@ using Microsoft.Maui.Controls;
 using Microsoft.Maui.Media;
 using Plugin.Maui.Audio;
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace PomodoroProject.ViewModels;
 
@@ -25,9 +26,10 @@ public partial class TimerViewModel : INotifyPropertyChanged
     }
 
     // === Поля ===
-
-
-
+    private string _filePath;
+    private Random rnd;
+    private List<MaskotMessage> _messages;
+    
     private readonly IAudioManager _audioManager;
     private readonly Func<PomodoroTask, Task<bool>> _confirmDelete;
 
@@ -58,8 +60,26 @@ public partial class TimerViewModel : INotifyPropertyChanged
     private string _currentCatImage = "cat.png";
     private double _karmaValue;
 
+    private bool _isMaskotMessageOn;
+    private double _maskotMessageOpacity;
+    private string _maskotText;
 
     // === Свойства ===
+    public bool IsMaskotMessageOn
+    {
+        get => _isMaskotMessageOn;
+        set { _isMaskotMessageOn = value; OnPropertyChanged(); }
+    }
+    public double MaskotMessageOpacity
+    {
+        get => _maskotMessageOpacity;
+        set { _maskotMessageOpacity = value; OnPropertyChanged(); }
+    }
+    public string MaskotText
+    {
+        get => _maskotText;
+        set { _maskotText = value; OnPropertyChanged(); }
+    }
     public double KarmaValue
     {
         get => _karmaValue;
@@ -250,7 +270,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
     public ICommand ToggleModeCommand { get; }
     public ICommand OpenModePickerCommand { get; }
     public ICommand CancelAddTaskCommand { get; }
-
+    public ICommand SwitchMaskotMessageCommand { get; }
 
 
     // === Команды для тестирования кармы ===
@@ -268,8 +288,12 @@ public partial class TimerViewModel : INotifyPropertyChanged
     // === Конструктор ===
     public TimerViewModel(Func<PomodoroTask, Task<bool>> confirmDelete, IAudioManager audioManager)
     {
+        rnd = new Random();
         KarmaValue = Preferences.Get("karma", 0.2);
         OnPropertyChanged(nameof(KarmaValue));
+        
+        
+        LoadMessages();
 
         _audioManager = audioManager;
 
@@ -294,7 +318,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
         OpenModePickerCommand = new Command(async () => await OnOpenModePicker());
         DeleteTaskCommand = new Command<PomodoroTask>(async task => await OnDeleteTaskAsync(task));
         CancelAddTaskCommand = new Command(async () => await HideAddMenuAsync());
-
+        SwitchMaskotMessageCommand = new Command(async () => await SwitchMaskotMessageAsync());
 
         // Добавляем команды для тестирования
         IncreaseKarmaCommand = new Command(() => KarmaValue += 0.1);
@@ -304,9 +328,61 @@ public partial class TimerViewModel : INotifyPropertyChanged
         LoadDeadlinesCommand.Execute(null);
 
         UpdateBackgroundColor();
+
+
     }
 
     // === Методы ===
+    private async void LoadMessages()
+    {   
+        var json = await FileSystem.OpenAppPackageFileAsync("maskotMessages.json");
+        _messages = JsonSerializer.Deserialize<List<MaskotMessage>>(json);
+    }
+
+    private async Task SwitchMaskotMessageAsync()
+    {
+        if (IsMaskotMessageOn)
+        {
+            await HideMaskotMessageAsync();
+        }
+        else
+        {
+            MaskotMessage[] mes;
+            switch (KarmaValue)
+            {
+                case (>= 0.8):
+                    mes = _messages.Where(x => x.Level == 2).ToArray();
+                    break;
+                case (<= 0.4):
+                    mes = _messages.Where(x => x.Level == 0).ToArray();
+                    break;
+                default:
+                    mes = _messages.Where(x => x.Level == 1).ToArray();
+                    break;
+            }
+            MaskotText = mes[rnd.Next(0, mes.Length)].Text;
+            await ShowMaskotMessageAsync();
+        }
+    }
+    private async Task ShowMaskotMessageAsync()
+    {
+        await Task.Delay(1);
+        for (double t = 0; t <= 1.0; t += 0.1)
+        {
+            MaskotMessageOpacity = t;
+            await Task.Delay(16);
+        }
+        IsMaskotMessageOn = true;
+    }
+    private async Task HideMaskotMessageAsync()
+    {
+        for (double t = 1; t >= 0; t -= 0.1)
+        {
+            MaskotMessageOpacity = t;
+            await Task.Delay(16);
+        }
+        IsMaskotMessageOn = false;
+    }
     private async Task LoadTasksAsync()
     {
         Tasks.Clear();
@@ -349,7 +425,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
     {
         MessagingCenter.Send<object, PomodoroTask>(
                 this,
-                "Task", // Уникальное имя сообщения
+                "Task",
                 CurrentTask
             );
     }
@@ -481,6 +557,8 @@ public partial class TimerViewModel : INotifyPropertyChanged
             SendCurrentTaskToDeadlines();
         }
     }
+    
+
 
     private async Task ShowAddMenuAsync()
     {
@@ -551,10 +629,10 @@ public partial class TimerViewModel : INotifyPropertyChanged
                     ThemeManager.Instance.GlobalColor = Color.FromArgb("#FF7E7E");
                     break;
                 case (<= 0.4):
-                    ThemeManager.Instance.GlobalColor = Color.FromArgb("#A84141");
+                    ThemeManager.Instance.GlobalColor = Color.FromArgb("#B49292");
                     break;
                 default:
-                    ThemeManager.Instance.GlobalColor = Color.FromArgb("#E05C5C");
+                    ThemeManager.Instance.GlobalColor = Color.FromArgb("#E28C8C");
                     break;
             }
             

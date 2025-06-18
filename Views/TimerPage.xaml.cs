@@ -3,6 +3,7 @@ using Microsoft.Maui.Controls;
 using PomodoroProject.ViewModels;
 using Plugin.Maui.Audio;
 using System.ComponentModel;
+using PomodoroProject.Data;
 
 namespace PomodoroProject.Views
 {

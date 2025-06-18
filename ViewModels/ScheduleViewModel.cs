@@ -228,7 +228,7 @@ namespace PomodoroProject.ViewModels
         private async Task ToggleTuesday()
         {
             if (!IsTuesdayToggled)
-                await CreateLocalNotification(2, "", "Пора за работу", DayOfWeek.Tuesday);
+                await CreateLocalNotification(2, "Уже вторник", "Пора за работу", DayOfWeek.Tuesday);
             else
                 CancelLocalNotification(2);
             IsTuesdayToggled = !IsTuesdayToggled;
@@ -236,7 +236,7 @@ namespace PomodoroProject.ViewModels
         private async Task ToggleWednesday()
         {
             if (!IsWednesdayToggled)
-                await CreateLocalNotification(3, "", "Пора за работу", DayOfWeek.Wednesday);
+                await CreateLocalNotification(3, "Уже среда", "Пора за работу", DayOfWeek.Wednesday);
             else
                 CancelLocalNotification(3);
             IsWednesdayToggled = !IsWednesdayToggled;
@@ -244,7 +244,7 @@ namespace PomodoroProject.ViewModels
         private async Task ToggleThursday()
         {
             if (!IsThursdayToggled)
-                await CreateLocalNotification(4, "", "Пора за работу", DayOfWeek.Thursday);
+                await CreateLocalNotification(4, "Уже четверг", "Пора за работу", DayOfWeek.Thursday);
             else
                 CancelLocalNotification(4);
             IsThursdayToggled = !IsThursdayToggled;
@@ -252,7 +252,7 @@ namespace PomodoroProject.ViewModels
         private async Task ToggleFriday()
         {
             if (!IsFridayToggled)
-                await CreateLocalNotification(5, "", "Пора за работу", DayOfWeek.Friday);
+                await CreateLocalNotification(5, "Уже пятница", "Пора за работу", DayOfWeek.Friday);
             else
                 CancelLocalNotification(5);
             IsFridayToggled = !IsFridayToggled;
@@ -260,7 +260,7 @@ namespace PomodoroProject.ViewModels
         private async Task ToggleSaturday()
         {
             if (!IsSaturdayToggled)
-                await CreateLocalNotification(6, "", "Пора за работу", DayOfWeek.Saturday);
+                await CreateLocalNotification(6, "Уже суббота", "Пора за работу", DayOfWeek.Saturday);
             else
                 CancelLocalNotification(6);
             IsSaturdayToggled = !IsSaturdayToggled;
@@ -268,7 +268,7 @@ namespace PomodoroProject.ViewModels
         private async Task ToggleSunday()
         {
             if (!IsSundayToggled)
-                await CreateLocalNotification(7, "", "Пора за работу", DayOfWeek.Sunday);
+                await CreateLocalNotification(7, "Уже воскресенье", "Пора за работу", DayOfWeek.Sunday);
             else
                 CancelLocalNotification(7);
             IsSundayToggled = !IsSundayToggled;
@@ -280,8 +280,8 @@ namespace PomodoroProject.ViewModels
             var request = new NotificationRequest
             {
                 NotificationId = 555,
-                Title = "Привет это Test",
-                Description = "котьек - 🐈",
+                Title = "Привет это повторяющийся тест",
+                Description = "Котик - 🐈",
                 Subtitle = "это подзаголовок!!!",
                 Schedule = new NotificationRequestSchedule
                 {
