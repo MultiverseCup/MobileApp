@@ -26,6 +26,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
     }
 
     // === Поля ===
+    private int[] _minutes = Enumerable.Range(0, 60).ToArray();
     private string _filePath;
     private Random rnd;
     private List<MaskotMessage> _messages;
@@ -43,12 +44,13 @@ public partial class TimerViewModel : INotifyPropertyChanged
     private double _addMenuOpacity = 0;
     private string _newTaskName;
     private bool _isWorkPhase = true;
-    private string _newWorkMinutes = "25";
-    private string _newWorkSeconds = "00";
-    private string _newRestMinutes = "5";
-    private string _newRestSeconds = "00";
-    private string _pomodoroTime = "00:00";
-    private string _freeTime = "00:00";
+
+    private int _newWorkHours = 0;
+    private int _newWorkMinutes = 25;
+    private int _newRestHours = 0;
+    private int _newRestMinutes = 5;
+    private string _pomodoroTime = "0:00:00";
+    private string _freeTime = "0:00:00";
     private string _totalWorkTime = "00:00:00";
     private bool _pomodoroRunning;
     private bool _isPickerOpen;
@@ -65,6 +67,11 @@ public partial class TimerViewModel : INotifyPropertyChanged
     private string _maskotText;
 
     // === Свойства ===
+    public int[] Minutes
+    {
+        get => _minutes;
+        set { _minutes = value; OnPropertyChanged(); }
+    }
     public bool IsMaskotMessageOn
     {
         get => _isMaskotMessageOn;
@@ -91,7 +98,6 @@ public partial class TimerViewModel : INotifyPropertyChanged
                 Preferences.Set("karma", clampedValue);
                 _karmaValue = clampedValue;
                 OnPropertyChanged(nameof(KarmaValue));
-                UpdateKarma();
                 UpdateBackgroundColor();
                 UpdateCatImageBasedOnKarma(clampedValue);
             }
@@ -192,28 +198,28 @@ public partial class TimerViewModel : INotifyPropertyChanged
         set { _newTaskName = value; OnPropertyChanged(); }
     }
 
-    public string NewWorkMinutes
+    public int NewWorkHours
+    {
+        get => _newWorkHours;
+        set { _newWorkHours = value; OnPropertyChanged(); }
+    }
+
+    public int NewWorkMinutes
     {
         get => _newWorkMinutes;
         set { _newWorkMinutes = value; OnPropertyChanged(); }
     }
 
-    public string NewWorkSeconds
+    public int NewRestHours
     {
-        get => _newWorkSeconds;
-        set { _newWorkSeconds = value; OnPropertyChanged(); }
+        get => _newRestHours;
+        set { _newRestHours = value; OnPropertyChanged(); }
     }
 
-    public string NewRestMinutes
+    public int NewRestMinutes
     {
         get => _newRestMinutes;
         set { _newRestMinutes = value; OnPropertyChanged(); }
-    }
-
-    public string NewRestSeconds
-    {
-        get => _newRestSeconds;
-        set { _newRestSeconds = value; OnPropertyChanged(); }
     }
 
     public string PomodoroTime
@@ -270,7 +276,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
     public ICommand ToggleModeCommand { get; }
     public ICommand OpenModePickerCommand { get; }
     public ICommand CancelAddTaskCommand { get; }
-    public ICommand SwitchMaskotMessageCommand { get; }
+    public ICommand PushMaskotMessageCommand { get; }
 
 
     // === Команды для тестирования кармы ===
@@ -291,8 +297,15 @@ public partial class TimerViewModel : INotifyPropertyChanged
         rnd = new Random();
         KarmaValue = Preferences.Get("karma", 0.2);
         OnPropertyChanged(nameof(KarmaValue));
-        
-        
+
+        MessagingCenter.Subscribe<object, double>(
+            this,
+            "karmaupdate",
+            (sender, newkarmavalue) =>
+            {
+                KarmaValue = newkarmavalue;
+            }
+        );
         LoadMessages();
 
         _audioManager = audioManager;
@@ -300,7 +313,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
         _confirmDelete = confirmDelete;
 
 
-        UpdateKarma();
+        
 
         // Инициализация команд
         LoadTasksCommand = new Command(async () => await LoadTasksAsync());
@@ -318,7 +331,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
         OpenModePickerCommand = new Command(async () => await OnOpenModePicker());
         DeleteTaskCommand = new Command<PomodoroTask>(async task => await OnDeleteTaskAsync(task));
         CancelAddTaskCommand = new Command(async () => await HideAddMenuAsync());
-        SwitchMaskotMessageCommand = new Command(async () => await SwitchMaskotMessageAsync());
+        PushMaskotMessageCommand = new Command(async () => await PushMaskotMessageAsync());
 
         // Добавляем команды для тестирования
         IncreaseKarmaCommand = new Command(() => KarmaValue += 0.1);
@@ -339,30 +352,28 @@ public partial class TimerViewModel : INotifyPropertyChanged
         _messages = JsonSerializer.Deserialize<List<MaskotMessage>>(json);
     }
 
-    private async Task SwitchMaskotMessageAsync()
+
+    private async Task PushMaskotMessageAsync()
     {
-        if (IsMaskotMessageOn)
+        MaskotMessage[] mes;
+        switch (KarmaValue)
         {
-            await HideMaskotMessageAsync();
+            case (>= 0.8):
+                mes = _messages.Where(x => x.Level == 2).ToArray();
+                break;
+            case (<= 0.4):
+                mes = _messages.Where(x => x.Level == 0).ToArray();
+                break;
+            default:
+                mes = _messages.Where(x => x.Level == 1).ToArray();
+                break;
         }
-        else
-        {
-            MaskotMessage[] mes;
-            switch (KarmaValue)
-            {
-                case (>= 0.8):
-                    mes = _messages.Where(x => x.Level == 2).ToArray();
-                    break;
-                case (<= 0.4):
-                    mes = _messages.Where(x => x.Level == 0).ToArray();
-                    break;
-                default:
-                    mes = _messages.Where(x => x.Level == 1).ToArray();
-                    break;
-            }
-            MaskotText = mes[rnd.Next(0, mes.Length)].Text;
-            await ShowMaskotMessageAsync();
-        }
+        MaskotText = mes[rnd.Next(0, mes.Length)].Text;
+        await ShowMaskotMessageAsync();
+
+        await Task.Delay(3000);
+
+        await HideMaskotMessageAsync();
     }
     private async Task ShowMaskotMessageAsync()
     {
@@ -416,9 +427,9 @@ public partial class TimerViewModel : INotifyPropertyChanged
     private void RefreshTimers()
     {
         if (CurrentTask == null) return;
-        PomodoroTime = TimeSpan.FromMilliseconds(CurrentTask.TimeRemaining).ToString(@"mm\:ss");
+        PomodoroTime = TimeSpan.FromMilliseconds(CurrentTask.TimeRemaining).ToString(@"h\:mm\:ss");
         TotalWorkTime = TimeSpan.FromMilliseconds(CurrentTask.TotalWorkTime).ToString(@"hh\:mm\:ss");
-        FreeTime = TimeSpan.FromMilliseconds(_freeElapsed).ToString(@"mm\:ss");
+        FreeTime = TimeSpan.FromMilliseconds(_freeElapsed).ToString(@"h\:mm\:ss");
     }
 
     private void SendCurrentTaskToDeadlines()
@@ -437,7 +448,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
     }
     private async Task OnStartPomodoro()
     {
-
+        PushMaskotMessageAsync();
         if (CurrentTask == null) return;
         _pomodoroRunning = !_pomodoroRunning;
         IsTimerRunning = _pomodoroRunning;
@@ -505,13 +516,13 @@ public partial class TimerViewModel : INotifyPropertyChanged
         RefreshTimers();
         await App.Database.SaveTaskAsync(CurrentTask);
         UpdateBackgroundColor();
-        UpdateKarma();
+        
     }
-    private void UpdateKarma() =>
-        MessagingCenter.Send(this, "karmaupdate", KarmaValue);
+    
 
     private async Task OnStartFree()
     {
+        PushMaskotMessageAsync();
         if (CurrentTask == null) return;
         _freeRunning = !_freeRunning;
         IsTimerRunning = _freeRunning;
@@ -538,7 +549,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
         // при полной остановке
         await App.Database.SaveTaskAsync(CurrentTask);
         UpdateBackgroundColor();
-        UpdateKarma();
+        
     }
 
     private void OnResetFree()
@@ -550,7 +561,7 @@ public partial class TimerViewModel : INotifyPropertyChanged
 
     private async Task OnResetTotal()
     {
-        if (await Application.Current.MainPage.DisplayAlert("Полный сброс", "Вы точно хотите сбросить общее время?", "OK", "NO"))
+        if (await Application.Current.MainPage.DisplayAlert("Полный сброс", "Вы точно хотите сбросить общее время?", "Да", "Нет"))
         {        
             RefreshTimers();
             CurrentTask.TotalWorkTime = 0;
@@ -587,13 +598,9 @@ public partial class TimerViewModel : INotifyPropertyChanged
     private async Task ConfirmAddTaskAsync()
     {
         if (string.IsNullOrWhiteSpace(NewTaskName)) return;
-        bool minW = int.TryParse(NewWorkMinutes, out int wMin);
-        bool secW = int.TryParse(NewWorkSeconds, out int wSec);
-        bool minR = int.TryParse(NewRestMinutes, out int rMin);
-        bool secR = int.TryParse(NewRestSeconds, out int rSec);
-        if (!minW || !secW || !minR || !secR) return;
-        var workMs = (wMin * 60 + wSec) * 1000;
-        var restMs = (rMin * 60 + rSec) * 1000;
+        
+        var workMs = (NewWorkHours * 60 * 60 + NewWorkMinutes * 60) * 1000;
+        var restMs = (NewRestHours * 60 * 60 + NewRestMinutes * 60) * 1000;
         var newTask = new PomodoroTask
         {
             Name = NewTaskName,
@@ -606,14 +613,14 @@ public partial class TimerViewModel : INotifyPropertyChanged
         Tasks.Add(newTask);
 
         NewTaskName = string.Empty;
-        NewWorkMinutes = "25";
-        NewWorkSeconds = "00";
-        NewRestMinutes = "5";
-        NewRestSeconds = "00";
+        NewWorkHours = 0;
+        NewWorkMinutes = 25;
+        NewRestHours = 0;
+        NewRestMinutes = 5;
+        OnPropertyChanged(nameof(NewWorkHours));
         OnPropertyChanged(nameof(NewWorkMinutes));
-        OnPropertyChanged(nameof(NewWorkSeconds));
+        OnPropertyChanged(nameof(NewRestHours));
         OnPropertyChanged(nameof(NewRestMinutes));
-        OnPropertyChanged(nameof(NewRestSeconds));
 
         await HideAddMenuAsync();
 

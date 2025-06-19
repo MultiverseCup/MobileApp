@@ -20,8 +20,8 @@ public class PomodoroTask : INotifyPropertyChanged
         set { _totalWorkTime = value; OnPropertyChanged(nameof(DisplayTotalTime));
         } }
 
-    public string DisplayWorkDuration => TimeSpan.FromMilliseconds(WorkDuration).ToString(@"mm\:ss");
-    public string DisplayRestDuration => TimeSpan.FromMilliseconds(RestDuration).ToString(@"mm\:ss");
+    public string DisplayWorkDuration => TimeSpan.FromMilliseconds(WorkDuration).ToString(@"hh\:mm");
+    public string DisplayRestDuration => TimeSpan.FromMilliseconds(RestDuration).ToString(@"hh\:mm");
     public string DisplayTotalTime => TimeSpan.FromMilliseconds(TotalWorkTime).ToString(@"hh\:mm\:ss");
 
 

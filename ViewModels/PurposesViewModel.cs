@@ -154,28 +154,7 @@ public partial class PurposesViewModel : INotifyPropertyChanged
             }
         );
 
-        MessagingCenter.Subscribe<object, PomodoroTask>(
-            this,
-            "karmaupdate",
-            async (sender, task) =>
-            {
-                foreach (var d in Deadlines)
-                {
-                    if (d.TaskId == task.Id)
-                    {
-                        if (task.TotalWorkTime == 0) d.InitialTotalTime = 0;
-                        d.ElapsedTotalTime += task.TotalWorkTime - d.InitialTotalTime;
-                        d.InitialTotalTime = task.TotalWorkTime;
-
-                        d.IsCompleted = d.ElapsedTotalTime >= d.PlannedTime;
-                        d.IsOverdue = (DateTime.Now > d.Deadline) && d.ElapsedTotalTime < d.PlannedTime;
-                        d.IsActual = !(d.IsCompleted || d.IsOverdue);
-                        await App.Database.SaveDeadlineAsync(d);
-
-                    }
-                }
-            }
-        );
+        
         _confirmDelete = confirmDelete;
         // Инициализация команд
         LoadTasksCommand = new Command(async () => await LoadTasksAsync());
@@ -197,7 +176,8 @@ public partial class PurposesViewModel : INotifyPropertyChanged
 
     // === Методы ===
     private void UpdateKarma()
-    {
+    {   
+
         MessagingCenter.Send<object, double>(
                 this,
                 "karmaupdate", // Уникальное имя сообщения

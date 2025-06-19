@@ -14,19 +14,19 @@
 
     <TabBar>
         <ShellContent
-        Title="Schedule"
+        Title="Расписание"
         Icon="calendar.png"
         Route="SchedulePage"
         ContentTemplate="{DataTemplate views:SchedulePage}" />
 
         <ShellContent
-        Title="Timer"
+        Title="Таймер"
         Icon="clock.png"
         Route="TimerPage"
         ContentTemplate="{DataTemplate views:TimerPage}" />
 
         <ShellContent
-        Title="Purposes"
+        Title="Цели"
         Icon="checkcircle.png"
         Route="PurposesPage"
         ContentTemplate="{DataTemplate views:PurposesPage}" />

@@ -158,12 +158,12 @@
                     Grid.Column="2" 
                     Grid.Row="0"
                     Grid.RowSpan="2"
-                    Command="{Binding SwitchMaskotMessageCommand}"
+                    Command="{Binding PushMaskotMessageCommand}"
                     Source="{Binding CurrentCatImage}"
                     MaximumHeightRequest="110" />
 
                 <!-- Временные кнопки для тестирования -->
-                <StackLayout Grid.Column="3" Grid.Row="0" 
+                <StackLayout Grid.Column="3" Grid.Row="0" IsVisible="False"
                  Orientation="Horizontal"
                  HorizontalOptions="End"
                  VerticalOptions="Start"
@@ -276,7 +276,6 @@
                 Margin="0,20,0,0"
                 SelectedItem="{Binding CurrentTask}"
                 SelectionMode="Single"
-                
                 MaximumHeightRequest="325"
                 ItemSizingStrategy="MeasureAllItems">
                 <CollectionView.ItemTemplate>
@@ -318,7 +317,7 @@
                                 <Label 
                                     Grid.Column="0"
                                     Text="{Binding Name}"
-                                    FontSize="22"
+                                    FontSize="20"
                                     FontFamily="VisionRegular"
                                     TextColor="Black"
                                     VerticalOptions="Center" />
@@ -429,23 +428,57 @@
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="60" />
-                            <ColumnDefinition Width="5" />
-                            <ColumnDefinition Width="60" />
+                            <ColumnDefinition Width="*" />
+                            
                         </Grid.ColumnDefinitions>
 
+
+                        
+                        
+                        
                         <!-- Work -->
                         <Label Grid.Row="0" Grid.Column="0" Text="Время работы:" FontSize="25" VerticalOptions="Center"/>
-                        <Entry Grid.Row="0" Grid.Column="1" Text="{Binding NewWorkMinutes}" FontSize="25" VerticalOptions="Center"/>
-                        <Label Grid.Row="0" Grid.Column="2" Text=":" FontSize="25" VerticalOptions="Center"/>
-                        <Entry Grid.Row="0" Grid.Column="3" Text="{Binding NewWorkSeconds}" FontSize="25" VerticalOptions="Center"/>
+                        
+                        <StackLayout Orientation="Horizontal" Spacing="5"
+                                     Grid.Row="0" Grid.Column="1">
+                            <Picker
+                                TextColor="Black"
+                                FontSize="25"
+                                FontFamily="VisionBold"
+                                WidthRequest="80"
+                                ItemsSource="{Binding Minutes}" 
+                                SelectedItem="{Binding NewWorkHours}"
+                                />
+                            <Label  Text=":" FontSize="25" VerticalOptions="Center"/>
+                            <Picker 
+                                TextColor="Black"
+                                FontSize="25"
+                                FontFamily="VisionBold"
+                                WidthRequest="80"
+                                ItemsSource="{Binding Minutes}" 
+                                SelectedItem="{Binding NewWorkMinutes}"/>
+                        </StackLayout>
 
                         <!-- Rest -->
                         <Label Grid.Row="1" Grid.Column="0" Text="Время отдыха:" FontSize="25" VerticalOptions="Center"/>
-                        <Entry Grid.Row="1" Grid.Column="1" Text="{Binding NewRestMinutes}" FontSize="25" VerticalOptions="Center"/>
-                        <Label Grid.Row="1" Grid.Column="2" Text=":" FontSize="25" VerticalOptions="Center"/>
-                        <Entry Grid.Row="1" Grid.Column="3" Text="{Binding NewRestSeconds}" FontSize="25" VerticalOptions="Center"/>
-
+                        <StackLayout Orientation="Horizontal" Spacing="5"
+                            Grid.Row="1" Grid.Column="1">
+                            <Picker
+                                TextColor="Black"
+                                FontSize="25"
+                                FontFamily="VisionBold"
+                                WidthRequest="80"
+                                ItemsSource="{Binding Minutes}" 
+                                SelectedItem="{Binding NewRestHours}"/>
+                            <Label  Text=":" FontSize="25" VerticalOptions="Center"/>
+                            <Picker 
+                                TextColor="Black"
+                                FontSize="25"
+                                FontFamily="VisionBold"
+                                WidthRequest="80"
+                                ItemsSource="{Binding Minutes}" 
+                                SelectedItem="{Binding NewRestMinutes}"/>
+                        </StackLayout>
                         <!-- Confirm -->
                         <ImageButton 
                             Grid.Row="2" 

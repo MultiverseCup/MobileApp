@@ -27,7 +27,8 @@
                 BackgroundColor="{DynamicResource GlobalColor}"
                 StrokeShape="RoundRectangle 0,0,50,50"
                 StrokeThickness="0"
-                HeightRequest="100">
+                HeightRequest="100"
+                >
                 <Label 
                         Text="Планировщик задач" 
                        FontFamily="VisionBold"
@@ -39,13 +40,16 @@
             </Border>
             <RefreshView Command="{Binding CheckDeadlinesCommand}"
                          IsRefreshing="{Binding IsDeadlinesRefreshing}"
-                         Margin="20">
+                         Margin="20"
+                         MaximumHeightRequest="800"
+                         
+                         >
                 <CollectionView 
                     SelectionMode="None"
                     ItemsSource="{Binding Deadlines}"
                     MaximumHeightRequest="800"
                     ItemSizingStrategy="MeasureAllItems"
-                
+                    
                 >
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="model:TaskDeadline">
@@ -106,6 +110,7 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
             </RefreshView>
+            
             <ImageButton 
                 Source="pluscircle.png"
                 Command="{Binding ShowAddMenuCommand}"

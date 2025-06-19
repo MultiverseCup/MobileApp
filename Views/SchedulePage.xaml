@@ -11,6 +11,7 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <conv:BoolToWeekdayClrConverter x:Key="BoolToWeekdayClr"/>
+            <conv:BoolToTextColorConverter x:Key="BoolToTextColor"/>
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -27,23 +28,28 @@
                    HorizontalOptions="Center" 
                    VerticalOptions="Center"/>
         </Border>
-        <Label Text="Время уведомлений:" 
+        <Label 
+            Margin="0,20,0,0"
+                Text="Время уведомлений:" 
                HorizontalOptions="Center" 
                FontSize="20" 
                FontFamily="VisionBold"/>
-        <Grid HorizontalOptions="Center">
-            <Border 
+
+        <Border HorizontalOptions="Center"
                 BackgroundColor="White"   
                 StrokeShape="RoundRectangle 20"    
-                StrokeThickness="0"/>
+                StrokeThickness="1"
+                Stroke="Black">
             <TimePicker 
-                Margin="5"
-                FontSize="30"   
-                Time="{Binding NotifyTime}"
-                Format="HH:mm"/>
-        </Grid>
+                    Margin="20,0,20,0"
+                    FontSize="25"   
+                    Time="{Binding NotifyTime}"
+                    Format="HH:mm"/>
+        </Border>
         <Button 
+            Margin="0,10,0,0"
             Text="Обновить время уведомлений" 
+            FontFamily="VisionBold"
             BackgroundColor="{DynamicResource GlobalColor}"
             Command="{Binding RefreshNotificationsCommand}"
             HorizontalOptions="Center"/>
@@ -59,65 +65,112 @@
 
         <StackLayout 
             Spacing="10"
-            WidthRequest="300"
+            WidthRequest="250"
             >
-            <Button Text="ПН" 
+            <Grid>
+                <Border
+                    BackgroundColor="{DynamicResource GlobalColor}"
+                    StrokeShape="RoundRectangle 20"
+                    StrokeThickness="0"/>
+                <Button Text="Понедельник" 
+                    CornerRadius="20"
                     FontSize="18"
-                    TextColor="Black"
+                    TextColor="{Binding IsMondayToggled, Converter={StaticResource BoolToTextColor}}"
                     FontFamily="VisionRegular"
                     BackgroundColor="{Binding IsMondayToggled, Converter={StaticResource BoolToWeekdayClr}}" 
                     Command="{Binding ToggleMondayCommand}"/>
-            <Button Text="ВТ" 
+            </Grid>
+            <Grid>
+                <Border
+                    BackgroundColor="{DynamicResource GlobalColor}"
+                    StrokeShape="RoundRectangle 20"
+                    StrokeThickness="0"/>
+                <Button Text="Вторник" 
+                    CornerRadius="20"
                     FontSize="18"
-                    TextColor="Black"
+                    TextColor="{Binding IsTuesdayToggled, Converter={StaticResource BoolToTextColor}}"
                     FontFamily="VisionRegular"
                     BackgroundColor="{Binding IsTuesdayToggled, Converter={StaticResource BoolToWeekdayClr}}"
                     Command="{Binding ToggleTuesdayCommand}"/>
-            <Button Text="СР" 
+            </Grid>
+            <Grid>
+                <Border
+                    BackgroundColor="{DynamicResource GlobalColor}"
+                    StrokeShape="RoundRectangle 20"
+                    StrokeThickness="0"/>
+                <Button Text="Среда" 
+                    CornerRadius="20"
                     FontSize="18"
-                    TextColor="Black"
+                    TextColor="{Binding IsWednesdayToggled, Converter={StaticResource BoolToTextColor}}" 
                     FontFamily="VisionRegular"
                     BackgroundColor="{Binding IsWednesdayToggled, Converter={StaticResource BoolToWeekdayClr}}" 
                     Command="{Binding ToggleWednesdayCommand}"/>
-            <Button Text="ЧТ" 
+            </Grid>
+            <Grid>
+                <Border
+                     BackgroundColor="{DynamicResource GlobalColor}"
+                     StrokeShape="RoundRectangle 20"
+                     StrokeThickness="0"/>
+                <Button Text="Четверг" 
+                    CornerRadius="20"
                     FontSize="18"
-                    TextColor="Black"
+                    TextColor="{Binding IsThursdayToggled, Converter={StaticResource BoolToTextColor}}" 
                     FontFamily="VisionRegular"
                     BackgroundColor="{Binding IsThursdayToggled, Converter={StaticResource BoolToWeekdayClr}}" 
                     Command="{Binding ToggleThursdayCommand}"/>
-            <Button Text="ПТ"
+            </Grid>
+            <Grid>
+                <Border
+                     BackgroundColor="{DynamicResource GlobalColor}"
+                     StrokeShape="RoundRectangle 20"
+                     StrokeThickness="0"/>
+                <Button Text="Пятница"
+                    CornerRadius="20"
                     FontSize="18"
-                    TextColor="Black"
+                    TextColor="{Binding IsFridayToggled, Converter={StaticResource BoolToTextColor}}" 
                     FontFamily="VisionRegular"
                     BackgroundColor="{Binding IsFridayToggled, Converter={StaticResource BoolToWeekdayClr}}" 
                     Command="{Binding ToggleFridayCommand}"/>
-            <Button Text="СБ"
+            </Grid>
+            <Grid>
+                <Border
+                     BackgroundColor="{DynamicResource GlobalColor}"
+                     StrokeShape="RoundRectangle 20"
+                     StrokeThickness="0"/>
+                <Button Text="Суббота"
+                    CornerRadius="20"
                     FontSize="18"
-                    TextColor="Black"
+                    TextColor="{Binding IsSaturdayToggled, Converter={StaticResource BoolToTextColor}}"
                     FontFamily="VisionRegular"
                     BackgroundColor="{Binding IsSaturdayToggled, Converter={StaticResource BoolToWeekdayClr}}"
                     Command="{Binding ToggleSaturdayCommand}"/>
-            <Button Text="ВС" 
+            </Grid>
+            <Grid>
+                <Border
+                     BackgroundColor="{DynamicResource GlobalColor}"
+                     StrokeShape="RoundRectangle 20"
+                     StrokeThickness="0"/>
+                <Button Text="Воскресенье" 
+                    CornerRadius="20"
                     FontSize="18"
-                    TextColor="Black"
+                    TextColor="{Binding IsSundayToggled, Converter={StaticResource BoolToTextColor}}"
                     FontFamily="VisionRegular"
                     BackgroundColor="{Binding IsSundayToggled, Converter={StaticResource BoolToWeekdayClr}}"
                     Command="{Binding ToggleSundayCommand}"/>
+            </Grid>
         </StackLayout>
-
-
 
         <StackLayout Orientation="Horizontal"
                      Margin="0,10,0,0"
-                     HorizontalOptions="Center">
+                     HorizontalOptions="Center"
+                     IsVisible="False">
             <!--Тестовые кнопки-->
             <Button 
-                Text="Start test"
+                Text="Начать тест"
                 Command="{Binding TestNotificationCommand}"
                 />
-
             <Button 
-                Text="Stop test"
+                Text="Стоп"
                 Command="{Binding StopTestNotificationCommand}"   
                 />
         </StackLayout>
