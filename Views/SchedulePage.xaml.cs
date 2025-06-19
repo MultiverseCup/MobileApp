@@ -1,11 +1,19 @@
-namespace PomodoroProject.Views
+using PomodoroProject.Data.Models;
+using PomodoroProject.ViewModels;
 
+
+namespace PomodoroProject.Views;
+
+
+public partial class SchedulePage : ContentPage
 {
-	public partial class SchedulePage : ContentPage
+    private readonly ScheduleViewModel _viewModel;
+
+
+    public SchedulePage()
 	{
-		public SchedulePage()
-		{
-			InitializeComponent();
-		}
-	}
+		InitializeComponent();
+        _viewModel = new ScheduleViewModel();
+        BindingContext = _viewModel;
+    }
 }

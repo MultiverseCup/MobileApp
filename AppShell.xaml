@@ -13,21 +13,23 @@
     BackgroundColor="#FF7E7E">
 
     <TabBar>
+        <ShellContent
+        Title="Расписание"
+        Icon="calendar.png"
+        Route="SchedulePage"
+        ContentTemplate="{DataTemplate views:SchedulePage}" />
 
         <ShellContent
-            Title="Schedule"
-            Icon="calendar.png"
-            ContentTemplate="{DataTemplate views:SchedulePage}" />
+        Title="Таймер"
+        Icon="clock.png"
+        Route="TimerPage"
+        ContentTemplate="{DataTemplate views:TimerPage}" />
 
         <ShellContent
-            Title="Timer"
-            Icon="clock.png"
-            ContentTemplate="{DataTemplate views:TimerPage}" />
-
-        <ShellContent
-            Title="Purposes"
-            Icon="checkcircle.png"
-            ContentTemplate="{DataTemplate views:PurposesPage}" />
+        Title="Цели"
+        Icon="checkcircle.png"
+        Route="PurposesPage"
+        ContentTemplate="{DataTemplate views:PurposesPage}" />
 
     </TabBar>
 </Shell>
