@@ -8,7 +8,7 @@ Pomodoro Planner помогает сосредоточиться на учёбе
 - ✅ Статистика – трекинг времени и анализ продуктивности
 
 ## Примерный дизайн приложения
-<img src="https://ltdfoto.ru/image/sNCHls" alt="Pomodoro Planner">
+<img src="https://vk.com/izyuzyakin?z=photo271951047_457255850%2Fphoto_feed271951047" alt="Pomodoro Planner">
 
 
 ## Ссылка на доску проекта [тут](https://github.com/users/MultiverseCup/projects/1)
